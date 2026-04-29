@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theresa Gyamfuwaa — Full-Stack Engineer & AI Systems Builder</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card: #111;
+            --text: #e8e0d4;
+            --muted: #888;
+            --accent: #8b5cf6;
+            --accent2: #a78bfa;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4c1d95 100%);
+            color: white;
+            padding: 40px 40px 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(139,92,246,0.3);
+        }
+        .header h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+        .header .tagline { font-size: 15px; font-weight: 600; opacity: 0.85; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); }
+        .header .contact-info { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; font-size: 13px; opacity: 0.9; }
+        .contact-info span { display: flex; align-items: center; gap: 6px; }
+
+        /* Metrics bar */
+        .metrics-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            border-top: 1px solid rgba(139,92,246,0.2);
+            margin-top: 28px;
+        }
+        .metric-item {
+            padding: 18px;
+            border-right: 1px solid rgba(139,92,246,0.2);
+            text-align: center;
+        }
+        .metric-item:last-child { border-right: none; }
+        .metric-num {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--accent2);
+            display: block;
+        }
+        .metric-label { font-size: 12px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; }
+
+        .content { padding: 40px; }
+        .section { margin-bottom: 36px; transition: all 0.3s ease; }
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent2);
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(139,92,246,0.3);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .summary {
+            background: rgba(139,92,246,0.08);
+            padding: 20px;
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            line-height: 1.8;
+            font-size: 14px;
+            color: #ccc;
+        }
+        .summary strong { color: var(--text); }
+
+        /* Skills */
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .skill-category {
+            background: rgba(255,255,255,0.03);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .skill-category h4 { font-size: 11px; font-weight: 700; color: var(--accent2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .skill-items { list-style: none; font-size: 12px; color: #aaa; line-height: 2; }
+        .skill-items li::before { content: "▸ "; color: var(--accent); }
+
+        /* Collapsible ventures */
+        .venture {
+            background: rgba(255,255,255,0.03);
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-left: 3px solid var(--accent);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+        .venture:hover { background: rgba(139,92,246,0.07); }
+        .venture-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center; }
+        .venture-title::after { content: "▸"; font-size: 11px; color: var(--muted); transition: transform 0.3s ease; }
+        .venture.open .venture-title::after { transform: rotate(90deg); }
+        .venture-meta { font-size: 12px; color: var(--accent2); font-weight: 600; margin-bottom: 0; letter-spacing: 0.5px; }
+        .venture-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .venture.open .venture-details { max-height: 300px; }
+        .venture-details ul { list-style: none; margin-top: 14px; }
+        .venture-details li {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 7px;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.6;
+        }
+        .venture-details li::before { content: "▸"; position: absolute; left: 0; color: var(--accent); font-weight: bold; }
+
+        /* Experience */
+        .role-block { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .role-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+        .role-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+        .role-company { font-size: 12px; color: var(--accent2); font-weight: 600; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .role-bullets { list-style: none; }
+        .role-bullets li { font-size: 13px; color: #aaa; margin-bottom: 7px; padding-left: 18px; position: relative; line-height: 1.6; }
+        .role-bullets li::before { content: "•"; position: absolute; left: 0; color: var(--accent); font-weight: bold; font-size: 16px; }
+
+        /* Education */
+        .education {
+            background: rgba(255,255,255,0.03);
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .education-degree { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+        .education-details { font-size: 12px; color: var(--muted); }
+
+        /* Achievements */
+        .achievements { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .achievement {
+            background: rgba(139,92,246,0.07);
+            padding: 14px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+            font-size: 13px;
+            color: #ccc;
+            line-height: 1.6;
+        }
+        .achievement::before { content: "✓ "; color: var(--accent2); font-weight: 700; }
+
+        /* Availability */
+        .availability {
+            background: linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(76,29,149,0.15) 100%);
+            border: 1px solid rgba(139,92,246,0.3);
+            color: var(--text);
+            padding: 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 2;
+            margin-top: 10px;
+        }
+        .availability strong { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent2); text-transform: uppercase; letter-spacing: 2px; }
+
+        .footer { text-align: center; padding: 20px 40px; background: rgba(0,0,0,0.3); font-size: 11px; color: var(--muted); border-top: 1px solid rgba(255,255,255,0.06); }
+
+        /* Reveal animation */
+        .fade-in { opacity: 0; transform: translateY(16px); animation: fadeIn 0.7s ease forwards; }
+        .fade-in:nth-child(2) { animation-delay: 0.1s; }
+        .fade-in:nth-child(3) { animation-delay: 0.2s; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .achievements, .skills-grid { grid-template-columns: 1fr; }
+            .metrics-bar { grid-template-columns: 1fr; }
+            .metric-item { border-right: none; border-bottom: 1px solid rgba(139,92,246,0.2); }
+            .header { padding: 30px 20px 0; }
+            .header h1 { font-size: 24px; }
+            .content { padding: 25px; }
+            .header .contact-info { flex-direction: column; gap: 10px; font-size: 12px; }
+        }
+        @media print {
+            body { background: white; padding: 0; color: #111; }
+            .container { box-shadow: none; border-radius: 0; background: white; }
+            #cmd { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="fade-in">THERESA GYAMFUWAA</h1>
+        <div class="tagline fade-in">Full-Stack Engineer &nbsp;|&nbsp; AI Systems Builder</div>
+        <div class="contact-info fade-in">
+            <span>📍 Thailand (Remote)</span>
+            <span>📧 gyamfuwaa@protonmail.com</span>
+            <span>📞 +66 886 803 829</span>
+            <span>💻 github.com/AIceCreamLabs</span>
+        </div>
+        <div class="metrics-bar">
+            <div class="metric-item">
+                <span class="metric-num">6+</span>
+                <span class="metric-label">Products Shipped</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-num">10K+</span>
+                <span class="metric-label">Docs Processed (AI)</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-num">$1.5M+</span>
+                <span class="metric-label">Ad Spend Managed</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="section">
+            <div class="section-title">Summary</div>
+            <div class="summary">
+                Full-stack engineer with <strong>5+ years</strong> building and shipping AI-powered products end-to-end. Proven ability to design, develop, and deploy production systems across web, AI, and marketplace platforms. Strong in rapid prototyping, system design, and operating independently in high-ambiguity environments.
+                <br><br>
+                Built <strong>6+ live products</strong> across AI, legal tech, and marketplaces — including systems processing 10K+ documents and platforms managing real-world operations. Shipped from zero to production, solo.
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Technical Skills</div>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h4>Languages</h4>
+                    <ul class="skill-items">
+                        <li>JavaScript / Node.js</li>
+                        <li>TypeScript</li>
+                        <li>Python</li>
+                        <li>PHP</li>
+                        <li>HTML / CSS</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Frontend</h4>
+                    <ul class="skill-items">
+                        <li>React / Next.js</li>
+                        <li>Tailwind CSS</li>
+                        <li>Framer Motion</li>
+                        <li>Figma (UI/UX)</li>
+                        <li>Responsive Design</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Backend & DB</h4>
+                    <ul class="skill-items">
+                        <li>FastAPI</li>
+                        <li>Firebase / Supabase</li>
+                        <li>PostgreSQL</li>
+                        <li>REST APIs</li>
+                        <li>n8n Automation</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>AI / ML</h4>
+                    <ul class="skill-items">
+                        <li>OpenAI API</li>
+                        <li>OpenClaw</li>
+                        <li>CrewAI</li>
+                        <li>Anthropic API</li>
+                        <li>Agentic Workflows</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>DevOps & Tools</h4>
+                    <ul class="skill-items">
+                        <li>GitHub / Vercel</li>
+                        <li>Docker (basic)</li>
+                        <li>Replit / Base44</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Languages</h4>
+                    <ul class="skill-items">
+                        <li>Dutch (Native)</li>
+                        <li>English (Fluent)</li>
+                        <li>Spanish (Basic)</li>
+                        <li>Twi (Heritage)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Experience</div>
+
+            <div class="role-block">
+                <div class="role-title">Full-Stack Engineer — Self-Directed Ventures</div>
+                <div class="role-company">Custom Systems &nbsp;|&nbsp; 2023–Present</div>
+                <ul class="role-bullets">
+                    <li>Built and launched 4+ production platforms across AI, legal tech, and marketplaces</li>
+                    <li>Designed end-to-end architectures — frontend, backend, AI pipelines, deployment</li>
+                    <li>Developed AI systems processing 10K+ documents for compliance and analysis</li>
+                    <li>Implemented agent-based workflows to automate onboarding and operations</li>
+                    <li>Operated full product lifecycle: ideation → MVP → production → iteration</li>
+                </ul>
+
+                <div style="margin-top: 20px; margin-bottom: 8px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px;">Selected Projects — click to expand</div>
+
+                <div class="venture" onclick="this.classList.toggle('open')">
+                    <div class="venture-title">Ntoma — AI Fashion Pattern Generation Tool</div>
+                    <div class="venture-meta">Founder &amp; Lead Developer · 2025–Present</div>
+                    <div class="venture-details">
+                        <ul>
+                            <li>Built full pipeline: image input → garment analysis → pattern generation → DXF export</li>
+                            <li>Developed multi-size grading system (XS–XL) and virtual fit preview</li>
+                            <li>AI-assisted pattern editor with chat interface</li>
+                            <li>Stack: React, FastAPI, Python, OpenAI Vision · Shipped solo in &lt;3 months</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="venture" onclick="this.classList.toggle('open')">
+                    <div class="venture-title">AICE Legal — AI Compliance Platform</div>
+                    <div class="venture-meta">Co-Founder · 2023–Present</div>
+                    <div class="venture-details">
+                        <ul>
+                            <li>Built document analysis pipeline for GDPR / EU AI Act compliance</li>
+                            <li>Processed 10K+ legal documents using LLM-based workflows</li>
+                            <li>Targeting law firms in Netherlands and Belgium</li>
+                            <li>Stack: Node.js, Firebase, LLM APIs</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="venture" onclick="this.classList.toggle('open')">
+                    <div class="venture-title">GiGZo — Domestic Services Marketplace</div>
+                    <div class="venture-meta">Co-Founder · 2023–Present</div>
+                    <div class="venture-details">
+                        <ul>
+                            <li>Built and scaled marketplace to 50+ active service providers</li>
+                            <li>Implemented booking, payments, and logistics coordination systems</li>
+                            <li>Implemented AI-powered customer onboarding agents using LangChain and CrewAI</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="venture" onclick="this.classList.toggle('open')">
+                    <div class="venture-title">Promesa — Property Management Marketplace</div>
+                    <div class="venture-meta">Co-Founder · 2024–Present</div>
+                    <div class="venture-details">
+                        <ul>
+                            <li>Full-stack platform for expat property and household management in SEA</li>
+                            <li>User acquisition targeting digital nomads and relocating professionals</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="role-block">
+                <div class="role-title">Account Executive — Google Ads</div>
+                <div class="role-company">Google &nbsp;|&nbsp; 2023–2024 &nbsp;|&nbsp; Remote</div>
+                <ul class="role-bullets">
+                    <li>Managed $1.5M+ in annual ad spend across SMB accounts</li>
+                    <li>Improved campaign ROI by 25–35% through optimization strategies</li>
+                    <li>Built internal dashboard system adopted team-wide, reducing support load by 25%</li>
+                    <li>Delivered technical troubleshooting and performance analysis</li>
+                </ul>
+            </div>
+
+            <div class="role-block">
+                <div class="role-title">Freelance Full-Stack Developer</div>
+                <div class="role-company">Various Clients &nbsp;|&nbsp; 2019–Present &nbsp;|&nbsp; Remote</div>
+                <ul class="role-bullets">
+                    <li>Delivered custom web applications for startups and SMBs across EU and SEA</li>
+                    <li>Built e-commerce platforms improving conversion rates by ~30%</li>
+                    <li>Reduced client onboarding time by 40% via automation systems</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Education</div>
+            <div class="education">
+                <div class="education-degree">HBO Business Innovation Studies</div>
+                <div class="education-details">Hogeschool InHolland, Netherlands &nbsp;|&nbsp; 2018–2022</div>
+            </div>
+            <div class="education">
+                <div class="education-degree">Google Project Management Professional Certificate</div>
+                <div class="education-details">Completed 2024</div>
+            </div>
+            <div class="education">
+                <div class="education-degree">Self-directed Full-Stack Development & AI Engineering</div>
+                <div class="education-details">2019–Present &nbsp;|&nbsp; React, Next.js, Python, LLM APIs, Agentic AI</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Key Achievements</div>
+            <div class="achievements">
+                <div class="achievement">Built and launched 6+ production products as a solo engineer</div>
+                <div class="achievement">Developed AI systems processing 10K+ legal documents</div>
+                <div class="achievement">Managed $1.5M+ in ad spend with consistent ROI improvements</div>
+                <div class="achievement">Scaled marketplace platform to 50+ active service providers</div>
+                <div class="achievement">Reduced onboarding overhead by up to 40% through automation</div>
+                <div class="achievement">Shipped Ntoma MVP from idea to live product in under 3 months</div>
+            </div>
+        </div>
+
+        <div class="availability">
+            <strong>Availability</strong>
+            Work authorization: Open to global remote roles &nbsp;·&nbsp; Availability: Immediate<br>
+            Contract: €3k–5k/month &nbsp;·&nbsp; Equity roles: Open &nbsp;·&nbsp; Time zones: EST–APAC flexible
+        </div>
+
+    </div>
+
+    <div class="footer">
+        Theresa Gyamfuwaa &nbsp;·&nbsp; gyamfuwaa@protonmail.com &nbsp;·&nbsp; +66 886 803 829 &nbsp;·&nbsp; April 2026
+    </div>
+</div>
+
+<input id="cmd" placeholder="Press / to navigate..." style="
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 8px;
+    opacity: 0.6;
+    font-size: 13px;
+    width: 260px;
+    outline: none;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+">
+
+<script>
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+            e.preventDefault();
+            const cmd = document.getElementById('cmd');
+            cmd.focus();
+            cmd.style.opacity = '1';
+            cmd.style.borderColor = '#8b5cf6';
+        }
+        if (e.key === 'Escape') {
+            const cmd = document.getElementById('cmd');
+            cmd.blur();
+            cmd.value = '';
+            cmd.style.opacity = '0.6';
+            cmd.style.borderColor = '#333';
+        }
+    });
+
+    document.getElementById('cmd').addEventListener('blur', function () {
+        this.style.opacity = '0.6';
+        this.style.borderColor = '#333';
+    });
+</script>
+</body>
+</html>
