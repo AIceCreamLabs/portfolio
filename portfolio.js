@@ -113,7 +113,7 @@ const portfolioItems = [
     id: 7,
     title: 'About Me',
     subtitle: 'Developer & AI Builder',
-    image: 'about-me.png',
+    image: 'hire-me.png',
     type: 'about',
     description: 'Full-stack developer and AI builder based in Thailand. Building real products that work.',
     fullDescription: true
@@ -154,6 +154,8 @@ class PortfolioController {
     this.createGalleryGrid();
     this.startRenderLoop();
     this.attachEventListeners();
+    this.attachGalleryScroll();
+    this.attachCardTilt();
   }
   
   createGalleryGrid() {
@@ -241,6 +243,44 @@ class PortfolioController {
     });
   }
   
+  attachGalleryScroll() {
+    // Wheel/trackpad scroll pans the gallery via the existing velocity system
+    this.galleryCanvas.addEventListener('wheel', (e) => {
+      if (this.animationPhase === 'intro' || this.isDetailOpen || this.isMobile()) return;
+      e.preventDefault();
+
+      const speedX = e.deltaX * 0.55;
+      const speedY = e.deltaY * 0.55;
+
+      this.dragVelocity.x -= speedX;
+      this.dragVelocity.y -= speedY;
+
+      // Clamp so fast trackpad swipes don't go wild
+      const cap = 28;
+      this.dragVelocity.x = Math.max(-cap, Math.min(cap, this.dragVelocity.x));
+      this.dragVelocity.y = Math.max(-cap, Math.min(cap, this.dragVelocity.y));
+    }, { passive: false });
+  }
+
+  attachCardTilt() {
+    // 3D perspective tilt on individual gallery cards
+    const cards = document.querySelectorAll('.gallery-image');
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        if (this.animationPhase === 'intro') return;
+        const rect = card.getBoundingClientRect();
+        const cx = (e.clientX - rect.left) / rect.width - 0.5;
+        const cy = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(700px) rotateY(${cx * 14}deg) rotateX(${-cy * 14}deg) scale(1.03) translateZ(10px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transition = 'transform 0.7s var(--ease-out-expo)';
+        card.style.transform = '';
+        setTimeout(() => { card.style.transition = ''; }, 700);
+      });
+    });
+  }
+
   isMobile() {
     return window.innerWidth <= 768;
   }
@@ -276,7 +316,15 @@ class PortfolioController {
   }
   
   updateGalleryPosition() {
-    this.galleryImages.style.transform = `translate(${this.dragOffset.x}px, ${this.dragOffset.y}px)`;
+    // Tilt the grid in 3D based on current velocity — springs back as momentum decays
+    const tiltX = Math.max(-6, Math.min(6, this.dragVelocity.y * 0.22));
+    const tiltY = Math.max(-6, Math.min(6, -this.dragVelocity.x * 0.22));
+    this.galleryImages.style.transform = `
+      translate(${this.dragOffset.x}px, ${this.dragOffset.y}px)
+      perspective(1000px)
+      rotateX(${tiltX}deg)
+      rotateY(${tiltY}deg)
+    `;
   }
   
   openDetail(item) {
@@ -791,13 +839,17 @@ class PortfolioController {
   
   updateDragMomentum() {
     if (!this.isDragging) {
-      if (Math.abs(this.dragVelocity.x) > 0.1 || Math.abs(this.dragVelocity.y) > 0.1) {
+      if (Math.abs(this.dragVelocity.x) > 0.05 || Math.abs(this.dragVelocity.y) > 0.05) {
         this.dragOffset.x += this.dragVelocity.x;
         this.dragOffset.y += this.dragVelocity.y;
-        
-        this.dragVelocity.x *= 0.95;
-        this.dragVelocity.y *= 0.95;
-        
+
+        this.dragVelocity.x *= 0.94;
+        this.dragVelocity.y *= 0.94;
+
+        this.updateGalleryPosition();
+      } else if (this.dragVelocity.x !== 0 || this.dragVelocity.y !== 0) {
+        // Snap velocity to zero and reset tilt cleanly
+        this.dragVelocity = { x: 0, y: 0 };
         this.updateGalleryPosition();
       }
     }
