@@ -113,7 +113,7 @@ const portfolioItems = [
     id: 7,
     title: 'About Me',
     subtitle: 'Developer & AI Builder',
-    image: 'hire-me.png',
+    image: 'about-me.png',
     type: 'about',
     description: 'Full-stack developer and AI builder based in Thailand. Building real products that work.',
     fullDescription: true
