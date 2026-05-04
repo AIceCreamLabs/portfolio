@@ -669,6 +669,7 @@ class PortfolioController {
     return `
       <div class="detail-body">
         <div class="detail-intro reveal-on-scroll slow">
+          <h2 style="font-family: var(--font-display); font-size: clamp(28px, 4vw, 48px); font-weight: 700; margin-bottom: 12px;">Akua Theresa Gyamfuwaa</h2>
           <p class="section-text">I'm a freelance developer based in Thailand, building high-end digital systems that make clients money.</p>
         </div>
 
