@@ -311,14 +311,13 @@ class PortfolioController {
     const cards = document.querySelectorAll('.gallery-image');
     cards.forEach(card => {
       card.addEventListener('mousemove', (e) => {
-        if (this.animationPhase === 'intro' || this.isDragging) return;
+        if (this.animationPhase === 'intro') return;
         const rect = card.getBoundingClientRect();
         const cx = (e.clientX - rect.left) / rect.width - 0.5;
         const cy = (e.clientY - rect.top) / rect.height - 0.5;
         card.style.transform = `perspective(700px) rotateY(${cx * 14}deg) rotateX(${-cy * 14}deg) scale(1.03) translateZ(10px)`;
       });
       card.addEventListener('mouseleave', () => {
-        if (this.isDragging) return;
         card.style.transition = 'transform 0.7s var(--ease-out-expo)';
         card.style.transform = '';
         setTimeout(() => { card.style.transition = ''; }, 700);
