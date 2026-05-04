@@ -806,23 +806,9 @@ body::after {
 }
 
 @media (max-width: 768px) {
-  /* Gallery: native scroll on mobile */
+  /* Gallery: JS-driven touch pan + pinch-zoom (same engine as desktop) */
   .gallery-view {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .gallery-canvas {
-    position: relative;
-    height: auto;
-    cursor: default;
-    min-height: 100svh;
-  }
-
-  .gallery-images {
-    position: relative;
-    height: auto;
-    transform: none !important;
+    overflow: hidden;
   }
 
   #imageGrid {
@@ -955,6 +941,23 @@ body::after {
     height: 44px;
     top: 12px;
     right: 12px;
+  }
+
+  /* Touch press: mirrors desktop hover colour reveal */
+  .gallery-image.card-active .img-reveal {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .gallery-image.card-active .img-base {
+    opacity: 0.15;
+    filter: grayscale(0.3) contrast(1);
+  }
+
+  .gallery-image.card-active {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transform: scale(0.97);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
 }
 

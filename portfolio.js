@@ -135,6 +135,11 @@ class PortfolioController {
     this.dragOffset = { x: 0, y: 0 };
     this.dragVelocity = { x: 0, y: 0 };
     
+    this.zoom = 1;
+    this.minZoom = 0.4;
+    this.maxZoom = 3;
+    this.lastPinchDist = null;
+
     this.galleryCanvas = document.getElementById('galleryCanvas');
     this.galleryImages = document.getElementById('galleryImages');
     this.heroText = document.getElementById('heroText');
@@ -198,6 +203,18 @@ class PortfolioController {
       imgEl.appendChild(label);
       imgEl.addEventListener('click', () => this.openDetail(item));
 
+      // Touch press: reveal colour + scale (mirrors desktop hover)
+      imgEl.addEventListener('touchstart', () => {
+        if (this.animationPhase !== 'interactive') return;
+        imgEl.classList.add('card-active');
+      }, { passive: true });
+      imgEl.addEventListener('touchend', () => {
+        setTimeout(() => imgEl.classList.remove('card-active'), 250);
+      });
+      imgEl.addEventListener('touchcancel', () => {
+        imgEl.classList.remove('card-active');
+      });
+
       // Auto-cycle images on hover (if multiple images)
       if (imageSrcs.length > 1) {
         let cycleIdx = 0;
@@ -231,23 +248,50 @@ class PortfolioController {
     this.galleryCanvas.addEventListener('mouseup', () => this.onDragEnd());
     this.galleryCanvas.addEventListener('mouseleave', () => this.onDragEnd());
 
-    // Touch drag only on non-mobile (mobile uses native scroll)
+    // Touch: single-finger drag + two-finger pinch-to-zoom
     this.galleryCanvas.addEventListener('touchstart', (e) => {
-      if (!this.isMobile()) this.onDragStart(e.touches[0]);
+      if (this.animationPhase === 'intro' || this.isDetailOpen) return;
+      if (e.touches.length === 2) {
+        this.isDragging = false;
+        this.galleryCanvas.classList.remove('dragging');
+        this.lastPinchDist = this.getPinchDist(e.touches);
+      } else if (e.touches.length === 1) {
+        this.onDragStart(e.touches[0]);
+      }
     }, { passive: true });
     this.galleryCanvas.addEventListener('touchmove', (e) => {
-      if (!this.isMobile()) this.onDragMove(e.touches[0]);
-    }, { passive: true });
-    this.galleryCanvas.addEventListener('touchend', () => {
-      if (!this.isMobile()) this.onDragEnd();
+      if (this.animationPhase === 'intro' || this.isDetailOpen) return;
+      if (e.touches.length === 2 && this.lastPinchDist !== null) {
+        e.preventDefault();
+        this.onPinchMove(e.touches);
+      } else if (e.touches.length === 1) {
+        this.onDragMove(e.touches[0]);
+      }
+    }, { passive: false });
+    this.galleryCanvas.addEventListener('touchend', (e) => {
+      if (e.touches.length === 0) {
+        this.lastPinchDist = null;
+        this.onDragEnd();
+      } else if (e.touches.length === 1) {
+        this.lastPinchDist = null;
+      }
     });
   }
   
   attachGalleryScroll() {
-    // Wheel/trackpad scroll pans the gallery via the existing velocity system
+    // Wheel/trackpad: pan + ctrl-scroll/trackpad-pinch to zoom
     this.galleryCanvas.addEventListener('wheel', (e) => {
-      if (this.animationPhase === 'intro' || this.isDetailOpen || this.isMobile()) return;
+      if (this.animationPhase === 'intro' || this.isDetailOpen) return;
       e.preventDefault();
+
+      if (e.ctrlKey || e.metaKey) {
+        const delta = e.deltaY > 0 ? 0.92 : 1.08;
+        this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom * delta));
+        this.updateGalleryPosition();
+        return;
+      }
+
+      if (this.isMobile()) return;
 
       const speedX = e.deltaX * 0.55;
       const speedY = e.deltaY * 0.55;
@@ -286,7 +330,7 @@ class PortfolioController {
   }
 
   onDragStart(e) {
-    if (this.animationPhase === 'intro' || this.isMobile()) return;
+    if (this.animationPhase === 'intro') return;
     this.isDragging = true;
     this.dragStart = { x: e.clientX, y: e.clientY };
     this.dragVelocity = { x: 0, y: 0 };
@@ -316,11 +360,14 @@ class PortfolioController {
   }
   
   updateGalleryPosition() {
-    // Tilt the grid in 3D based on current velocity — springs back as momentum decays
-    const tiltX = Math.max(-6, Math.min(6, this.dragVelocity.y * 0.22));
-    const tiltY = Math.max(-6, Math.min(6, -this.dragVelocity.x * 0.22));
+    // Tilt the grid in 3D based on current velocity — gentler on mobile
+    const tiltMult = this.isMobile() ? 0.08 : 0.22;
+    const tiltCap = this.isMobile() ? 2 : 6;
+    const tiltX = Math.max(-tiltCap, Math.min(tiltCap, this.dragVelocity.y * tiltMult));
+    const tiltY = Math.max(-tiltCap, Math.min(tiltCap, -this.dragVelocity.x * tiltMult));
     this.galleryImages.style.transform = `
       translate(${this.dragOffset.x}px, ${this.dragOffset.y}px)
+      scale(${this.zoom})
       perspective(1000px)
       rotateX(${tiltX}deg)
       rotateY(${tiltY}deg)
@@ -389,8 +436,8 @@ class PortfolioController {
       
       const galleryImages = document.querySelectorAll('.gallery-image');
       galleryImages.forEach(el => {
-        el.style.opacity = '1';
-        el.style.transform = 'scale(1)';
+        el.style.opacity = '';
+        el.style.transform = '';
       });
       
       this.detailHero = null;
@@ -795,6 +842,20 @@ class PortfolioController {
     });
   }
   
+  getPinchDist(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  onPinchMove(touches) {
+    const dist = this.getPinchDist(touches);
+    const scale = dist / this.lastPinchDist;
+    this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom * scale));
+    this.lastPinchDist = dist;
+    this.updateGalleryPosition();
+  }
+
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -870,6 +931,10 @@ class PortfolioController {
       this.intro.active = false;
       this.animationPhase = 'interactive';
       document.getElementById('galleryView').classList.add('interactive');
+      // Clear intro inline styles so CSS card-active hover/touch states work
+      document.querySelectorAll('.gallery-image').forEach(el => {
+        el.style.transform = '';
+      });
     }
   }
   
