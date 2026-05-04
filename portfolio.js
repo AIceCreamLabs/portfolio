@@ -311,13 +311,14 @@ class PortfolioController {
     const cards = document.querySelectorAll('.gallery-image');
     cards.forEach(card => {
       card.addEventListener('mousemove', (e) => {
-        if (this.animationPhase === 'intro') return;
+        if (this.animationPhase === 'intro' || this.isDragging) return;
         const rect = card.getBoundingClientRect();
         const cx = (e.clientX - rect.left) / rect.width - 0.5;
         const cy = (e.clientY - rect.top) / rect.height - 0.5;
         card.style.transform = `perspective(700px) rotateY(${cx * 14}deg) rotateX(${-cy * 14}deg) scale(1.03) translateZ(10px)`;
       });
       card.addEventListener('mouseleave', () => {
+        if (this.isDragging) return;
         card.style.transition = 'transform 0.7s var(--ease-out-expo)';
         card.style.transform = '';
         setTimeout(() => { card.style.transition = ''; }, 700);
@@ -616,7 +617,7 @@ class PortfolioController {
         <div class="pricing-container reveal-on-scroll slow">
           <div class="pricing-card">
             <div class="pricing-title">Starter</div>
-            <div class="pricing-price">$1.5k</div>
+            <div class="pricing-price">€1,500</div>
             <p class="pricing-description">Perfect for startups</p>
             <ul class="pricing-features">
               <li>Landing Page</li>
@@ -624,11 +625,12 @@ class PortfolioController {
               <li>SEO Optimization</li>
               <li>Contact Form</li>
             </ul>
+            <a href="mailto:gyamfuwaa@protonmail.com?subject=Starter Project Inquiry" class="pricing-cta-btn">Get Started</a>
           </div>
           
           <div class="pricing-card featured">
             <div class="pricing-title">Pro</div>
-            <div class="pricing-price">$4k</div>
+            <div class="pricing-price">€4,000</div>
             <p class="pricing-description">Full solution</p>
             <ul class="pricing-features">
               <li>Full Website</li>
@@ -636,30 +638,51 @@ class PortfolioController {
               <li>Dashboard</li>
               <li>Advanced SEO</li>
             </ul>
+            <a href="mailto:gyamfuwaa@protonmail.com?subject=Pro Project Inquiry" class="pricing-cta-btn">Get Started</a>
           </div>
           
           <div class="pricing-card">
-            <div class="pricing-title">Custom</div>
-            <div class="pricing-price">—</div>
-            <p class="pricing-description">For complex needs</p>
+            <div class="pricing-title">Editorial</div>
+            <div class="pricing-price">€7,500</div>
+            <p class="pricing-description">Awwwards-level</p>
             <ul class="pricing-features">
-              <li>Advanced Systems</li>
-              <li>Automation</li>
-              <li>Scaling</li>
-              <li>Custom Solutions</li>
+              <li>Three.js / WebGL</li>
+              <li>Immersive Animations</li>
+              <li>Advanced Interactions</li>
+              <li>Award-Ready Design</li>
             </ul>
+            <a href="mailto:gyamfuwaa@protonmail.com?subject=Editorial Project Inquiry" class="pricing-cta-btn">Get Started</a>
           </div>
         </div>
         
-        <div class="detail-section reveal-on-scroll slow">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Why Work With Me?</h3>
-          <p class="section-text"><strong>Results-Focused:</strong> Every project designed to impact your bottom line—whether conversions, efficiency, or revenue.</p>
-          <p class="section-text"><strong>AI Integration:</strong> From chatbots to automation to custom AI systems. I build intelligence into your workflow.</p>
-          <p class="section-text"><strong>Full-Stack Expertise:</strong> React, Next.js, Node.js, Python, GPT integration. End-to-end development.</p>
+        <div class="why-section reveal-on-scroll slow">
+          <h3>Why Work With Me?</h3>
+          <div class="why-grid">
+            <div class="why-card">
+              <div class="why-card-icon">⚡</div>
+              <div class="why-card-title">Results-Focused</div>
+              <div class="why-card-text">Every project designed to impact your bottom line — conversions, efficiency, revenue.</div>
+            </div>
+            <div class="why-card">
+              <div class="why-card-icon">🤖</div>
+              <div class="why-card-title">AI Integration</div>
+              <div class="why-card-text">Chatbots, automation, custom AI systems. I build intelligence into your workflow.</div>
+            </div>
+            <div class="why-card">
+              <div class="why-card-icon">🛠️</div>
+              <div class="why-card-title">Full-Stack Expertise</div>
+              <div class="why-card-text">React, Next.js, Node.js, Python, GPT integration. End-to-end development.</div>
+            </div>
+            <div class="why-card">
+              <div class="why-card-icon">🚀</div>
+              <div class="why-card-title">Fast Delivery</div>
+              <div class="why-card-text">MVP in weeks, not months. Clean code, responsive communication, zero fluff.</div>
+            </div>
+          </div>
         </div>
         
-        <div class="detail-section reveal-on-scroll fast">
-          <a href="mailto:gyamfuwaa@protonmail.com" class="cta-button">Start a Project</a>
+        <div class="big-cta reveal-on-scroll fast">
+          <a href="mailto:gyamfuwaa@protonmail.com?subject=Start a Project" class="big-cta-btn">Start a Project</a>
         </div>
       </div>
     `;

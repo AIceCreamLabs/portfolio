@@ -593,6 +593,120 @@ body::after {
   margin-right: 8px;
 }
 
+.pricing-cta-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 24px;
+  margin-top: 24px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  color: var(--color-bg);
+  background: var(--color-text);
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.pricing-cta-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: translateY(-2px);
+}
+
+.pricing-card.featured .pricing-cta-btn {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.pricing-card:not(.featured) .pricing-cta-btn {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
+}
+
+.pricing-card:not(.featured) .pricing-cta-btn:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+/* ========== WHY WORK WITH ME CARDS ========== */
+
+.why-section {
+  margin: 60px 0;
+}
+
+.why-section h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  margin-bottom: 24px;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.why-card {
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 32px 24px;
+  text-align: center;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.why-card:hover {
+  border-color: var(--color-text);
+  transform: translateY(-4px);
+}
+
+.why-card-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.why-card-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.why-card-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+/* ========== BIG CTA ========== */
+
+.big-cta {
+  text-align: center;
+  margin: 80px 0 40px;
+}
+
+.big-cta-btn {
+  display: inline-block;
+  padding: 20px 48px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  color: var(--color-bg);
+  background: var(--color-text);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.big-cta-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
 /* ========== SOFT FLASH ========== */
 
 .exposure-soft {
@@ -803,6 +917,15 @@ body::after {
   .pricing-card.featured {
     transform: none;
   }
+
+  .why-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .big-cta-btn {
+    padding: 16px 36px;
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -922,6 +1045,24 @@ body::after {
 
   .pricing-price {
     font-size: 36px;
+  }
+
+  .why-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .why-card {
+    padding: 24px 20px;
+  }
+
+  .big-cta {
+    margin: 48px 0 24px;
+  }
+
+  .big-cta-btn {
+    padding: 16px 32px;
+    font-size: 16px;
   }
 
   /* CTA row */
