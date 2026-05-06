@@ -436,7 +436,7 @@ class PortfolioController {
       
       const galleryImages = document.querySelectorAll('.gallery-image');
       galleryImages.forEach(el => {
-        el.style.opacity = '';
+        el.style.opacity = '1';
         el.style.transform = '';
       });
       
