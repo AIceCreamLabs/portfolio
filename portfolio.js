@@ -910,26 +910,12 @@ class PortfolioController {
         this.updateIntro();
       } else {
         this.updateDragMomentum();
-        this.updateLetterParallax();
       }
       requestAnimationFrame(render);
     };
     render();
   }
   
-  updateLetterParallax() {
-    if (this.isDetailOpen) return;
-    const letters = document.querySelectorAll('.letter');
-    const total = letters.length;
-    letters.forEach((letter, i) => {
-      const depth = 0.03 + (i / total) * 0.07;
-      const tx = -this.dragOffset.x * depth;
-      const ty = -this.dragOffset.y * depth * 0.4;
-      const skew = Math.max(-8, Math.min(8, this.dragVelocity.x * -0.2));
-      letter.style.transform = `translate(${tx}px, ${ty}px) skewX(${skew}deg) scale(1)`;
-    });
-  }
-
   updateDragMomentum() {
     if (!this.isDragging) {
       if (Math.abs(this.dragVelocity.x) > 0.05 || Math.abs(this.dragVelocity.y) > 0.05) {
@@ -1039,10 +1025,112 @@ class PortfolioController {
 class PremiumEnhancements {
   constructor() {
     this.setupBackground();
+    this.setupLetterHover();
     if (window.innerWidth > 768) this.setupMagneticCursor();
     this.setupKeyboardNav();
     this.setupImagePreload();
     this.setupAnalytics();
+  }
+
+  setupLetterHover() {
+    // Inject SVG displacement filter for liquid distortion
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.style.cssText = 'position:absolute;width:0;height:0;pointer-events:none;';
+    svg.innerHTML = `
+      <defs>
+        <filter id="liquid-filter" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence id="letter-turb" type="turbulence"
+            baseFrequency="0.013 0.009" numOctaves="2" seed="3" result="noise"/>
+          <feDisplacementMap id="letter-disp" in="SourceGraphic" in2="noise"
+            scale="0" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </defs>
+    `;
+    document.body.appendChild(svg);
+
+    const heroText = document.querySelector('.hero-text');
+    if (!heroText) return;
+
+    const turb = document.getElementById('letter-turb');
+    const disp = document.getElementById('letter-disp');
+    let raf = null;
+    let isHovering = false;
+    let currentScale = 0;
+    let targetScale = 0;
+    let t = 0;
+
+    const tick = () => {
+      t += 0.007;
+      turb.setAttribute('baseFrequency',
+        `${0.012 + Math.sin(t) * 0.004} ${0.008 + Math.cos(t * 0.8) * 0.003}`
+      );
+      currentScale += (targetScale - currentScale) * 0.035;
+      disp.setAttribute('scale', currentScale.toFixed(2));
+
+      if (isHovering || currentScale > 0.05) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = null;
+        heroText.classList.remove('liquid-active');
+      }
+    };
+
+    heroText.addEventListener('mouseenter', () => {
+      isHovering = true;
+      targetScale = 8;
+      heroText.classList.add('liquid-active');
+      if (!raf) raf = requestAnimationFrame(tick);
+      this.startBubbles(heroText);
+    });
+
+    heroText.addEventListener('mouseleave', () => {
+      isHovering = false;
+      targetScale = 0;
+      this.stopBubbles();
+      if (!raf) raf = requestAnimationFrame(tick);
+    });
+  }
+
+  startBubbles(heroText) {
+    const spawn = () => {
+      const letters = heroText.querySelectorAll('.letter');
+      if (!letters.length) return;
+      const letter = letters[Math.floor(Math.random() * letters.length)];
+      const r = letter.getBoundingClientRect();
+
+      const size = 3 + Math.random() * 6;
+      const x = r.left + Math.random() * r.width;
+      const y = r.top + r.height * (0.2 + Math.random() * 0.8);
+      const drift = (Math.random() - 0.5) * 22;
+
+      const b = document.createElement('div');
+      b.style.cssText = `
+        position:fixed;width:${size}px;height:${size}px;
+        left:${x}px;top:${y}px;
+        background:rgba(26,26,26,0.1);
+        border:1px solid rgba(26,26,26,0.07);
+        border-radius:50%;pointer-events:none;z-index:100;
+      `;
+      document.body.appendChild(b);
+
+      b.animate([
+        { transform: 'translate(0,0) scale(0)',                    opacity: 0   },
+        { transform: `translate(${drift*.4}px,-14px) scale(1)`,   opacity: 0.6, offset: 0.3 },
+        { transform: `translate(${drift}px,-48px) scale(0.5)`,    opacity: 0   }
+      ], { duration: 1100 + Math.random() * 700, easing: 'ease-out' })
+        .onfinish = () => b.remove();
+    };
+
+    spawn();
+    this.bubbleInterval = setInterval(() => {
+      spawn();
+      if (Math.random() > 0.55) spawn();
+    }, 190);
+  }
+
+  stopBubbles() {
+    clearInterval(this.bubbleInterval);
+    this.bubbleInterval = null;
   }
 
   setupBackground() {

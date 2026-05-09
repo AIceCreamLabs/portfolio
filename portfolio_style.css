@@ -1114,6 +1114,13 @@ body::after {
   }
 }
 
+/* ========== LETTER LIQUID HOVER ========== */
+
+.hero-text.liquid-active .word {
+  filter: url(#liquid-filter);
+  will-change: filter;
+}
+
 /* ========== BACKGROUND BLOBS ========== */
 
 .bg-blobs {
