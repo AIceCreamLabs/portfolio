@@ -886,13 +886,8 @@ class PortfolioController {
   attachDetailListeners() {
     const detailView = document.getElementById('detailView');
     detailView.addEventListener('scroll', () => {
-      const current = this.detailView.scrollTop;
-      this.scrollVelocity += (current - this.scrollVelocity) * 0.1;
-      
       this.updateProgressCircle();
       this.updateHeroParallax();
-      this.applyScrollGravity();
-      this.handleCinematicPause();
     });
   }
   
@@ -1029,10 +1024,43 @@ class PortfolioController {
 
 class PremiumEnhancements {
   constructor() {
+    this.setupBackground();
     if (window.innerWidth > 768) this.setupMagneticCursor();
     this.setupKeyboardNav();
     this.setupImagePreload();
     this.setupAnalytics();
+  }
+
+  setupBackground() {
+    const canvas = document.getElementById('galleryCanvas');
+    if (!canvas) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'bg-blobs';
+
+    const blobs = [
+      { size: 640, left: '12%',  top: '22%',  color: 'rgba(210,190,160,0.38)', anim: 'bgBlob1', dur: 24 },
+      { size: 520, left: '78%',  top: '58%',  color: 'rgba(170,190,175,0.28)', anim: 'bgBlob2', dur: 30 },
+      { size: 480, left: '48%',  top: '82%',  color: 'rgba(200,180,200,0.22)', anim: 'bgBlob3', dur: 20 },
+    ];
+
+    blobs.forEach(b => {
+      const el = document.createElement('div');
+      el.style.cssText = `
+        position:absolute;
+        width:${b.size}px;height:${b.size}px;
+        left:${b.left};top:${b.top};
+        transform:translate(-50%,-50%);
+        background:radial-gradient(circle,${b.color},transparent 70%);
+        border-radius:50%;
+        filter:blur(70px);
+        animation:${b.anim} ${b.dur}s ease-in-out infinite alternate;
+        will-change:transform;
+      `;
+      wrapper.appendChild(el);
+    });
+
+    canvas.insertBefore(wrapper, canvas.firstChild);
   }
 
   setupMagneticCursor() {
