@@ -1114,6 +1114,94 @@ body::after {
   }
 }
 
+/* ========== PREMIUM ENHANCEMENTS ========== */
+
+/* Magnetic cursor */
+.premium-cursor {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--color-text);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s var(--ease-out-expo), opacity 0.2s ease;
+}
+
+.premium-cursor-ring {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-text);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  opacity: 0.35;
+  transition: transform 0.3s var(--ease-out-expo), opacity 0.2s ease;
+}
+
+.premium-cursor.hovering {
+  transform: translate(-50%, -50%) scale(2.5);
+  opacity: 0.4;
+}
+
+.premium-cursor-ring.hovering {
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0.9;
+}
+
+/* Button click ripple */
+.cta-button {
+  overflow: hidden;
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease-out, height 0.5s ease-out, opacity 0.5s ease-out;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cta-button:active::before {
+  width: 400px;
+  height: 400px;
+  opacity: 1;
+}
+
+/* Keyboard focus states */
+.gallery-image:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+button:focus-visible,
+.cta-button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .premium-cursor,
+  .premium-cursor-ring {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

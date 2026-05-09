@@ -1024,9 +1024,145 @@ class PortfolioController {
 }
 
 // ============================================================================
+// PREMIUM ENHANCEMENTS
+// ============================================================================
+
+class PremiumEnhancements {
+  constructor() {
+    if (window.innerWidth > 768) this.setupMagneticCursor();
+    this.setupKeyboardNav();
+    this.setupImagePreload();
+    this.setupAnalytics();
+  }
+
+  setupMagneticCursor() {
+    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+    const dot = document.createElement('div');
+    dot.className = 'premium-cursor';
+    document.body.appendChild(dot);
+
+    const ring = document.createElement('div');
+    ring.className = 'premium-cursor-ring';
+    document.body.appendChild(ring);
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.left = mouseX + 'px';
+      dot.style.top = mouseY + 'px';
+    });
+
+    const animateRing = () => {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      ring.style.left = ringX + 'px';
+      ring.style.top = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    };
+    animateRing();
+
+    // Scale cursor on interactive elements
+    document.querySelectorAll('.gallery-image, .cta-button, button, a').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        dot.classList.add('hovering');
+        ring.classList.add('hovering');
+      });
+      el.addEventListener('mouseleave', () => {
+        dot.classList.remove('hovering');
+        ring.classList.remove('hovering');
+      });
+    });
+
+    // Magnetic pull on CTA buttons
+    document.querySelectorAll('.cta-button').forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        const dist = Math.hypot(x, y);
+        if (dist < 60) {
+          const pull = (1 - dist / 60) * 7;
+          btn.style.transform = `translate(${(x / dist) * pull}px, ${(y / dist) * pull}px)`;
+        }
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+      });
+    });
+  }
+
+  setupKeyboardNav() {
+    // Tab + Enter on gallery cards
+    document.querySelectorAll('.gallery-image').forEach(card => {
+      card.setAttribute('tabindex', '0');
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.click();
+        }
+      });
+    });
+
+    // Escape closes detail view
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const detailView = document.getElementById('detailView');
+        if (detailView?.classList.contains('active')) {
+          document.getElementById('closeBtn').click();
+        }
+      }
+    });
+  }
+
+  setupImagePreload() {
+    // Pre-cache full project images as the card comes near the viewport
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = parseInt(entry.target.dataset.id);
+        const project = portfolioItems.find(p => p.id === id);
+        if (project?.media) {
+          project.media.forEach(src => {
+            if (!src.endsWith('.mp4') && !src.endsWith('.webm') && !src.endsWith('.mov')) {
+              new Image().src = src;
+            }
+          });
+        }
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '300px' });
+
+    document.querySelectorAll('.gallery-image').forEach(el => observer.observe(el));
+  }
+
+  setupAnalytics() {
+    // Plausible-ready event tracking (no-op if Plausible not installed)
+    const track = (name, props = {}) => {
+      if (window.plausible) window.plausible(name, { props });
+    };
+
+    document.querySelectorAll('.gallery-image').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = parseInt(card.dataset.id);
+        const project = portfolioItems.find(p => p.id === id);
+        if (project) track('Project Opened', { name: project.title });
+      });
+    });
+
+    document.querySelectorAll('.cta-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        track('CTA Clicked', { text: btn.textContent.trim() });
+      });
+    });
+  }
+}
+
+// ============================================================================
 // INITIALIZE
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
   new PortfolioController();
+  new PremiumEnhancements();
 });
