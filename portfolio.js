@@ -1075,19 +1075,25 @@ class PremiumEnhancements {
       }
     };
 
-    heroText.addEventListener('mouseenter', () => {
-      isHovering = true;
-      targetScale = 8;
-      heroText.classList.add('liquid-active');
-      if (!raf) raf = requestAnimationFrame(tick);
-      this.startBubbles(heroText);
-    });
+    // canvas captures all mouse events so use document-level move and check bounds
+    document.addEventListener('mousemove', (e) => {
+      const r = heroText.getBoundingClientRect();
+      const pad = 16;
+      const over = e.clientX >= r.left - pad && e.clientX <= r.right + pad
+                && e.clientY >= r.top  - pad && e.clientY <= r.bottom + pad;
 
-    heroText.addEventListener('mouseleave', () => {
-      isHovering = false;
-      targetScale = 0;
-      this.stopBubbles();
-      if (!raf) raf = requestAnimationFrame(tick);
+      if (over && !isHovering) {
+        isHovering = true;
+        targetScale = 8;
+        heroText.classList.add('liquid-active');
+        if (!raf) raf = requestAnimationFrame(tick);
+        this.startBubbles(heroText);
+      } else if (!over && isHovering) {
+        isHovering = false;
+        targetScale = 0;
+        this.stopBubbles();
+        if (!raf) raf = requestAnimationFrame(tick);
+      }
     });
   }
 
