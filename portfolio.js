@@ -128,7 +128,7 @@ class PortfolioController {
     this.isDetailOpen = false;
     this.currentItem = null;
     this.animationPhase = 'intro';
-    this.intro = { progress: 0, active: true, duration: 8000, startTime: null };
+    this.intro = { progress: 0, active: true, duration: 3000, startTime: null };
     this.scrollVelocity = 0;
     this.isDragging = false;
     this.dragStart = { x: 0, y: 0 };
@@ -910,12 +910,26 @@ class PortfolioController {
         this.updateIntro();
       } else {
         this.updateDragMomentum();
+        this.updateLetterParallax();
       }
       requestAnimationFrame(render);
     };
     render();
   }
   
+  updateLetterParallax() {
+    if (this.isDetailOpen) return;
+    const letters = document.querySelectorAll('.letter');
+    const total = letters.length;
+    letters.forEach((letter, i) => {
+      const depth = 0.03 + (i / total) * 0.07;
+      const tx = -this.dragOffset.x * depth;
+      const ty = -this.dragOffset.y * depth * 0.4;
+      const skew = Math.max(-8, Math.min(8, this.dragVelocity.x * -0.2));
+      letter.style.transform = `translate(${tx}px, ${ty}px) skewX(${skew}deg) scale(1)`;
+    });
+  }
+
   updateDragMomentum() {
     if (!this.isDragging) {
       if (Math.abs(this.dragVelocity.x) > 0.05 || Math.abs(this.dragVelocity.y) > 0.05) {
