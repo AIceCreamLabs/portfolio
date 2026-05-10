@@ -1043,22 +1043,24 @@ class PremiumEnhancements {
   constructor() {
     this.setupBackground();
     this.setupLetterHover();
+    this.setupSpotlight();
+    this.setupGrain();
     if (window.innerWidth > 768) this.setupMagneticCursor();
     this.setupKeyboardNav();
     this.setupImagePreload();
     this.setupAnalytics();
     this.setupThemeToggle();
+    this.setupCardLiquid();
   }
 
   setupLetterHover() {
-    // Inject SVG displacement filter for liquid distortion
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.style.cssText = 'position:absolute;width:0;height:0;pointer-events:none;';
     svg.innerHTML = `
       <defs>
-        <filter id="liquid-filter" x="-20%" y="-20%" width="140%" height="140%">
+        <filter id="liquid-filter" x="-25%" y="-25%" width="150%" height="150%">
           <feTurbulence id="letter-turb" type="turbulence"
-            baseFrequency="0.013 0.009" numOctaves="2" seed="3" result="noise"/>
+            baseFrequency="0.009 0.006" numOctaves="3" seed="3" result="noise"/>
           <feDisplacementMap id="letter-disp" in="SourceGraphic" in2="noise"
             scale="0" xChannelSelector="R" yChannelSelector="G"/>
         </filter>
@@ -1078,14 +1080,15 @@ class PremiumEnhancements {
     let t = 0;
 
     const tick = () => {
-      t += 0.007;
+      t += 0.014;
       turb.setAttribute('baseFrequency',
-        `${0.012 + Math.sin(t) * 0.004} ${0.008 + Math.cos(t * 0.8) * 0.003}`
+        `${0.008 + Math.sin(t) * 0.006} ${0.005 + Math.cos(t * 0.75) * 0.004}`
       );
-      currentScale += (targetScale - currentScale) * 0.035;
+      const lerp = isHovering ? 0.065 : 0.028;
+      currentScale += (targetScale - currentScale) * lerp;
       disp.setAttribute('scale', currentScale.toFixed(2));
 
-      if (isHovering || currentScale > 0.05) {
+      if (isHovering || currentScale > 0.1) {
         raf = requestAnimationFrame(tick);
       } else {
         raf = null;
@@ -1093,22 +1096,23 @@ class PremiumEnhancements {
       }
     };
 
-    // canvas captures all mouse events so use document-level move and check bounds
     document.addEventListener('mousemove', (e) => {
       const r = heroText.getBoundingClientRect();
-      const pad = 16;
+      const pad = 12;
       const over = e.clientX >= r.left - pad && e.clientX <= r.right + pad
                 && e.clientY >= r.top  - pad && e.clientY <= r.bottom + pad;
 
       if (over && !isHovering) {
         isHovering = true;
-        targetScale = 8;
+        targetScale = 26;
         heroText.classList.add('liquid-active');
+        heroText.classList.add('color-hot');
         if (!raf) raf = requestAnimationFrame(tick);
         this.startBubbles(heroText);
       } else if (!over && isHovering) {
         isHovering = false;
         targetScale = 0;
+        heroText.classList.remove('color-hot');
         this.stopBubbles();
         if (!raf) raf = requestAnimationFrame(tick);
       }
@@ -1122,10 +1126,10 @@ class PremiumEnhancements {
       const letter = letters[Math.floor(Math.random() * letters.length)];
       const r = letter.getBoundingClientRect();
 
-      const size = 3 + Math.random() * 6;
+      const size = 6 + Math.random() * 22;
       const x = r.left + Math.random() * r.width;
-      const y = r.top + r.height * (0.2 + Math.random() * 0.8);
-      const drift = (Math.random() - 0.5) * 22;
+      const y = r.top + r.height * (0.1 + Math.random() * 0.9);
+      const drift = (Math.random() - 0.5) * 55;
 
       const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
       const bubbleBg = isDark ? 'rgba(245,240,232,0.12)' : 'rgba(13,13,13,0.07)';
@@ -1141,18 +1145,19 @@ class PremiumEnhancements {
       document.body.appendChild(b);
 
       b.animate([
-        { transform: 'translate(0,0) scale(0)',                    opacity: 0   },
-        { transform: `translate(${drift*.4}px,-14px) scale(1)`,   opacity: 0.6, offset: 0.3 },
-        { transform: `translate(${drift}px,-48px) scale(0.5)`,    opacity: 0   }
-      ], { duration: 1100 + Math.random() * 700, easing: 'ease-out' })
+        { transform: 'translate(0,0) scale(0)',                    opacity: 0    },
+        { transform: `translate(${drift*.3}px,-22px) scale(1)`,   opacity: 0.75, offset: 0.25 },
+        { transform: `translate(${drift}px,-90px) scale(0.3)`,    opacity: 0    }
+      ], { duration: 1400 + Math.random() * 900, easing: 'ease-out' })
         .onfinish = () => b.remove();
     };
 
     spawn();
     this.bubbleInterval = setInterval(() => {
       spawn();
-      if (Math.random() > 0.55) spawn();
-    }, 190);
+      if (Math.random() > 0.4) spawn();
+      if (Math.random() > 0.7) spawn();
+    }, 130);
   }
 
   stopBubbles() {
@@ -1167,29 +1172,50 @@ class PremiumEnhancements {
     const wrapper = document.createElement('div');
     wrapper.className = 'bg-blobs';
 
-    const blobs = [
-      { size: 640, left: '12%',  top: '22%',  color: 'rgba(201,168,76,0.10)', anim: 'bgBlob1', dur: 24 },
-      { size: 520, left: '78%',  top: '58%',  color: 'rgba(100,160,140,0.07)', anim: 'bgBlob2', dur: 30 },
-      { size: 480, left: '48%',  top: '82%',  color: 'rgba(160,120,180,0.06)', anim: 'bgBlob3', dur: 20 },
+    const blobDefs = [
+      { size: 750, left: 0.12, top: 0.22, color: 'rgba(201,168,76,0.11)', anim: 'bgBlob1', dur: 24, px: 0.06,  py: 0.05  },
+      { size: 620, left: 0.78, top: 0.58, color: 'rgba(100,160,140,0.08)', anim: 'bgBlob2', dur: 30, px: -0.05, py: 0.04  },
+      { size: 560, left: 0.48, top: 0.82, color: 'rgba(160,120,180,0.07)', anim: 'bgBlob3', dur: 20, px: 0.03,  py: -0.06 },
     ];
 
-    blobs.forEach(b => {
+    this.blobEls = [];
+    blobDefs.forEach(b => {
       const el = document.createElement('div');
       el.style.cssText = `
         position:absolute;
         width:${b.size}px;height:${b.size}px;
-        left:${b.left};top:${b.top};
+        left:${b.left * 100}%;top:${b.top * 100}%;
         transform:translate(-50%,-50%);
         background:radial-gradient(circle,${b.color},transparent 70%);
         border-radius:50%;
-        filter:blur(70px);
+        filter:blur(80px);
         animation:${b.anim} ${b.dur}s ease-in-out infinite alternate;
         will-change:transform;
       `;
       wrapper.appendChild(el);
+      this.blobEls.push({ el, px: b.px, py: b.py });
     });
 
     canvas.insertBefore(wrapper, canvas.firstChild);
+
+    // Mouse parallax on blobs
+    let mx = 0.5, my = 0.5, cx = 0.5, cy = 0.5;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX / window.innerWidth;
+      my = e.clientY / window.innerHeight;
+    });
+
+    const parallaxTick = () => {
+      cx += (mx - cx) * 0.04;
+      cy += (my - cy) * 0.04;
+      const dx = (cx - 0.5) * 2;
+      const dy = (cy - 0.5) * 2;
+      this.blobEls.forEach(({ el, px, py }) => {
+        el.style.transform = `translate(calc(-50% + ${dx * px * 120}px), calc(-50% + ${dy * py * 120}px))`;
+      });
+      requestAnimationFrame(parallaxTick);
+    };
+    parallaxTick();
   }
 
   setupMagneticCursor() {
@@ -1322,6 +1348,112 @@ class PremiumEnhancements {
       const next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
+    });
+  }
+
+  setupSpotlight() {
+    const el = document.createElement('div');
+    el.className = 'cursor-spotlight';
+    document.body.appendChild(el);
+
+    let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
+    let cx = tx, cy = ty;
+
+    document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
+
+    const tick = () => {
+      cx += (tx - cx) * 0.09;
+      cy += (ty - cy) * 0.09;
+      el.style.transform = `translate(${cx}px, ${cy}px)`;
+      requestAnimationFrame(tick);
+    };
+    tick();
+  }
+
+  setupGrain() {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;opacity:0.028;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    const resize = () => {
+      canvas.width = Math.ceil(window.innerWidth / 2);
+      canvas.height = Math.ceil(window.innerHeight / 2);
+      canvas.style.imageRendering = 'pixelated';
+    };
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    const frame = () => {
+      const w = canvas.width, h = canvas.height;
+      const img = ctx.createImageData(w, h);
+      const d = img.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const v = (Math.random() * 255) | 0;
+        d[i] = d[i+1] = d[i+2] = v;
+        d[i+3] = 255;
+      }
+      ctx.putImageData(img, 0, 0);
+      requestAnimationFrame(frame);
+    };
+    frame();
+  }
+
+  setupCardLiquid() {
+    if (window.innerWidth <= 768) return;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.style.cssText = 'position:absolute;width:0;height:0;pointer-events:none;';
+    svg.innerHTML = `
+      <defs>
+        <filter id="card-liquid-filter" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence id="card-turb" type="turbulence"
+            baseFrequency="0.012 0.008" numOctaves="2" seed="9" result="noise"/>
+          <feDisplacementMap id="card-disp" in="SourceGraphic" in2="noise"
+            scale="0" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </defs>
+    `;
+    document.body.appendChild(svg);
+
+    const cardTurb = document.getElementById('card-turb');
+    const cardDisp = document.getElementById('card-disp');
+    let raf = null;
+    let t = 0;
+    let scale = 0;
+    let target = 0;
+    let activeFx = null;
+
+    const tick = () => {
+      t += 0.011;
+      cardTurb.setAttribute('baseFrequency',
+        `${0.011 + Math.sin(t) * 0.005} ${0.007 + Math.cos(t * 0.8) * 0.004}`
+      );
+      const lerp = target > 0 ? 0.07 : 0.04;
+      scale += (target - scale) * lerp;
+      cardDisp.setAttribute('scale', scale.toFixed(2));
+
+      if (target > 0 || scale > 0.1) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = null;
+        if (activeFx) { activeFx.style.filter = ''; activeFx = null; }
+      }
+    };
+
+    document.querySelectorAll('.gallery-image').forEach(card => {
+      const fx = card.querySelector('.img-fx');
+      if (!fx) return;
+      card.addEventListener('mouseenter', () => {
+        target = 18;
+        if (activeFx && activeFx !== fx) activeFx.style.filter = '';
+        activeFx = fx;
+        fx.style.filter = 'url(#card-liquid-filter)';
+        if (!raf) raf = requestAnimationFrame(tick);
+      });
+      card.addEventListener('mouseleave', () => {
+        target = 0;
+      });
     });
   }
 }

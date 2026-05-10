@@ -262,6 +262,7 @@ body::after {
 .word {
   display: flex;
   gap: clamp(20px, 4vw, 60px);
+  transition: letter-spacing 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hero-sub {
@@ -297,7 +298,7 @@ body::after {
   position: relative;
   transform-origin: center;
   will-change: transform, opacity;
-  transition: color 0.55s var(--ease-out-expo);
+  transition: color 0.4s var(--ease-out-expo), text-shadow 0.4s var(--ease-out-expo);
 }
 
 /* ========== DETAIL VIEW ========== */
@@ -1156,8 +1157,35 @@ body::after {
   will-change: filter;
 }
 
-.hero-text.liquid-active .letter {
+/* color-hot is added/removed immediately on enter/leave — separate from the displacement wind-down */
+.hero-text.color-hot .letter {
   color: var(--color-accent);
+  text-shadow: 0 0 60px rgba(201, 168, 76, 0.45), 0 0 120px rgba(201, 168, 76, 0.15);
+}
+
+.hero-text.color-hot .word {
+  letter-spacing: clamp(22px, 4.5vw, 65px);
+}
+
+/* ========== CURSOR SPOTLIGHT ========== */
+
+.cursor-spotlight {
+  position: fixed;
+  top: -350px;
+  left: -350px;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.04) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+  border-radius: 50%;
+}
+
+/* ========== GALLERY CARD LIQUID ========== */
+
+.img-fx {
+  will-change: filter;
 }
 
 /* ========== BACKGROUND BLOBS ========== */
