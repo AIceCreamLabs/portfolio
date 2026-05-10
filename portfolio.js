@@ -579,28 +579,33 @@ class PortfolioController {
         </div>
 
         <div class="detail-section reveal-on-scroll slow">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Solution</h3>
+          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">The Approach</h3>
           <p class="section-text">${item.solution}</p>
         </div>
 
         <div class="detail-section reveal-on-scroll dramatic">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Results</h3>
+          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">The Outcome</h3>
           <ul style="list-style: none;">
-            ${item.results.map(result => `<li style="padding: 8px 0; padding-left: 20px; position: relative;">
-              <span style="position: absolute; left: 0;">✓</span> ${result}
+            ${item.results.map(result => `<li style="padding: 8px 0; padding-left: 20px; position: relative; font-size: 14px; color: var(--color-text-secondary);">
+              <span style="position: absolute; left: 0; color: var(--color-accent);">—</span> ${result}
             </li>`).join('')}
           </ul>
         </div>
 
         <div class="detail-section reveal-on-scroll fast">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Tech Stack</h3>
+          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Stack</h3>
           <div class="tech-stack">
             ${item.tech.map(t => `<div class="tech-tag">${t}</div>`).join('')}
           </div>
         </div>
 
         <div class="detail-section reveal-on-scroll fast">
-          <a href="mailto:gyamfuwaa@protonmail.com" class="cta-button">Start a Project</a>
+          <div class="about-cta-row">
+            ${item.link && !item.link.startsWith('mailto')
+              ? `<a href="${item.link}" target="_blank" rel="noopener" class="cta-button">View Project</a>
+                 <a href="mailto:gyamfuwaa@protonmail.com?subject=Project Inquiry — ${item.title}" class="cta-button cta-button--outline">Start Similar</a>`
+              : `<a href="mailto:gyamfuwaa@protonmail.com?subject=Project Inquiry — ${item.title}" class="cta-button">Start a Project</a>`}
+          </div>
         </div>
       </div>
     `;
@@ -610,76 +615,76 @@ class PortfolioController {
     return `
       <div class="detail-body">
         <div class="detail-intro reveal-on-scroll slow">
-          <p class="section-text">Professional web development and AI integration services. Building systems that make your business money.</p>
+          <p class="section-text" style="font-size: 18px; line-height: 1.7;">You're not paying for code. You're paying for the gap between where your business is now and where it needs to be digitally.</p>
         </div>
-        
+
         <div class="pricing-container reveal-on-scroll slow">
           <div class="pricing-card">
-            <div class="pricing-title">Starter</div>
-            <div class="pricing-price">€1,500</div>
-            <p class="pricing-description">Perfect for startups</p>
+            <div class="pricing-title">Foundation</div>
+            <div class="pricing-price"><span>€</span>1,500</div>
+            <p class="pricing-description">For businesses entering the digital market or needing a credible online presence that converts.</p>
             <ul class="pricing-features">
               <li>Landing Page</li>
               <li>Basic AI Integration</li>
-              <li>SEO Optimization</li>
-              <li>Contact Form</li>
+              <li>SEO Optimisation</li>
+              <li>Contact &amp; Lead Capture</li>
             </ul>
-            <a href="mailto:gyamfuwaa@protonmail.com?subject=Starter Project Inquiry" class="pricing-cta-btn">Get Started</a>
+            <a href="mailto:gyamfuwaa@protonmail.com?subject=Foundation Project Inquiry" class="pricing-cta-btn">Start Foundation</a>
           </div>
-          
+
           <div class="pricing-card featured">
-            <div class="pricing-title">Pro</div>
-            <div class="pricing-price">€4,000</div>
-            <p class="pricing-description">Full solution</p>
+            <div class="pricing-title">System</div>
+            <div class="pricing-price"><span>€</span>4,000</div>
+            <p class="pricing-description">A complete web system built on strategy. For businesses ready to compete seriously in their market.</p>
             <ul class="pricing-features">
-              <li>Full Website</li>
+              <li>Full Website or Web App</li>
               <li>Custom AI System</li>
-              <li>Dashboard</li>
+              <li>Admin Dashboard</li>
               <li>Advanced SEO</li>
             </ul>
-            <a href="mailto:gyamfuwaa@protonmail.com?subject=Pro Project Inquiry" class="pricing-cta-btn">Get Started</a>
+            <a href="mailto:gyamfuwaa@protonmail.com?subject=System Project Inquiry" class="pricing-cta-btn">Start System</a>
           </div>
-          
+
           <div class="pricing-card">
-            <div class="pricing-title">Editorial</div>
-            <div class="pricing-price">€7,500</div>
-            <p class="pricing-description">Awwwards-level</p>
+            <div class="pricing-title">Authority</div>
+            <div class="pricing-price"><span>€</span>7,500</div>
+            <p class="pricing-description">Award-level execution for brands that need to look like market leaders immediately.</p>
             <ul class="pricing-features">
               <li>Three.js / WebGL</li>
-              <li>Immersive Animations</li>
-              <li>Advanced Interactions</li>
-              <li>Award-Ready Design</li>
+              <li>Immersive Interactions</li>
+              <li>Advanced AI Integration</li>
+              <li>Awwwards-Ready Design</li>
             </ul>
-            <a href="mailto:gyamfuwaa@protonmail.com?subject=Editorial Project Inquiry" class="pricing-cta-btn">Get Started</a>
+            <a href="mailto:gyamfuwaa@protonmail.com?subject=Authority Project Inquiry" class="pricing-cta-btn">Start Authority</a>
           </div>
         </div>
-        
+
         <div class="why-section reveal-on-scroll slow">
-          <h3>Why Work With Me?</h3>
+          <h3>What makes this different</h3>
           <div class="why-grid">
             <div class="why-card">
-              <div class="why-card-icon">⚡</div>
-              <div class="why-card-title">Results-Focused</div>
-              <div class="why-card-text">Every project designed to impact your bottom line — conversions, efficiency, revenue.</div>
+              <div class="why-card-icon">01</div>
+              <div class="why-card-title">Strategy First</div>
+              <div class="why-card-text">Every project starts with understanding the business problem. Code is the last step, not the first.</div>
             </div>
             <div class="why-card">
-              <div class="why-card-icon">🤖</div>
-              <div class="why-card-title">AI Integration</div>
-              <div class="why-card-text">Chatbots, automation, custom AI systems. I build intelligence into your workflow.</div>
+              <div class="why-card-icon">02</div>
+              <div class="why-card-title">AI-Native</div>
+              <div class="why-card-text">GPT-4, LangChain, custom agents. Intelligence built into your workflow — not as an afterthought.</div>
             </div>
             <div class="why-card">
-              <div class="why-card-icon">🛠️</div>
-              <div class="why-card-title">Full-Stack Expertise</div>
-              <div class="why-card-text">React, Next.js, Node.js, Python, GPT integration. End-to-end development.</div>
+              <div class="why-card-icon">03</div>
+              <div class="why-card-title">Full-Stack</div>
+              <div class="why-card-text">React, Next.js, Node.js, Python, FastAPI. End-to-end ownership — no hand-offs, no gaps.</div>
             </div>
             <div class="why-card">
-              <div class="why-card-icon">🚀</div>
-              <div class="why-card-title">Fast Delivery</div>
-              <div class="why-card-text">MVP in weeks, not months. Clean code, responsive communication, zero fluff.</div>
+              <div class="why-card-icon">04</div>
+              <div class="why-card-title">Fast &amp; Clean</div>
+              <div class="why-card-text">MVP in weeks. Production-grade code. Clear communication throughout. No scope creep.</div>
             </div>
           </div>
         </div>
-        
+
         <div class="big-cta reveal-on-scroll fast">
           <a href="mailto:gyamfuwaa@protonmail.com?subject=Start a Project" class="big-cta-btn">Start a Project</a>
         </div>
@@ -691,17 +696,22 @@ class PortfolioController {
     return `
       <div class="detail-body">
         <div class="detail-intro reveal-on-scroll slow">
-          <h2 style="font-family: var(--font-display); font-size: clamp(28px, 4vw, 48px); font-weight: 700; margin-bottom: 12px;">Akua Theresa Gyamfuwaa</h2>
-          <p class="section-text">I'm a freelance developer based in Thailand, building high-end digital systems that make clients money.</p>
+          <h2 style="font-family: var(--font-display); font-size: clamp(28px, 4vw, 52px); font-weight: 700; margin-bottom: 24px; line-height: 1.05;">Akua Theresa Gyamfuwaa</h2>
+          <p class="section-text" style="font-size: 18px; line-height: 1.7;">I don't build websites. I build systems that make clients money — custom platforms, AI infrastructure, and digital products that convert.</p>
         </div>
 
         <div class="detail-section reveal-on-scroll slow">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">What I Do</h3>
-          <p class="section-text">Custom web development with React, Next.js, and Node.js. AI integration using GPT-4, LangChain, and custom algorithms. Building systems that convert—websites, automation, and intelligence.</p>
+          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">What I believe</h3>
+          <p class="section-text">Most digital work fails not because it looks wrong — but because it's built without strategic clarity. Every system I build starts with understanding the business problem first. Code is the last step.</p>
+        </div>
+
+        <div class="detail-section reveal-on-scroll slow">
+          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">What I build</h3>
+          <p class="section-text">Full-stack web applications with React, Next.js, and Node.js. AI pipelines using GPT-4, LangChain, and custom agents. Automation systems that replace manual processes. Platforms that connect businesses with their customers.</p>
         </div>
 
         <div class="detail-section reveal-on-scroll fast">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Tech Stack</h3>
+          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Stack</h3>
           <div class="tech-stack">
             <div class="tech-tag">React</div>
             <div class="tech-tag">Next.js</div>
@@ -710,12 +720,13 @@ class PortfolioController {
             <div class="tech-tag">FastAPI</div>
             <div class="tech-tag">GPT-4 &amp; LangChain</div>
             <div class="tech-tag">Firebase</div>
+            <div class="tech-tag">CrewAI</div>
           </div>
         </div>
 
         <div class="detail-section reveal-on-scroll dramatic">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Availability</h3>
-          <p class="section-text">Currently accepting projects. Specializing in web development, AI integration, and automation. Response time: &lt;1 hour during business hours.</p>
+          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Currently</h3>
+          <p class="section-text">Based in Thailand. Accepting new projects. I work with founders, agencies, and businesses who are serious about what they build. Response within 24 hours.</p>
         </div>
 
         <div class="detail-section reveal-on-scroll fast">
@@ -1113,8 +1124,8 @@ class PremiumEnhancements {
       b.style.cssText = `
         position:fixed;width:${size}px;height:${size}px;
         left:${x}px;top:${y}px;
-        background:rgba(26,26,26,0.1);
-        border:1px solid rgba(26,26,26,0.07);
+        background:rgba(245,240,232,0.12);
+        border:1px solid rgba(245,240,232,0.08);
         border-radius:50%;pointer-events:none;z-index:100;
       `;
       document.body.appendChild(b);
@@ -1147,9 +1158,9 @@ class PremiumEnhancements {
     wrapper.className = 'bg-blobs';
 
     const blobs = [
-      { size: 640, left: '12%',  top: '22%',  color: 'rgba(210,190,160,0.38)', anim: 'bgBlob1', dur: 24 },
-      { size: 520, left: '78%',  top: '58%',  color: 'rgba(170,190,175,0.28)', anim: 'bgBlob2', dur: 30 },
-      { size: 480, left: '48%',  top: '82%',  color: 'rgba(200,180,200,0.22)', anim: 'bgBlob3', dur: 20 },
+      { size: 640, left: '12%',  top: '22%',  color: 'rgba(201,168,76,0.10)', anim: 'bgBlob1', dur: 24 },
+      { size: 520, left: '78%',  top: '58%',  color: 'rgba(100,160,140,0.07)', anim: 'bgBlob2', dur: 30 },
+      { size: 480, left: '48%',  top: '82%',  color: 'rgba(160,120,180,0.06)', anim: 'bgBlob3', dur: 20 },
     ];
 
     blobs.forEach(b => {
