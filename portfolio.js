@@ -378,36 +378,38 @@ class PortfolioController {
     if (this.isDetailOpen) return;
     this.isDetailOpen = true;
     this.currentItem = item;
-    
+
     this.focusOverlay.classList.add('active');
-    
+
     const flash = document.createElement('div');
     flash.className = 'exposure-soft';
     document.body.appendChild(flash);
     setTimeout(() => flash.remove(), 600);
-    
+
     document.querySelectorAll('.gallery-image').forEach(el => {
       if (el.dataset.id !== item.id.toString()) {
-        el.style.opacity = '0.1';
-        el.style.transform = 'scale(0.95)';
+        el.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.16,1,0.3,1), filter 0.45s ease';
+        el.style.opacity = '0.06';
+        el.style.transform = 'scale(0.92)';
+        el.style.filter = 'blur(2px)';
       }
     });
-    
-    setTimeout(() => this.showDetail(item), 700);
+
+    setTimeout(() => this.showDetail(item), 500);
   }
-  
+
   showDetail(item) {
     this.detailView.classList.add('active');
-    this.detailView.style.opacity = 0;
     this.animationPhase = 'detail';
     this.renderDetailContent(item);
     this.attachDetailListeners();
-    
-    requestAnimationFrame(() => {
-      this.detailView.style.transition = 'opacity 0.8s ease';
-      this.detailView.style.opacity = 1;
-    });
-    
+
+    // Architectural wipe: curtain drops from top
+    this.detailView.style.clipPath = 'inset(0 0 100% 0)';
+    this.detailView.offsetHeight; // force reflow
+    this.detailView.style.transition = 'clip-path 0.7s cubic-bezier(0.77, 0, 0.175, 1)';
+    this.detailView.style.clipPath = 'inset(0 0 0% 0)';
+
     setTimeout(() => {
       this.detailHero = this.detailView.querySelector('.detail-hero');
       this.detailHeroImg = this.detailView.querySelector('.detail-hero img, .detail-slider img');
@@ -420,31 +422,34 @@ class PortfolioController {
       this.initMagneticElements();
     }, 100);
   }
-  
+
   closeDetail() {
-    this.detailView.style.transition = 'opacity 0.6s ease';
-    this.detailView.style.opacity = 0;
+    this.detailView.style.transition = 'clip-path 0.55s cubic-bezier(0.77, 0, 0.175, 1)';
+    this.detailView.style.clipPath = 'inset(0 0 100% 0)';
     this.isDetailOpen = false;
     this.animationPhase = 'interactive';
-    
+
     this.focusOverlay.classList.remove('active');
-    
+
     setTimeout(() => {
       this.detailView.classList.remove('active');
-      this.detailView.style.opacity = '';
+      this.detailView.style.clipPath = '';
+      this.detailView.style.transition = '';
       this.detailView.scrollTop = 0;
-      
-      const galleryImages = document.querySelectorAll('.gallery-image');
-      galleryImages.forEach(el => {
+
+      document.querySelectorAll('.gallery-image').forEach(el => {
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1), filter 0.5s ease';
         el.style.opacity = '1';
         el.style.transform = '';
+        el.style.filter = '';
+        setTimeout(() => { el.style.transition = ''; }, 500);
       });
-      
+
       this.detailHero = null;
       this.detailHeroImg = null;
       this.detailBody = null;
       this.detailSections = null;
-    }, 600);
+    }, 550);
   }
   
   renderDetailContent(item) {
@@ -1041,6 +1046,7 @@ class PremiumEnhancements {
     this.setupKeyboardNav();
     this.setupImagePreload();
     this.setupAnalytics();
+    this.setupThemeToggle();
   }
 
   setupLetterHover() {
@@ -1120,12 +1126,15 @@ class PremiumEnhancements {
       const y = r.top + r.height * (0.2 + Math.random() * 0.8);
       const drift = (Math.random() - 0.5) * 22;
 
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      const bubbleBg = isDark ? 'rgba(245,240,232,0.12)' : 'rgba(13,13,13,0.07)';
+      const bubbleBorder = isDark ? 'rgba(245,240,232,0.08)' : 'rgba(13,13,13,0.04)';
       const b = document.createElement('div');
       b.style.cssText = `
         position:fixed;width:${size}px;height:${size}px;
         left:${x}px;top:${y}px;
-        background:rgba(245,240,232,0.12);
-        border:1px solid rgba(245,240,232,0.08);
+        background:${bubbleBg};
+        border:1px solid ${bubbleBorder};
         border-radius:50%;pointer-events:none;z-index:100;
       `;
       document.body.appendChild(b);
@@ -1301,6 +1310,17 @@ class PremiumEnhancements {
       btn.addEventListener('click', () => {
         track('CTA Clicked', { text: btn.textContent.trim() });
       });
+    });
+  }
+
+  setupThemeToggle() {
+    const toggle = document.getElementById('themeToggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
     });
   }
 }

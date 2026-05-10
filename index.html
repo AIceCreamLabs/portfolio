@@ -178,6 +178,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 
+  <!-- ===== ANTI-FLASH: set theme before CSS loads ===== -->
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
   <!-- ===== STYLES ===== -->
   <link rel="stylesheet" href="portfolio_style.css">
 
@@ -238,6 +246,10 @@
   </div>
 
   <div class="focus-overlay" id="focusOverlay" aria-hidden="true"></div>
+
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode">
+    <span class="theme-toggle-dot"></span>
+  </button>
 
   <script src="portfolio.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
