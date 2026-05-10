@@ -118,17 +118,19 @@ body::after {
   width: 100%;
   aspect-ratio: 1;
   opacity: 0;
-  will-change: transform, opacity;
+  will-change: transform, opacity, clip-path;
   cursor: pointer;
   overflow: hidden;
   border-radius: 0;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   transform-style: preserve-3d;
-  transition: box-shadow 0.5s ease, filter 0.6s ease;
+  transition: box-shadow 0.5s ease, filter 0.6s ease, clip-path 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
 }
 
 .gallery-image:hover {
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
+  clip-path: polygon(50% 0%, 50% 0%, 100% 100%, 0% 100%);
 }
 
 /* Scattered heights */
@@ -1182,11 +1184,6 @@ body::after {
   border-radius: 50%;
 }
 
-/* ========== GALLERY CARD LIQUID ========== */
-
-.img-fx {
-  will-change: filter;
-}
 
 /* ========== BACKGROUND BLOBS ========== */
 

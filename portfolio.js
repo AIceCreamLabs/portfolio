@@ -1050,7 +1050,6 @@ class PremiumEnhancements {
     this.setupImagePreload();
     this.setupAnalytics();
     this.setupThemeToggle();
-    this.setupCardLiquid();
   }
 
   setupLetterHover() {
@@ -1399,63 +1398,6 @@ class PremiumEnhancements {
     frame();
   }
 
-  setupCardLiquid() {
-    if (window.innerWidth <= 768) return;
-
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.style.cssText = 'position:absolute;width:0;height:0;pointer-events:none;';
-    svg.innerHTML = `
-      <defs>
-        <filter id="card-liquid-filter" x="-10%" y="-10%" width="120%" height="120%">
-          <feTurbulence id="card-turb" type="turbulence"
-            baseFrequency="0.012 0.008" numOctaves="2" seed="9" result="noise"/>
-          <feDisplacementMap id="card-disp" in="SourceGraphic" in2="noise"
-            scale="0" xChannelSelector="R" yChannelSelector="G"/>
-        </filter>
-      </defs>
-    `;
-    document.body.appendChild(svg);
-
-    const cardTurb = document.getElementById('card-turb');
-    const cardDisp = document.getElementById('card-disp');
-    let raf = null;
-    let t = 0;
-    let scale = 0;
-    let target = 0;
-    let activeFx = null;
-
-    const tick = () => {
-      t += 0.011;
-      cardTurb.setAttribute('baseFrequency',
-        `${0.011 + Math.sin(t) * 0.005} ${0.007 + Math.cos(t * 0.8) * 0.004}`
-      );
-      const lerp = target > 0 ? 0.07 : 0.04;
-      scale += (target - scale) * lerp;
-      cardDisp.setAttribute('scale', scale.toFixed(2));
-
-      if (target > 0 || scale > 0.1) {
-        raf = requestAnimationFrame(tick);
-      } else {
-        raf = null;
-        if (activeFx) { activeFx.style.filter = ''; activeFx = null; }
-      }
-    };
-
-    document.querySelectorAll('.gallery-image').forEach(card => {
-      const fx = card.querySelector('.img-fx');
-      if (!fx) return;
-      card.addEventListener('mouseenter', () => {
-        target = 18;
-        if (activeFx && activeFx !== fx) activeFx.style.filter = '';
-        activeFx = fx;
-        fx.style.filter = 'url(#card-liquid-filter)';
-        if (!raf) raf = requestAnimationFrame(tick);
-      });
-      card.addEventListener('mouseleave', () => {
-        target = 0;
-      });
-    });
-  }
 }
 
 // ============================================================================
