@@ -554,6 +554,23 @@ body::after {
 .pricing-card.featured {
   border: 1px solid var(--color-accent);
   transform: scale(1.05);
+  position: relative;
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-accent);
+  color: #0D0D0D;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  white-space: nowrap;
 }
 
 .pricing-title {

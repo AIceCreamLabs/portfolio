@@ -638,6 +638,7 @@ class PortfolioController {
           </div>
 
           <div class="pricing-card featured">
+            <div class="pricing-badge">Most Popular</div>
             <div class="pricing-title">System</div>
             <div class="pricing-price"><span>€</span>4,000</div>
             <p class="pricing-description">A complete web system built on strategy. For businesses ready to compete seriously in their market.</p>
