@@ -955,7 +955,7 @@ class PortfolioController {
     const t = this.easeOutCubic(this.intro.progress);
 
     this.animateLetters(t);
-    this.animateImagesIntro(t);
+    // Cards stay hidden during intro — rectangle appears after letters finish
 
     if (this.intro.progress >= 1 && !this.bundleInitialized) {
       this.bundleInitialized = true;
@@ -968,46 +968,68 @@ class PortfolioController {
 
   initBundledState() {
     const cards = [...document.querySelectorAll('.gallery-image')];
-    const cx = window.innerWidth / 2;
-    const cy = window.innerHeight / 2;
+    const n = cards.length;
+
+    // Each card in the rectangle is scaled down to fit a tight grid
+    const scale = 0.28;
+    const bW = Math.round(300 * scale); // ~84px
+    const bH = Math.round(420 * scale); // ~118px
+    const gap = 1; // 1px between cells — looks like one solid rectangle
+    const cols = 3;
+    const rows = Math.ceil(n / cols);
+    const totalW = cols * bW + (cols - 1) * gap;
+    const totalH = rows * bH + (rows - 1) * gap;
+    const originX = (window.innerWidth  - totalW) / 2;
+    const originY = (window.innerHeight - totalH) / 2;
 
     this.bundleData = cards.map((card, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      // Centre incomplete last row
+      const cardsInRow = row === rows - 1 ? n - row * cols : cols;
+      const rowPad = (cols - cardsInRow) * (bW + gap) / 2;
+
+      const bx = originX + rowPad + col * (bW + gap) + bW / 2;
+      const by = originY + row * (bH + gap) + bH / 2;
+
+      // Natural position in the strip (getBoundingClientRect accounts for parent translateX)
       const rect = card.getBoundingClientRect();
-      const cardCX = rect.left + rect.width / 2;
-      const cardCY = rect.top + rect.height / 2;
-      return { card, dx: cx - cardCX, dy: cy - cardCY, i };
+      const sx = rect.left + rect.width  / 2;
+      const sy = rect.top  + rect.height / 2;
+
+      return { card, dx: bx - sx, dy: by - sy, scale, i };
     });
 
-    // Converge all cards to center in a tight overlapping stack
-    this.bundleData.forEach(({ card, dx, dy, i }) => {
-      const n = cards.length;
-      const stackX = (i - n / 2) * 4;
-      const stackY = (i - n / 2) * 3;
-      card.style.transition = `transform 0.85s cubic-bezier(0.16,1,0.3,1) ${i * 0.025}s, opacity 0.3s ease`;
-      card.style.transform = `translate(${dx + stackX}px, ${dy + stackY}px) scale(0.72)`;
-      card.style.zIndex = i;
+    // Position all cards at their rectangle spots instantly (they're still opacity 0)
+    this.bundleData.forEach(({ card, dx, dy }) => {
+      card.style.transition = 'none';
+      card.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
     });
 
-    // Show scroll hint
-    const hint = document.createElement('div');
-    hint.className = 'scroll-hint';
-    hint.textContent = 'drag to explore';
-    document.body.appendChild(hint);
-    this._scrollHint = hint;
+    // Fade the whole rectangle in as one unit
+    requestAnimationFrame(() => {
+      cards.forEach(card => {
+        card.style.transition = 'opacity 0.55s ease';
+        card.style.opacity = '1';
+      });
+      setTimeout(() => {
+        cards.forEach(card => { card.style.transition = 'none'; });
+      }, 600);
+    });
   }
 
   triggerScatter() {
     if (this.animationPhase !== 'bundled') return;
     this.animationPhase = 'scattering';
 
-    if (this._scrollHint) { this._scrollHint.style.opacity = '0'; setTimeout(() => this._scrollHint?.remove(), 500); }
-
     if (!this.bundleData) return;
     const n = this.bundleData.length;
 
+    // Each card flies from its rectangle position to its natural strip position
     this.bundleData.forEach(({ card }, i) => {
-      card.style.transition = `transform 0.95s cubic-bezier(0.16,1,0.3,1) ${i * 0.04}s`;
+      card.style.transition = `transform 0.9s cubic-bezier(0.16,1,0.3,1) ${i * 0.045}s, opacity 0.4s ease ${i * 0.02}s`;
       card.style.transform = '';
+      card.style.opacity = '1';
     });
 
     setTimeout(() => {
@@ -1015,9 +1037,9 @@ class PortfolioController {
       this.bundleData.forEach(({ card }) => {
         card.style.transition = '';
         card.style.transform = '';
-        card.style.zIndex = '';
+        card.style.zIndex  = '';
       });
-    }, 950 + n * 40);
+    }, 900 + n * 45);
   }
   
   easeOutCubic(t) {
