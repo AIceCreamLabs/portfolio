@@ -160,11 +160,12 @@ class PortfolioController {
   
   init() {
     this.createGalleryGrid();
-    // Center grid horizontally after layout renders
+    // Center grid in viewport after layout renders
     requestAnimationFrame(() => {
       const grid = document.getElementById('imageGrid');
       if (grid) {
-        this.dragOffset.x = Math.min(0, (window.innerWidth - grid.scrollWidth) / 2);
+        this.dragOffset.x = (window.innerWidth  - grid.scrollWidth)  / 2;
+        this.dragOffset.y = (window.innerHeight - grid.scrollHeight) / 2;
         this.updateGalleryPosition();
       }
     });
@@ -306,10 +307,9 @@ class PortfolioController {
 
       if (this.isMobile()) return;
 
-      // Route both axes to horizontal pan
-      const speed = (e.deltaX + e.deltaY) * 0.6;
-      this.dragVelocity.x -= speed;
-      this.dragVelocity.x = Math.max(-30, Math.min(30, this.dragVelocity.x));
+      const cap = 28;
+      this.dragVelocity.x -= Math.max(-cap, Math.min(cap, e.deltaX * 0.55));
+      this.dragVelocity.y -= Math.max(-cap, Math.min(cap, e.deltaY * 0.55));
     }, { passive: false });
   }
 
@@ -349,9 +349,11 @@ class PortfolioController {
     if (!this.isDragging || this.animationPhase === 'intro' || this.animationPhase === 'bundled' || this.animationPhase === 'scattering') return;
 
     const dx = e.clientX - this.dragStart.x;
+    const dy = e.clientY - this.dragStart.y;
 
     this.dragOffset.x += dx * 0.5;
-    this.dragVelocity = { x: dx * 0.2, y: 0 };
+    this.dragOffset.y += dy * 0.5;
+    this.dragVelocity = { x: dx * 0.2, y: dy * 0.2 };
     this.dragStart = { x: e.clientX, y: e.clientY };
 
     this.updateGalleryPosition();
@@ -364,12 +366,14 @@ class PortfolioController {
   }
   
   updateGalleryPosition() {
-    const tiltCap = 5;
-    const tiltY = Math.max(-tiltCap, Math.min(tiltCap, -this.dragVelocity.x * 0.18));
+    const cap = 6;
+    const tiltX = Math.max(-cap, Math.min(cap,  this.dragVelocity.y * 0.2));
+    const tiltY = Math.max(-cap, Math.min(cap, -this.dragVelocity.x * 0.2));
     this.galleryImages.style.transform = `
-      translateX(${this.dragOffset.x}px)
+      translate(${this.dragOffset.x}px, ${this.dragOffset.y}px)
       scale(${this.zoom})
       perspective(1200px)
+      rotateX(${tiltX}deg)
       rotateY(${tiltY}deg)
     `;
   }
@@ -935,11 +939,13 @@ class PortfolioController {
   
   updateDragMomentum() {
     if (!this.isDragging) {
-      if (Math.abs(this.dragVelocity.x) > 0.05) {
+      if (Math.abs(this.dragVelocity.x) > 0.05 || Math.abs(this.dragVelocity.y) > 0.05) {
         this.dragOffset.x += this.dragVelocity.x;
+        this.dragOffset.y += this.dragVelocity.y;
         this.dragVelocity.x *= 0.94;
+        this.dragVelocity.y *= 0.94;
         this.updateGalleryPosition();
-      } else if (this.dragVelocity.x !== 0) {
+      } else if (this.dragVelocity.x !== 0 || this.dragVelocity.y !== 0) {
         this.dragVelocity = { x: 0, y: 0 };
         this.updateGalleryPosition();
       }
@@ -970,51 +976,62 @@ class PortfolioController {
     const cards = [...document.querySelectorAll('.gallery-image')];
     const n = cards.length;
 
-    // Each card in the rectangle is scaled down to fit a tight grid
-    const scale = 0.28;
-    const bW = Math.round(300 * scale); // ~84px
-    const bH = Math.round(420 * scale); // ~118px
-    const gap = 1; // 1px between cells — looks like one solid rectangle
-    const cols = 3;
-    const rows = Math.ceil(n / cols);
-    const totalW = cols * bW + (cols - 1) * gap;
-    const totalH = rows * bH + (rows - 1) * gap;
-    const originX = (window.innerWidth  - totalW) / 2;
-    const originY = (window.innerHeight - totalH) / 2;
+    // Curated collage positions: {rx, ry} relative to frame half-size, rot in deg, sc = scale
+    const layouts = [
+      { rx: -0.30, ry: -0.30, rot: -4.5, sc: 0.30 },
+      { rx:  0.05, ry: -0.33, rot:  2.0, sc: 0.28 },
+      { rx:  0.33, ry: -0.26, rot:  5.0, sc: 0.31 },
+      { rx: -0.28, ry:  0.04, rot:  1.5, sc: 0.27 },
+      { rx:  0.08, ry:  0.02, rot: -3.5, sc: 0.33 },
+      { rx:  0.34, ry:  0.08, rot: -2.0, sc: 0.27 },
+      { rx: -0.02, ry:  0.33, rot:  3.0, sc: 0.29 },
+    ];
+
+    // Create the visible frame
+    const frame = document.createElement('div');
+    frame.className = 'collage-frame';
+    document.body.appendChild(frame);
+    this._collageFrame = frame;
+
+    // Scatter on hover over the frame
+    frame.addEventListener('mouseenter', () => this.triggerScatter());
+
+    const fW = 380, fH = 460;
+    const fcx = window.innerWidth  / 2;
+    const fcy = window.innerHeight / 2;
 
     this.bundleData = cards.map((card, i) => {
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-      // Centre incomplete last row
-      const cardsInRow = row === rows - 1 ? n - row * cols : cols;
-      const rowPad = (cols - cardsInRow) * (bW + gap) / 2;
+      const L = layouts[i % layouts.length];
+      const bx = fcx + L.rx * fW;
+      const by = fcy + L.ry * fH;
 
-      const bx = originX + rowPad + col * (bW + gap) + bW / 2;
-      const by = originY + row * (bH + gap) + bH / 2;
-
-      // Natural position in the strip (getBoundingClientRect accounts for parent translateX)
       const rect = card.getBoundingClientRect();
       const sx = rect.left + rect.width  / 2;
       const sy = rect.top  + rect.height / 2;
 
-      return { card, dx: bx - sx, dy: by - sy, scale, i };
+      return { card, dx: bx - sx, dy: by - sy, rot: L.rot, sc: L.sc, i };
     });
 
-    // Position all cards at their rectangle spots instantly (they're still opacity 0)
-    this.bundleData.forEach(({ card, dx, dy }) => {
+    // Snap cards to collage positions (still invisible)
+    this.bundleData.forEach(({ card, dx, dy, rot, sc }) => {
       card.style.transition = 'none';
-      card.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+      card.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(${sc})`;
+      card.style.zIndex = '31';
     });
 
-    // Fade the whole rectangle in as one unit
+    // Frame fades in, then cards follow
     requestAnimationFrame(() => {
-      cards.forEach(card => {
-        card.style.transition = 'opacity 0.55s ease';
-        card.style.opacity = '1';
-      });
+      frame.classList.add('visible');
       setTimeout(() => {
-        cards.forEach(card => { card.style.transition = 'none'; });
-      }, 600);
+        this.bundleData.forEach(({ card }, i) => {
+          card.style.transition = `opacity 0.35s ease ${i * 0.03}s`;
+          card.style.opacity = '1';
+        });
+        // Clear transitions after fade-in completes
+        setTimeout(() => {
+          this.bundleData.forEach(({ card }) => { card.style.transition = 'none'; });
+        }, 350 + n * 30 + 100);
+      }, 150);
     });
   }
 
@@ -1022,14 +1039,21 @@ class PortfolioController {
     if (this.animationPhase !== 'bundled') return;
     this.animationPhase = 'scattering';
 
+    // Fade out the frame
+    if (this._collageFrame) {
+      this._collageFrame.style.transition = 'opacity 0.45s ease';
+      this._collageFrame.style.opacity = '0';
+      setTimeout(() => { this._collageFrame?.remove(); this._collageFrame = null; }, 500);
+    }
+
     if (!this.bundleData) return;
     const n = this.bundleData.length;
 
-    // Each card flies from its rectangle position to its natural strip position
+    // Cards spring from collage positions to their natural grid positions
     this.bundleData.forEach(({ card }, i) => {
-      card.style.transition = `transform 0.9s cubic-bezier(0.16,1,0.3,1) ${i * 0.045}s, opacity 0.4s ease ${i * 0.02}s`;
+      card.style.transition = `transform 1s cubic-bezier(0.16,1,0.3,1) ${i * 0.05}s`;
       card.style.transform = '';
-      card.style.opacity = '1';
+      card.style.zIndex = '';
     });
 
     setTimeout(() => {
@@ -1037,9 +1061,9 @@ class PortfolioController {
       this.bundleData.forEach(({ card }) => {
         card.style.transition = '';
         card.style.transform = '';
-        card.style.zIndex  = '';
+        card.style.zIndex = '';
       });
-    }, 900 + n * 45);
+    }, 1000 + n * 50);
   }
   
   easeOutCubic(t) {
@@ -1053,14 +1077,26 @@ class PortfolioController {
   animateLetters(t) {
     const letters = document.querySelectorAll('.letter');
     const total = letters.length;
-    // Typewriter: each letter snaps in sequentially in first 50% of intro
-    const typePhase = Math.min(1, t / 0.5);
+
+    // Typewriter: letters appear one-by-one in first 55% of intro
+    const typePhase = Math.min(1, t / 0.55);
     letters.forEach((letter, i) => {
       const threshold = i / total;
       const visible = typePhase >= threshold;
       letter.style.opacity = visible ? 1 : 0;
-      letter.style.transform = visible ? 'translateY(0) scale(1)' : 'translateY(14px) scale(0.88)';
+      letter.style.transform = visible ? 'none' : 'translateY(14px) scale(0.88)';
     });
+
+    // Blinking cursor: appears with first letter, fades at 80% of intro
+    if (!this._typeCursor) {
+      this._typeCursor = document.createElement('span');
+      this._typeCursor.className = 'type-cursor';
+      this._typeCursor.textContent = '_';
+      document.querySelector('.word-akua')?.appendChild(this._typeCursor);
+    }
+    const cursorOpacity = t < 0.8 ? 1 : Math.max(0, 1 - (t - 0.8) / 0.2);
+    this._typeCursor.style.opacity = cursorOpacity > 0 ? '' : '0';
+    if (cursorOpacity <= 0) this._typeCursor.style.animationPlayState = 'paused';
   }
 
   animateImagesIntro(t) {

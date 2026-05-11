@@ -98,26 +98,24 @@ body::after {
   transform-style: preserve-3d;
   z-index: 6;
   overflow: visible;
-  display: flex;
-  align-items: center;
 }
 
-/* ========== HORIZONTAL STRIP ========== */
+/* ========== PORTFOLIO GRID ========== */
 
 #imageGrid {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 32px;
-  padding: 0 100px;
+  display: grid;
+  grid-template-columns: repeat(3, 260px);
+  grid-auto-rows: 360px;
+  gap: 20px;
+  padding: 80px 60px;
   width: max-content;
+  margin: 0 auto;
 }
 
 .gallery-image {
   position: relative;
-  width: 300px;
-  height: 420px;
-  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
   opacity: 0;
   will-change: transform, opacity;
   cursor: pointer;
@@ -132,26 +130,43 @@ body::after {
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
 }
 
-/* Alternating vertical offsets for filmstrip depth */
-.gallery-image:nth-child(3n+1) { margin-top: -60px; }
-.gallery-image:nth-child(3n+2) { margin-top:  40px; }
-.gallery-image:nth-child(3n)   { margin-top: -20px; }
+/* ========== COLLAGE FRAME ========== */
 
-/* ========== SCROLL HINT ========== */
-
-.scroll-hint {
+.collage-frame {
   position: fixed;
-  bottom: 36px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--font-body);
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
-  pointer-events: none;
-  z-index: 60;
-  transition: opacity 0.6s ease;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  height: 460px;
+  border: 1px solid var(--color-accent);
+  z-index: 30;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.55s ease;
+  cursor: pointer;
+}
+
+.collage-frame.visible {
+  opacity: 1;
+}
+
+/* ========== TYPEWRITER CURSOR ========== */
+
+.type-cursor {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(60px, 12vw, 160px);
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1;
+  vertical-align: baseline;
+  animation: cursorBlink 0.75s step-end infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
 }
 
 .gallery-image img {
@@ -938,8 +953,10 @@ body::after {
 
 @media (max-width: 1024px) {
   #imageGrid {
-    gap: 20px;
-    padding: 0 60px;
+    grid-template-columns: repeat(2, 200px);
+    grid-auto-rows: 280px;
+    gap: 14px;
+    padding: 80px 30px;
   }
 
   .detail-content {
@@ -982,14 +999,10 @@ body::after {
   }
 
   #imageGrid {
-    gap: 14px;
-    padding: 0 30px;
-  }
-
-  .gallery-image {
-    width: 220px;
-    height: 300px;
-    margin-top: 0 !important;
+    grid-template-columns: repeat(2, 44vw);
+    grid-auto-rows: 58vw;
+    gap: 10px;
+    padding: 60px 16px;
   }
 
   /* Always show labels on mobile (no hover) */
