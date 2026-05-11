@@ -175,11 +175,34 @@ class PortfolioController {
     this.attachCardTilt();
   }
   
+  createCenterCard() {
+    const el = document.createElement('div');
+    el.className = 'gallery-image center-card';
+    el.dataset.id = 'center';
+    el.innerHTML = `
+      <div class="center-card-inner">
+        <div class="center-name">AKUMALI</div>
+        <div class="center-divider"></div>
+        <div class="center-role">Digital Systems<br>AI Integration</div>
+        <div class="center-location">Thailand</div>
+        <a href="mailto:gyamfuwaa@protonmail.com" class="center-cta">Get in touch →</a>
+      </div>
+    `;
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.location.href = 'mailto:gyamfuwaa@protonmail.com';
+    });
+    return el;
+  }
+
   createGalleryGrid() {
     const grid = document.createElement('div');
     grid.id = 'imageGrid';
 
-    portfolioItems.forEach((item) => {
+    portfolioItems.forEach((item, idx) => {
+      // Inject center info card into the 5th grid slot (center of 3×3)
+      if (idx === 4) grid.appendChild(this.createCenterCard());
+
       const imgEl = document.createElement('div');
       imgEl.className = 'gallery-image';
       imgEl.dataset.id = item.id;
@@ -982,6 +1005,7 @@ class PortfolioController {
       { rx:  0.05, ry: -0.33, rot:  2.0, sc: 0.28 },
       { rx:  0.33, ry: -0.26, rot:  5.0, sc: 0.31 },
       { rx: -0.28, ry:  0.04, rot:  1.5, sc: 0.27 },
+      { rx:  0.00, ry:  0.00, rot:  0.0, sc: 0.30 }, // center card — no rotation, dead center
       { rx:  0.08, ry:  0.02, rot: -3.5, sc: 0.33 },
       { rx:  0.34, ry:  0.08, rot: -2.0, sc: 0.27 },
       { rx: -0.02, ry:  0.33, rot:  3.0, sc: 0.29 },
@@ -1129,7 +1153,6 @@ class PremiumEnhancements {
     this.setupImagePreload();
     this.setupAnalytics();
     this.setupThemeToggle();
-    if (window.innerWidth > 768) this.setupLensDistortion();
   }
 
   setupLetterHover() {

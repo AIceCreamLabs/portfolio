@@ -105,7 +105,7 @@ body::after {
 #imageGrid {
   display: grid;
   grid-template-columns: repeat(3, 260px);
-  grid-auto-rows: 360px;
+  grid-auto-rows: 260px;
   gap: 20px;
   padding: 80px 60px;
   width: max-content;
@@ -175,6 +175,69 @@ body::after {
   object-fit: cover;
   display: block;
 }
+
+/* ========== CENTER INFO CARD ========== */
+
+.gallery-image.center-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+.center-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px;
+}
+
+.center-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: 0.06em;
+}
+
+.center-divider {
+  width: 20px;
+  height: 1px;
+  background: var(--color-accent);
+}
+
+.center-role {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  line-height: 1.9;
+}
+
+.center-location {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+}
+
+.center-cta {
+  margin-top: 6px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--color-accent);
+  text-decoration: none;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.4);
+  padding-bottom: 2px;
+  transition: opacity 0.2s ease;
+}
+
+.center-cta:hover { opacity: 0.7; }
 
 /* ========== IMAGE FX LAYERS ========== */
 
@@ -954,7 +1017,7 @@ body::after {
 @media (max-width: 1024px) {
   #imageGrid {
     grid-template-columns: repeat(2, 200px);
-    grid-auto-rows: 280px;
+    grid-auto-rows: 200px;
     gap: 14px;
     padding: 80px 30px;
   }
@@ -1000,7 +1063,7 @@ body::after {
 
   #imageGrid {
     grid-template-columns: repeat(2, 44vw);
-    grid-auto-rows: 58vw;
+    grid-auto-rows: 44vw;
     gap: 10px;
     padding: 60px 16px;
   }
