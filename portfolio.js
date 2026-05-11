@@ -129,6 +129,9 @@ class PortfolioController {
     this.currentItem = null;
     this.animationPhase = 'intro';
     this.intro = { progress: 0, active: true, duration: 3000, startTime: null };
+    this.bundleInitialized = false;
+    this.bundleData = null;
+    this._scrollHint = null;
     this.scrollVelocity = 0;
     this.isDragging = false;
     this.dragStart = { x: 0, y: 0 };
@@ -157,6 +160,14 @@ class PortfolioController {
   
   init() {
     this.createGalleryGrid();
+    // Center grid horizontally after layout renders
+    requestAnimationFrame(() => {
+      const grid = document.getElementById('imageGrid');
+      if (grid) {
+        this.dragOffset.x = Math.min(0, (window.innerWidth - grid.scrollWidth) / 2);
+        this.updateGalleryPosition();
+      }
+    });
     this.startRenderLoop();
     this.attachEventListeners();
     this.attachGalleryScroll();
@@ -279,10 +290,12 @@ class PortfolioController {
   }
   
   attachGalleryScroll() {
-    // Wheel/trackpad: pan + ctrl-scroll/trackpad-pinch to zoom
     this.galleryCanvas.addEventListener('wheel', (e) => {
-      if (this.animationPhase === 'intro' || this.isDetailOpen) return;
+      if (this.isDetailOpen) return;
       e.preventDefault();
+
+      if (this.animationPhase === 'bundled') { this.triggerScatter(); return; }
+      if (this.animationPhase === 'intro' || this.animationPhase === 'scattering') return;
 
       if (e.ctrlKey || e.metaKey) {
         const delta = e.deltaY > 0 ? 0.92 : 1.08;
@@ -293,16 +306,10 @@ class PortfolioController {
 
       if (this.isMobile()) return;
 
-      const speedX = e.deltaX * 0.55;
-      const speedY = e.deltaY * 0.55;
-
-      this.dragVelocity.x -= speedX;
-      this.dragVelocity.y -= speedY;
-
-      // Clamp so fast trackpad swipes don't go wild
-      const cap = 28;
-      this.dragVelocity.x = Math.max(-cap, Math.min(cap, this.dragVelocity.x));
-      this.dragVelocity.y = Math.max(-cap, Math.min(cap, this.dragVelocity.y));
+      // Route both axes to horizontal pan
+      const speed = (e.deltaX + e.deltaY) * 0.6;
+      this.dragVelocity.x -= speed;
+      this.dragVelocity.x = Math.max(-30, Math.min(30, this.dragVelocity.x));
     }, { passive: false });
   }
 
@@ -311,7 +318,7 @@ class PortfolioController {
     const cards = document.querySelectorAll('.gallery-image');
     cards.forEach(card => {
       card.addEventListener('mousemove', (e) => {
-        if (this.animationPhase === 'intro') return;
+        if (this.animationPhase === 'intro' || this.animationPhase === 'bundled' || this.animationPhase === 'scattering') return;
         const rect = card.getBoundingClientRect();
         const cx = (e.clientX - rect.left) / rect.width - 0.5;
         const cy = (e.clientY - rect.top) / rect.height - 0.5;
@@ -330,7 +337,8 @@ class PortfolioController {
   }
 
   onDragStart(e) {
-    if (this.animationPhase === 'intro') return;
+    if (this.animationPhase === 'intro' || this.animationPhase === 'scattering') return;
+    if (this.animationPhase === 'bundled') { this.triggerScatter(); return; }
     this.isDragging = true;
     this.dragStart = { x: e.clientX, y: e.clientY };
     this.dragVelocity = { x: 0, y: 0 };
@@ -338,18 +346,14 @@ class PortfolioController {
   }
   
   onDragMove(e) {
-    if (!this.isDragging || this.animationPhase === 'intro') return;
-    
+    if (!this.isDragging || this.animationPhase === 'intro' || this.animationPhase === 'bundled' || this.animationPhase === 'scattering') return;
+
     const dx = e.clientX - this.dragStart.x;
-    const dy = e.clientY - this.dragStart.y;
-    
+
     this.dragOffset.x += dx * 0.5;
-    this.dragOffset.y += dy * 0.5;
-    
-    this.dragVelocity = { x: dx * 0.2, y: dy * 0.2 };
-    
+    this.dragVelocity = { x: dx * 0.2, y: 0 };
     this.dragStart = { x: e.clientX, y: e.clientY };
-    
+
     this.updateGalleryPosition();
   }
   
@@ -360,16 +364,12 @@ class PortfolioController {
   }
   
   updateGalleryPosition() {
-    // Tilt the grid in 3D based on current velocity — gentler on mobile
-    const tiltMult = this.isMobile() ? 0.08 : 0.22;
-    const tiltCap = this.isMobile() ? 2 : 6;
-    const tiltX = Math.max(-tiltCap, Math.min(tiltCap, this.dragVelocity.y * tiltMult));
-    const tiltY = Math.max(-tiltCap, Math.min(tiltCap, -this.dragVelocity.x * tiltMult));
+    const tiltCap = 5;
+    const tiltY = Math.max(-tiltCap, Math.min(tiltCap, -this.dragVelocity.x * 0.18));
     this.galleryImages.style.transform = `
-      translate(${this.dragOffset.x}px, ${this.dragOffset.y}px)
+      translateX(${this.dragOffset.x}px)
       scale(${this.zoom})
-      perspective(1000px)
-      rotateX(${tiltX}deg)
+      perspective(1200px)
       rotateY(${tiltY}deg)
     `;
   }
@@ -925,7 +925,7 @@ class PortfolioController {
     const render = () => {
       if (this.animationPhase === 'intro') {
         this.updateIntro();
-      } else {
+      } else if (this.animationPhase === 'interactive' || this.animationPhase === 'detail') {
         this.updateDragMomentum();
       }
       requestAnimationFrame(render);
@@ -935,16 +935,11 @@ class PortfolioController {
   
   updateDragMomentum() {
     if (!this.isDragging) {
-      if (Math.abs(this.dragVelocity.x) > 0.05 || Math.abs(this.dragVelocity.y) > 0.05) {
+      if (Math.abs(this.dragVelocity.x) > 0.05) {
         this.dragOffset.x += this.dragVelocity.x;
-        this.dragOffset.y += this.dragVelocity.y;
-
         this.dragVelocity.x *= 0.94;
-        this.dragVelocity.y *= 0.94;
-
         this.updateGalleryPosition();
-      } else if (this.dragVelocity.x !== 0 || this.dragVelocity.y !== 0) {
-        // Snap velocity to zero and reset tilt cleanly
+      } else if (this.dragVelocity.x !== 0) {
         this.dragVelocity = { x: 0, y: 0 };
         this.updateGalleryPosition();
       }
@@ -953,24 +948,76 @@ class PortfolioController {
   
   updateIntro() {
     if (!this.intro.startTime) this.intro.startTime = performance.now();
-    
+
     const elapsed = performance.now() - this.intro.startTime;
     this.intro.progress = Math.min(elapsed / this.intro.duration, 1);
-    
+
     const t = this.easeOutCubic(this.intro.progress);
-    
+
     this.animateLetters(t);
     this.animateImagesIntro(t);
-    
-    if (this.intro.progress >= 1) {
+
+    if (this.intro.progress >= 1 && !this.bundleInitialized) {
+      this.bundleInitialized = true;
       this.intro.active = false;
-      this.animationPhase = 'interactive';
+      this.animationPhase = 'bundled';
       document.getElementById('galleryView').classList.add('interactive');
-      // Clear intro inline styles so CSS card-active hover/touch states work
-      document.querySelectorAll('.gallery-image').forEach(el => {
-        el.style.transform = '';
-      });
+      requestAnimationFrame(() => this.initBundledState());
     }
+  }
+
+  initBundledState() {
+    const cards = [...document.querySelectorAll('.gallery-image')];
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+
+    this.bundleData = cards.map((card, i) => {
+      const rect = card.getBoundingClientRect();
+      const cardCX = rect.left + rect.width / 2;
+      const cardCY = rect.top + rect.height / 2;
+      return { card, dx: cx - cardCX, dy: cy - cardCY, i };
+    });
+
+    // Converge all cards to center in a tight overlapping stack
+    this.bundleData.forEach(({ card, dx, dy, i }) => {
+      const n = cards.length;
+      const stackX = (i - n / 2) * 4;
+      const stackY = (i - n / 2) * 3;
+      card.style.transition = `transform 0.85s cubic-bezier(0.16,1,0.3,1) ${i * 0.025}s, opacity 0.3s ease`;
+      card.style.transform = `translate(${dx + stackX}px, ${dy + stackY}px) scale(0.72)`;
+      card.style.zIndex = i;
+    });
+
+    // Show scroll hint
+    const hint = document.createElement('div');
+    hint.className = 'scroll-hint';
+    hint.textContent = 'drag to explore';
+    document.body.appendChild(hint);
+    this._scrollHint = hint;
+  }
+
+  triggerScatter() {
+    if (this.animationPhase !== 'bundled') return;
+    this.animationPhase = 'scattering';
+
+    if (this._scrollHint) { this._scrollHint.style.opacity = '0'; setTimeout(() => this._scrollHint?.remove(), 500); }
+
+    if (!this.bundleData) return;
+    const n = this.bundleData.length;
+
+    this.bundleData.forEach(({ card }, i) => {
+      card.style.transition = `transform 0.95s cubic-bezier(0.16,1,0.3,1) ${i * 0.04}s`;
+      card.style.transform = '';
+    });
+
+    setTimeout(() => {
+      this.animationPhase = 'interactive';
+      this.bundleData.forEach(({ card }) => {
+        card.style.transition = '';
+        card.style.transform = '';
+        card.style.zIndex = '';
+      });
+    }, 950 + n * 40);
   }
   
   easeOutCubic(t) {
@@ -983,54 +1030,28 @@ class PortfolioController {
   
   animateLetters(t) {
     const letters = document.querySelectorAll('.letter');
-    const totalLetters = letters.length;
-    
-    // Letters appear in first 40% of animation
-    const letterEndTime = 0.4;
-    
+    const total = letters.length;
+    // Typewriter: each letter snaps in sequentially in first 50% of intro
+    const typePhase = Math.min(1, t / 0.5);
     letters.forEach((letter, i) => {
-      const letterDelay = (i / totalLetters) * 0.25;
-      const adjustedT = Math.min(1, t / letterEndTime);
-      const letterProgress = Math.max(0, Math.min(1, (adjustedT - letterDelay) / 0.15));
-      const letterEase = this.easeOutCubic(letterProgress);
-      
-      letter.style.opacity = letterEase;
-      letter.style.transform = `translateY(${(1 - letterEase) * 20}px) scale(${0.9 + letterEase * 0.1})`;
+      const threshold = i / total;
+      const visible = typePhase >= threshold;
+      letter.style.opacity = visible ? 1 : 0;
+      letter.style.transform = visible ? 'translateY(0) scale(1)' : 'translateY(14px) scale(0.88)';
     });
   }
-  
+
   animateImagesIntro(t) {
     const images = document.querySelectorAll('.gallery-image');
-    const totalImages = images.length;
-    
-    // Images start appearing after 35% of animation (letters done)
-    const imageStartTime = 0.35;
-    const adjustedT = Math.max(0, t - imageStartTime) / (1 - imageStartTime);
-    
+    const total = images.length;
+    // Cards fade in after letters finish (after 50% of intro)
+    const startT = 0.52;
+    const adjustedT = Math.max(0, (t - startT) / (1 - startT));
     images.forEach((img, idx) => {
-      const imageDelay = (idx / totalImages) * 0.5;
-      const imageProgress = Math.max(0, adjustedT - imageDelay);
-      
-      let scale, opacity;
-      
-      if (imageProgress < 0.5) {
-        const phase1 = imageProgress / 0.5;
-        const phase1Ease = this.easeOutCubic(phase1);
-        scale = 0.05 + phase1Ease * 0.8;
-        opacity = 1;
-      } else if (imageProgress < 0.7) {
-        scale = 0.85;
-        opacity = 1;
-      } else {
-        const phase3Start = imageProgress - 0.7;
-        const phase3 = phase3Start / 0.3;
-        const phase3Ease = this.easeInOutQuad(phase3);
-        scale = 0.85 + phase3Ease * 0.15;
-        opacity = 1;
-      }
-      
-      img.style.opacity = opacity;
-      img.style.transform = `scale(${scale})`;
+      const delay = (idx / total) * 0.4;
+      const progress = this.easeOutCubic(Math.max(0, Math.min(1, (adjustedT - delay) / 0.35)));
+      img.style.opacity = progress;
+      img.style.transform = `translateY(${(1 - progress) * 18}px)`;
     });
   }
 }
@@ -1050,6 +1071,7 @@ class PremiumEnhancements {
     this.setupImagePreload();
     this.setupAnalytics();
     this.setupThemeToggle();
+    if (window.innerWidth > 768) this.setupLensDistortion();
   }
 
   setupLetterHover() {
@@ -1347,6 +1369,122 @@ class PremiumEnhancements {
       const next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
+    });
+  }
+
+  setupLensDistortion() {
+    const vs = `
+      attribute vec2 aPos;
+      varying vec2 vUV;
+      void main(){vUV=aPos*0.5+0.5;gl_Position=vec4(aPos,0.0,1.0);}
+    `;
+    const fs = `
+      precision mediump float;
+      uniform sampler2D uTex;
+      uniform vec2 uMouse;
+      uniform float uStr;
+      varying vec2 vUV;
+      void main(){
+        vec2 uv=vUV;
+        vec2 d=uv-uMouse;
+        float dist=length(d);
+        float r=0.32;
+        if(dist<r){
+          float t=1.0-dist/r;
+          uv-=normalize(d)*uStr*t*t*0.22;
+        }
+        uv=clamp(uv,0.001,0.999);
+        gl_FragColor=texture2D(uTex,uv);
+      }
+    `;
+
+    const compile = (gl, type, src) => {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    };
+
+    document.querySelectorAll('.gallery-image').forEach(card => {
+      const imgEl = card.querySelector('.img-base');
+      if (!imgEl) return;
+
+      let cvs = null, gl = null, prog = null;
+      let uMouse, uStr;
+      let mx = 0.5, my = 0.5, cmx = 0.5, cmy = 0.5;
+      let str = 0, targetStr = 0, raf = null;
+
+      const boot = () => {
+        const fx = card.querySelector('.img-fx');
+        cvs = document.createElement('canvas');
+        cvs.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;';
+        cvs.width = fx.offsetWidth || 300;
+        cvs.height = fx.offsetHeight || 420;
+        fx.appendChild(cvs);
+
+        gl = cvs.getContext('webgl');
+        if (!gl) return false;
+
+        prog = gl.createProgram();
+        gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, vs));
+        gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, fs));
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
+
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+        const loc = gl.getAttribLocation(prog, 'aPos');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+        uMouse = gl.getUniformLocation(prog, 'uMouse');
+        uStr   = gl.getUniformLocation(prog, 'uStr');
+
+        const tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+        const upload = () => { try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgEl); } catch(e){} };
+        if (imgEl.complete && imgEl.naturalWidth) upload();
+        else imgEl.addEventListener('load', upload, { once: true });
+
+        return true;
+      };
+
+      const tick = () => {
+        cmx += (mx - cmx) * 0.11;
+        cmy += (my - cmy) * 0.11;
+        str += (targetStr - str) * 0.09;
+
+        if (gl && prog) {
+          gl.viewport(0, 0, cvs.width, cvs.height);
+          gl.uniform2f(uMouse, cmx, 1 - cmy);
+          gl.uniform1f(uStr, str);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+
+        if (targetStr > 0 || str > 0.002) {
+          raf = requestAnimationFrame(tick);
+        } else {
+          raf = null;
+          cvs?.remove(); cvs = null; gl = null; prog = null;
+        }
+      };
+
+      card.addEventListener('mouseenter', () => {
+        if (!cvs && !boot()) return;
+        targetStr = 1;
+        if (!raf) raf = requestAnimationFrame(tick);
+      });
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        mx = (e.clientX - r.left) / r.width;
+        my = (e.clientY - r.top) / r.height;
+      });
+      card.addEventListener('mouseleave', () => { targetStr = 0; });
     });
   }
 
