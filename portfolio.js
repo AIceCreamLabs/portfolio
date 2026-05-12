@@ -1,62 +1,50 @@
-const portfolioItems = [
+/* ============================================================
+ * AKUMALI PORTFOLIO — Main Script
+ * ============================================================ */
+
+const PORTFOLIO_ITEMS = [
   {
     id: 1,
     title: 'Ntoma',
     subtitle: 'AI Fashion Pattern Tool',
+    category: 'AI Product',
     image: 'ntoma.png',
     media: ['ntoma.png', 'ntoma-demo.mp4'],
     type: 'project',
-    category: 'AI Product',
     description: 'AI-powered garment pattern generation. Upload any photo, get a production-ready sewing pattern with flat drawings, virtual fit preview, and DXF factory export.',
     challenge: 'Fashion designers and home sewers spend hours or hundreds of euros getting patterns made from reference photos. There was no affordable, fast alternative.',
     solution: 'Built a full AI pipeline: computer vision garment analysis, technical flat drawing generation, mathematically correct pattern pieces, virtual fit on body silhouette, and multi-size grading — all from a single photo.',
-    results: [
-      'Photo → pattern in under 2 minutes',
-      'XS–XL grading automatic',
-      'DXF export for factory production',
-      'Assembly guide included',
-      'Early access waitlist live'
-    ],
-    tech: ['React', 'FastAPI', 'Python', 'OpenAI Vision', 'Base44', 'Vercel'],
+    results: ['Photo → pattern in under 2 minutes', 'XS–XL grading automatic', 'DXF export for factory production', 'Assembly guide included', 'Early access waitlist live'],
+    tech: ['React', 'FastAPI', 'Python', 'OpenAI Vision', 'Vercel'],
     link: 'https://ntoma.vercel.app'
   },
   {
     id: 2,
-    title: 'Psychologist Lithuania',
-    subtitle: 'Professional Services Website',
+    title: 'Psychologist LT',
+    subtitle: 'Bilingual Practice Website',
+    category: 'Web Development',
     image: 'psych.png',
     media: ['psych.png', 'psych0.png', 'psych1.png', 'psych2.png', 'psych3.png', 'psych4.png', 'psych5.png', 'psych-demo.mp4'],
     type: 'project',
-    category: 'Web Development',
     description: 'Clean, professional website for a psychotherapy practice in Lithuania. Designed for trust, accessibility, and client conversion.',
     challenge: 'The client needed a website that felt warm and trustworthy — not clinical. Had to work perfectly in Lithuanian and English.',
     solution: 'Built a bilingual, mobile-first website with calm design language, clear service descriptions, and an integrated booking flow.',
-    results: [
-      'Live and fully responsive',
-      'Bilingual LT/EN',
-      'Optimised for local SEO',
-      'Mobile-first design'
-    ],
+    results: ['Live and fully responsive', 'Bilingual LT/EN', 'Optimised for local SEO', 'Mobile-first design'],
     tech: ['HTML', 'CSS', 'JavaScript', 'Vercel'],
     link: 'https://sigitaasvydiene.lt/'
   },
   {
     id: 3,
     title: 'CAN Architecture',
-    subtitle: 'Architecture Studio Website',
+    subtitle: 'Editorial Studio Portfolio',
+    category: 'Web Development',
     image: 'can.png',
     media: ['can.png', 'can-demo.mp4'],
     type: 'project',
-    category: 'Web Development',
     description: 'Editorial architecture portfolio website with smooth scroll effects, large-format imagery, and bilingual navigation — built for a French architecture studio.',
     challenge: 'The client wanted a website that felt like a printed architecture monograph — slow, intentional, image-led. Not a typical corporate template.',
-    solution: 'Custom React build with Framer Motion scroll animations, full-bleed image layouts, and a project gallery that mirrors the big.dk scroll style.',
-    results: [
-      'Custom scroll effects matching big.dk',
-      'Bilingual FR/EN',
-      'Full-bleed editorial layout',
-      'Optimised image loading'
-    ],
+    solution: 'Custom React build with Framer Motion scroll animations, full-bleed image layouts, and a project gallery that mirrors editorial scroll style.',
+    results: ['Custom scroll effects', 'Bilingual FR/EN', 'Full-bleed editorial layout', 'Optimised image loading'],
     tech: ['React', 'Framer Motion', 'CSS', 'Vercel'],
     link: 'https://can-yinka-muu8xna3i-aicecreamlabs-6519s-projects.vercel.app/'
   },
@@ -64,1566 +52,874 @@ const portfolioItems = [
     id: 4,
     title: 'AICE Legal',
     subtitle: 'AI Legal Document Advisor',
+    category: 'AI Integration',
     image: 'aice.png',
     media: ['aice.png', 'aice_logo.png', 'aicelegal1.png', 'aicelegal2.png', 'aicelegal3.png', 'aicelegal.mp4'],
     type: 'project',
-    category: 'AI Integration',
     description: 'AI-powered legal document analysis platform for EU law firms. Analyses contracts and flags GDPR and EU AI Act compliance issues automatically.',
     challenge: 'Legal teams were reviewing compliance manually — slow, expensive, and inconsistent across documents and jurisdictions.',
     solution: 'Built a document processing pipeline using LLM APIs to extract clauses, flag compliance risks, and generate plain-language summaries. Firebase backend with secure document handling.',
-    results: [
-      'Automated GDPR compliance flagging',
-      'EU AI Act risk scoring',
-      'Plain-language summaries',
-      'Secure document pipeline'
-    ],
+    results: ['Automated GDPR compliance flagging', 'EU AI Act risk scoring', 'Plain-language summaries', 'Secure document pipeline'],
     tech: ['Node.js', 'Firebase', 'LangChain', 'OpenAI', 'React'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
-  },
-  {
-    id: 5,
-    title: 'GiGZo',
-    subtitle: 'Services Marketplace',
-    image: 'gigzo.png',
-    media: ['gigzo.png', 'gigzo1.png', 'gigzo2.png', 'gigzo3.png', 'gigzo5.png', 'gigzo_lg.png', 'gigzo.mp4'],
-    type: 'project',
-    category: 'Web App',
-    description: 'Domestic services marketplace for expats in Thailand. Connects customers with verified cleaning, laundry, and household service providers.',
-    challenge: 'Expats in Thailand had no reliable, English-language platform to find and book domestic services. Providers had no digital booking system.',
-    solution: 'Built a full-stack marketplace with provider onboarding, booking system, payment integration, and AI-powered customer support agents using CrewAI and LangChain.',
-    results: [
-      'Full marketplace MVP built',
-      'Booking + payment integration',
-      'AI customer onboarding agents',
-      'Provider management system'
-    ],
-    tech: ['React', 'Node.js', 'Firebase', 'CrewAI', 'LangChain', 'Stripe'],
     link: 'mailto:gyamfuwaa@protonmail.com'
   },
   {
     id: 6,
     title: 'Hire Me',
     subtitle: 'Services & Pricing',
+    category: 'Studio',
     image: 'hire-me.png',
     type: 'service',
-    description: 'Custom web development and AI integration services.',
-    fullDescription: true
+    description: 'Custom web development and AI integration services. Three tiers — Foundation, System, and Authority.',
+    challenge: 'Most studios sell hours. I sell systems that make money.',
+    solution: 'Strategy-first engagements with measurable outcomes. Every project begins with positioning, then architecture, then code.',
+    results: ['Foundation — €1,500', 'System — €4,000', 'Authority — €7,500', 'MVP in weeks, not months'],
+    tech: ['Strategy', 'Architecture', 'Engineering'],
+    link: 'mailto:gyamfuwaa@protonmail.com?subject=Project Inquiry'
+  },
+  {
+    id: 5,
+    title: 'GiGZo',
+    subtitle: 'Services Marketplace',
+    category: 'Web App',
+    image: 'gigzo.png',
+    media: ['gigzo.png', 'gigzo1.png', 'gigzo2.png', 'gigzo3.png', 'gigzo5.png', 'gigzo_lg.png', 'gigzo.mp4'],
+    type: 'project',
+    description: 'Domestic services marketplace for expats in Thailand. Connects customers with verified cleaning, laundry, and household service providers.',
+    challenge: 'Expats in Thailand had no reliable, English-language platform to find and book domestic services. Providers had no digital booking system.',
+    solution: 'Built a full-stack marketplace with provider onboarding, booking system, payment integration, and AI-powered customer support agents using CrewAI and LangChain.',
+    results: ['Full marketplace MVP built', 'Booking + payment integration', 'AI customer onboarding agents', 'Provider management system'],
+    tech: ['React', 'Node.js', 'Firebase', 'CrewAI', 'LangChain', 'Stripe'],
+    link: 'mailto:gyamfuwaa@protonmail.com'
+  },
+  {
+    id: 8,
+    title: 'Lumina',
+    subtitle: 'Brand Identity System',
+    category: 'Design System',
+    image: 'hire-me.png',
+    type: 'project',
+    description: 'Comprehensive brand identity and design system for a luxury wellness brand. Type, color, motion, and component library.',
+    challenge: 'Client needed a brand that read as premium across web, print, and motion — without veering into clichéd "luxury" territory.',
+    solution: 'Restrained typographic system anchored by a custom display face, paired with a warm-neutral palette and motion guidelines.',
+    results: ['Full design system', 'Web + print components', 'Motion guidelines', 'Brand book delivered'],
+    tech: ['Figma', 'After Effects', 'Webflow'],
+    link: 'mailto:gyamfuwaa@protonmail.com'
   },
   {
     id: 7,
-    title: 'About Me',
+    title: 'About Akua',
     subtitle: 'Developer & AI Builder',
+    category: 'Studio',
     image: 'about-me.png',
     type: 'about',
-    description: 'Full-stack developer and AI builder based in Thailand. Building real products that work.',
-    fullDescription: true
+    description: 'Full-stack developer and AI builder based in Thailand. Building real products that work — not demos that look pretty.',
+    challenge: 'Most digital work fails not because it looks wrong — but because it is built without strategic clarity.',
+    solution: 'Strategy first. Then architecture. Then code. End-to-end ownership of every project — no hand-offs, no gaps.',
+    results: ['Based in Thailand', 'Available worldwide', 'Response within 24h', 'Strategy + Engineering'],
+    tech: ['React', 'Next.js', 'Python', 'FastAPI', 'LangChain', 'CrewAI'],
+    link: 'mailto:gyamfuwaa@protonmail.com'
+  },
+  {
+    id: 9,
+    title: 'Atelier',
+    subtitle: 'Studio Practice',
+    category: 'Studio',
+    image: null,
+    type: 'project',
+    description: 'A focused practice — one set of hands across strategy, design, and engineering. End-to-end ownership of every project.',
+    challenge: 'Most agencies hand off between roles. The result is incoherence. We work end-to-end.',
+    solution: 'One operator per project. Strategy and execution from the same hand. Tight feedback loops, no scope drift.',
+    results: ['Solo-led practice', 'Strategy-led engagements', 'Selected clients only', 'Long-form retainers'],
+    tech: ['Strategy', 'Design', 'Engineering'],
+    link: 'mailto:gyamfuwaa@protonmail.com'
   }
 ];
-// ============================================================================
-// PORTFOLIO CONTROLLER
-// ============================================================================
 
-class PortfolioController {
-  constructor() {
-    this.isDetailOpen = false;
-    this.currentItem = null;
-    this.animationPhase = 'intro';
-    this.intro = { progress: 0, active: true, duration: 3000, startTime: null };
-    this.bundleInitialized = false;
-    this.bundleData = null;
-    this._scrollHint = null;
-    this.scrollVelocity = 0;
-    this.isDragging = false;
-    this.dragStart = { x: 0, y: 0 };
-    this.dragOffset = { x: 0, y: 0 };
-    this.dragVelocity = { x: 0, y: 0 };
-    
-    this.zoom = 1;
-    this.minZoom = 0.4;
-    this.maxZoom = 3;
-    this.lastPinchDist = null;
+const CELL_LABELS = PORTFOLIO_ITEMS.map((p, i) => ({
+  word: p.title,
+  project: p.title,
+  idx: String(i + 1).padStart(3, '0'),
+  item: p
+}));
 
-    this.galleryCanvas = document.getElementById('galleryCanvas');
-    this.galleryImages = document.getElementById('galleryImages');
-    this.heroText = document.getElementById('heroText');
-    this.detailView = document.getElementById('detailView');
-    this.focusOverlay = document.getElementById('focusOverlay');
-    this.detailHero = null;
-    this.detailHeroImg = null;
-    this.detailBody = null;
-    this.detailSections = null;
-    this.detailTitle = null;
-    this.detailMeta = null;
-    
-    this.init();
-  }
-  
-  init() {
-    this.createGalleryGrid();
-    // Center grid in viewport after layout renders
-    requestAnimationFrame(() => {
-      const grid = document.getElementById('imageGrid');
-      if (grid) {
-        this.dragOffset.x = (window.innerWidth  - grid.scrollWidth)  / 2;
-        this.dragOffset.y = (window.innerHeight - grid.scrollHeight) / 2;
-        this.updateGalleryPosition();
-      }
+const TWEAKS = {
+  hoverMode: 'bounce',
+  theme: 'light',
+  tileHover: 'shape'
+};
+
+/* ============================================================
+ * Bento morph — target layout after calve
+ * cellSize=130, gap=18 → right column starts at 310px
+ * ============================================================ */
+const BENTO_LAYOUTS = [
+  { x: 0,   y: 0,   w: 124, h: 94  },
+  { x: 142, y: 0,   w: 150, h: 94  },
+  { x: 310, y: 0,   w: 111, h: 220 },
+  { x: 0,   y: 112, w: 124, h: 156 },
+  { x: 142, y: 112, w: 150, h: 156 },
+  { x: 310, y: 238, w: 111, h: 48  },
+  { x: 0,   y: 286, w: 124, h: 124 },
+  { x: 142, y: 286, w: 94,  h: 124 },
+  { x: 254, y: 286, w: 184, h: 124 },
+];
+
+let bentoTimers = [];
+function clearBentoTimers() {
+  bentoTimers.forEach(t => clearTimeout(t));
+  bentoTimers = [];
+}
+
+function initBentoMorph() {
+  clearBentoTimers();
+  const ease = 'cubic-bezier(.2,.8,.2,1)';
+
+  // Fire at 4600ms — cellCalve ends at 4500ms, so all cells are stable at their calve positions
+  bentoTimers.push(setTimeout(() => {
+    const cells = document.querySelectorAll('.grid .cell');
+    cells.forEach(cell => {
+      const i = parseInt(cell.dataset.i);
+      const layout = BENTO_LAYOUTS[i];
+      // Read transform from stable forwards-fill state, then freeze it as inline style
+      const cs = getComputedStyle(cell);
+      const matrix = new DOMMatrix(cs.transform);
+      const curX = matrix.m41 || 0;
+      const curY = matrix.m42 || 0;
+      cell.style.animation = 'none';
+      cell.style.opacity = '1';
+      cell.style.transform = `translate(${curX}px, ${curY}px)`;
+      cell.style.width = '130px';
+      cell.style.height = '130px';
+      void cell.offsetHeight;
+      cell.style.transition = `transform 1.1s ${ease}, width 1.1s ${ease}, height 1.1s ${ease}`;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        cell.style.transform = `translate(${layout.x}px, ${layout.y}px)`;
+        cell.style.width = `${layout.w}px`;
+        cell.style.height = `${layout.h}px`;
+      }));
     });
-    this.startRenderLoop();
-    this.attachEventListeners();
-    this.attachGalleryScroll();
-    this.attachCardTilt();
-  }
-  
-  createCenterCard() {
-    const el = document.createElement('div');
-    el.className = 'gallery-image center-card';
-    el.dataset.id = 'center';
-    el.innerHTML = `
-      <div class="center-card-inner">
-        <div class="center-name">AKUMALI</div>
-        <div class="center-divider"></div>
-        <div class="center-role">Digital Systems<br>AI Integration</div>
-        <div class="center-location">Thailand</div>
-        <a href="mailto:gyamfuwaa@protonmail.com" class="center-cta">Get in touch →</a>
+  }, 4600));
+
+  // Reveal at 5600ms — bento morph mostly done (started 4600ms + 1100ms = 5700ms)
+  bentoTimers.push(setTimeout(() => {
+    const cells = document.querySelectorAll('.grid .cell');
+    cells.forEach(cell => {
+      cell.style.transition += `, background 0.9s ${ease}, border-color 0.9s ${ease}, box-shadow 0.9s ease`;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        cell.classList.add('revealed');
+      }));
+      const cellImg = cell.querySelector('.cell-img');
+      if (cellImg) cellImg.style.animation = 'cellImgFade 1.0s cubic-bezier(.2,.8,.2,1) forwards';
+    });
+  }, 5600));
+}
+
+/* ============================================================
+ * Render grid cells
+ * ============================================================ */
+const gridEl = document.getElementById('grid');
+
+function renderGrid() {
+  gridEl.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.dataset.i = i;
+    const lbl = CELL_LABELS[i];
+    const item = lbl.item;
+
+    const imgHtml = item.image
+      ? `<img src="${item.image}" alt="${item.title}" class="cell-photo">`
+      : '';
+
+    cell.innerHTML = `
+      <div class="cell-img">
+        <div class="ph"></div>
+        ${imgHtml}
+        <span class="idx">${lbl.idx}</span>
+        <span class="label">${lbl.project}</span>
       </div>
     `;
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      window.location.href = 'mailto:gyamfuwaa@protonmail.com';
-    });
-    return el;
-  }
 
-  createGalleryGrid() {
-    const grid = document.createElement('div');
-    grid.id = 'imageGrid';
-
-    portfolioItems.forEach((item, idx) => {
-      // Inject center info card into the 5th grid slot (center of 3×3)
-      if (idx === 4) grid.appendChild(this.createCenterCard());
-
-      const imgEl = document.createElement('div');
-      imgEl.className = 'gallery-image';
-      imgEl.dataset.id = item.id;
-
-      const imgFX = document.createElement('div');
-      imgFX.className = 'img-fx';
-
-      // Only use image sources for the gallery card (skip mp4)
-      const imageSrcs = item.media
-        ? item.media.filter(s => !s.endsWith('.mp4') && !s.endsWith('.webm') && !s.endsWith('.mov'))
-        : [item.image];
-      const firstSrc = imageSrcs[0] || item.image;
-
-      const imgBase = document.createElement('img');
-      imgBase.src = firstSrc;
-      imgBase.className = 'img-base';
-      imgBase.alt = item.title;
-
-      const imgReveal = document.createElement('img');
-      imgReveal.src = firstSrc;
-      imgReveal.className = 'img-reveal';
-      imgReveal.alt = item.title;
-
-      imgFX.appendChild(imgBase);
-      imgFX.appendChild(imgReveal);
-
-      // Label overlay
-      const label = document.createElement('div');
-      label.className = 'card-label';
-      label.innerHTML = `<span class="card-label-title">${item.title}</span><span class="card-label-sub">${item.subtitle || item.category || ''}</span>`;
-
-      imgEl.appendChild(imgFX);
-      imgEl.appendChild(label);
-      imgEl.addEventListener('click', () => this.openDetail(item));
-
-      // Touch press: reveal colour + scale (mirrors desktop hover)
-      imgEl.addEventListener('touchstart', () => {
-        if (this.animationPhase !== 'interactive') return;
-        imgEl.classList.add('card-active');
-      }, { passive: true });
-      imgEl.addEventListener('touchend', () => {
-        setTimeout(() => imgEl.classList.remove('card-active'), 250);
-      });
-      imgEl.addEventListener('touchcancel', () => {
-        imgEl.classList.remove('card-active');
-      });
-
-      // Auto-cycle images on hover (if multiple images)
-      if (imageSrcs.length > 1) {
-        let cycleIdx = 0;
-        let cycleTimer = null;
-        imgEl.addEventListener('mouseenter', () => {
-          cycleTimer = setInterval(() => {
-            cycleIdx = (cycleIdx + 1) % imageSrcs.length;
-            imgBase.src = imageSrcs[cycleIdx];
-            imgReveal.src = imageSrcs[cycleIdx];
-          }, 1200);
-        });
-        imgEl.addEventListener('mouseleave', () => {
-          clearInterval(cycleTimer);
-          cycleIdx = 0;
-          imgBase.src = firstSrc;
-          imgReveal.src = firstSrc;
-        });
-      }
-
-      grid.appendChild(imgEl);
+    cell.addEventListener('mouseenter', () => onTileHover(i));
+    cell.addEventListener('mouseleave', () => offTileHover());
+    cell.addEventListener('click', () => { if (gridDragMoved) return; openDetail(lbl.item); });
+    cell.tabIndex = 0;
+    cell.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetail(lbl.item); }
     });
 
-    this.galleryImages.appendChild(grid);
+    gridEl.appendChild(cell);
   }
-  
-  attachEventListeners() {
-    document.getElementById('closeBtn').addEventListener('click', () => this.closeDetail());
+}
+renderGrid();
 
-    this.galleryCanvas.addEventListener('mousedown', (e) => this.onDragStart(e));
-    this.galleryCanvas.addEventListener('mousemove', (e) => this.onDragMove(e));
-    this.galleryCanvas.addEventListener('mouseup', () => this.onDragEnd());
-    this.galleryCanvas.addEventListener('mouseleave', () => this.onDragEnd());
+/* ============================================================
+ * Tile caption hover
+ * ============================================================ */
+const morphEl  = document.getElementById('morph');
+const wordEl   = document.getElementById('morphWord');
+const heroEl   = document.getElementById('hero');
+const stageEl  = document.getElementById('stage');
 
-    // Touch: single-finger drag + two-finger pinch-to-zoom
-    this.galleryCanvas.addEventListener('touchstart', (e) => {
-      if (this.animationPhase === 'intro' || this.isDetailOpen) return;
-      if (e.touches.length === 2) {
-        this.isDragging = false;
-        this.galleryCanvas.classList.remove('dragging');
-        this.lastPinchDist = this.getPinchDist(e.touches);
-      } else if (e.touches.length === 1) {
-        this.onDragStart(e.touches[0]);
-      }
-    }, { passive: true });
-    this.galleryCanvas.addEventListener('touchmove', (e) => {
-      if (this.animationPhase === 'intro' || this.isDetailOpen) return;
-      if (e.touches.length === 2 && this.lastPinchDist !== null) {
-        e.preventDefault();
-        this.onPinchMove(e.touches);
-      } else if (e.touches.length === 1) {
-        this.onDragMove(e.touches[0]);
-      }
-    }, { passive: false });
-    this.galleryCanvas.addEventListener('touchend', (e) => {
-      if (e.touches.length === 0) {
-        this.lastPinchDist = null;
-        this.onDragEnd();
-      } else if (e.touches.length === 1) {
-        this.lastPinchDist = null;
-      }
-    });
-  }
-  
-  attachGalleryScroll() {
-    this.galleryCanvas.addEventListener('wheel', (e) => {
-      if (this.isDetailOpen) return;
-      e.preventDefault();
+let ready = false;
 
-      if (this.animationPhase === 'bundled') { this.triggerScatter(); return; }
-      if (this.animationPhase === 'intro' || this.animationPhase === 'scattering') return;
+function onTileHover(i) {
+  if (!ready) return;
+  wordEl.textContent = CELL_LABELS[i].project;
+  morphEl.classList.add('on');
+  heroEl.classList.add('dim');
+}
+function offTileHover() {
+  morphEl.classList.remove('on');
+  heroEl.classList.remove('dim');
+}
 
-      if (e.ctrlKey || e.metaKey) {
-        const delta = e.deltaY > 0 ? 0.92 : 1.08;
-        this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom * delta));
-        this.updateGalleryPosition();
-        return;
-      }
+/* ============================================================
+ * AKUMALI hover — morph / liquid / off
+ * ============================================================ */
+const MORPH_PHRASES = ['AKUMALI', 'POSITIONING', 'FULL-STACK', 'AI BUILDER', 'REVENUE FIRST'];
+const titleWrap    = document.getElementById('titleWrap');
+const titleMorphEl = document.getElementById('titleMorph');
 
-      if (this.isMobile()) return;
+let morphState = { idx: 0, raf: null, swap: 0, hovering: false };
 
-      const cap = 28;
-      this.dragVelocity.x -= Math.max(-cap, Math.min(cap, e.deltaX * 0.55));
-      this.dragVelocity.y -= Math.max(-cap, Math.min(cap, e.deltaY * 0.55));
-    }, { passive: false });
-  }
+function applyHoverMode(mode) {
+  titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-off');
+  if (mode === 'bounce') titleWrap.classList.add('hover-bounce');
+  else if (mode === 'morph') titleWrap.classList.add('hover-morph');
+  else if (mode === 'liquid') titleWrap.classList.add('hover-liquid');
+  else titleWrap.classList.add('hover-off');
+}
 
-  attachCardTilt() {
-    // 3D perspective tilt on individual gallery cards
-    const cards = document.querySelectorAll('.gallery-image');
-    cards.forEach(card => {
-      card.addEventListener('mousemove', (e) => {
-        if (this.animationPhase === 'intro' || this.animationPhase === 'bundled' || this.animationPhase === 'scattering') return;
-        const rect = card.getBoundingClientRect();
-        const cx = (e.clientX - rect.left) / rect.width - 0.5;
-        const cy = (e.clientY - rect.top) / rect.height - 0.5;
-        card.style.transform = `perspective(700px) rotateY(${cx * 14}deg) rotateX(${-cy * 14}deg) scale(1.03) translateZ(10px)`;
-      });
-      card.addEventListener('mouseleave', () => {
-        card.style.transition = 'transform 0.7s var(--ease-out-expo)';
-        card.style.transform = '';
-        setTimeout(() => { card.style.transition = ''; }, 700);
-      });
-    });
-  }
+function startMorphLoop() {
+  if (morphState.raf) return;
+  morphState.hovering = true;
+  titleWrap.classList.add('hovering');
+  titleMorphEl.classList.add('show');
+  titleMorphEl.textContent = MORPH_PHRASES[morphState.idx];
 
-  isMobile() {
-    return window.innerWidth <= 768;
-  }
-
-  onDragStart(e) {
-    if (this.animationPhase === 'intro' || this.animationPhase === 'scattering') return;
-    if (this.animationPhase === 'bundled') { this.triggerScatter(); return; }
-    this.isDragging = true;
-    this.dragStart = { x: e.clientX, y: e.clientY };
-    this.dragVelocity = { x: 0, y: 0 };
-    this.galleryCanvas.classList.add('dragging');
-  }
-  
-  onDragMove(e) {
-    if (!this.isDragging || this.animationPhase === 'intro' || this.animationPhase === 'bundled' || this.animationPhase === 'scattering') return;
-
-    const dx = e.clientX - this.dragStart.x;
-    const dy = e.clientY - this.dragStart.y;
-
-    this.dragOffset.x += dx * 0.5;
-    this.dragOffset.y += dy * 0.5;
-    this.dragVelocity = { x: dx * 0.2, y: dy * 0.2 };
-    this.dragStart = { x: e.clientX, y: e.clientY };
-
-    this.updateGalleryPosition();
-  }
-  
-  onDragEnd() {
-    if (!this.isDragging) return;
-    this.isDragging = false;
-    this.galleryCanvas.classList.remove('dragging');
-  }
-  
-  updateGalleryPosition() {
-    const cap = 6;
-    const tiltX = Math.max(-cap, Math.min(cap,  this.dragVelocity.y * 0.2));
-    const tiltY = Math.max(-cap, Math.min(cap, -this.dragVelocity.x * 0.2));
-    this.galleryImages.style.transform = `
-      translate(${this.dragOffset.x}px, ${this.dragOffset.y}px)
-      scale(${this.zoom})
-      perspective(1200px)
-      rotateX(${tiltX}deg)
-      rotateY(${tiltY}deg)
-    `;
-  }
-  
-  openDetail(item) {
-    if (this.isDetailOpen) return;
-    this.isDetailOpen = true;
-    this.currentItem = item;
-
-    this.focusOverlay.classList.add('active');
-
-    const flash = document.createElement('div');
-    flash.className = 'exposure-soft';
-    document.body.appendChild(flash);
-    setTimeout(() => flash.remove(), 600);
-
-    document.querySelectorAll('.gallery-image').forEach(el => {
-      if (el.dataset.id !== item.id.toString()) {
-        el.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.16,1,0.3,1), filter 0.45s ease';
-        el.style.opacity = '0.06';
-        el.style.transform = 'scale(0.92)';
-        el.style.filter = 'blur(2px)';
-      }
-    });
-
-    setTimeout(() => this.showDetail(item), 500);
-  }
-
-  showDetail(item) {
-    this.detailView.classList.add('active');
-    this.animationPhase = 'detail';
-    this.renderDetailContent(item);
-    this.attachDetailListeners();
-
-    // Architectural wipe: curtain drops from top
-    this.detailView.style.clipPath = 'inset(0 0 100% 0)';
-    this.detailView.offsetHeight; // force reflow
-    this.detailView.style.transition = 'clip-path 0.7s cubic-bezier(0.77, 0, 0.175, 1)';
-    this.detailView.style.clipPath = 'inset(0 0 0% 0)';
-
-    setTimeout(() => {
-      this.detailHero = this.detailView.querySelector('.detail-hero');
-      this.detailHeroImg = this.detailView.querySelector('.detail-hero img, .detail-slider img');
-      this.detailBody = this.detailView.querySelector('.detail-body');
-      this.detailSections = this.detailView.querySelector('.detail-main');
-      this.detailTitle = document.getElementById('detailTitle');
-      this.detailMeta = document.getElementById('detailMeta');
-      this.initSlider(this.detailView);
-      this.startDirectedScroll();
-      this.initMagneticElements();
-    }, 100);
-  }
-
-  closeDetail() {
-    this.detailView.style.transition = 'clip-path 0.55s cubic-bezier(0.77, 0, 0.175, 1)';
-    this.detailView.style.clipPath = 'inset(0 0 100% 0)';
-    this.isDetailOpen = false;
-    this.animationPhase = 'interactive';
-
-    this.focusOverlay.classList.remove('active');
-
-    setTimeout(() => {
-      this.detailView.classList.remove('active');
-      this.detailView.style.clipPath = '';
-      this.detailView.style.transition = '';
-      this.detailView.scrollTop = 0;
-
-      document.querySelectorAll('.gallery-image').forEach(el => {
-        el.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1), filter 0.5s ease';
-        el.style.opacity = '1';
-        el.style.transform = '';
-        el.style.filter = '';
-        setTimeout(() => { el.style.transition = ''; }, 500);
-      });
-
-      this.detailHero = null;
-      this.detailHeroImg = null;
-      this.detailBody = null;
-      this.detailSections = null;
-    }, 550);
-  }
-  
-  renderDetailContent(item) {
-    const detailContent = document.getElementById('detailContent');
-    const detailTitle = document.getElementById('detailTitle');
-    const detailMeta = document.getElementById('detailMeta');
-    const detailMain = document.getElementById('detailMain');
-    
-    detailTitle.textContent = item.title;
-    
-    if (item.type === 'service') {
-      detailMeta.innerHTML = '<span>Services & Pricing</span>';
-      detailMain.innerHTML = this.renderPricingContent();
-    } else if (item.type === 'about') {
-      detailMeta.innerHTML = '<span>About Akua</span>';
-      detailMain.innerHTML = this.renderAboutContent();
-    } else {
-      const category = item.category || item.type;
-      detailMeta.innerHTML = `
-        <span>${item.subtitle}</span>
-        <span>${category}</span>
-        <span>${item.tech.join(' • ')}</span>
-      `;
-      detailMain.innerHTML = this.renderProjectContent(item);
+  let last = performance.now();
+  const tick = (t) => {
+    if (!morphState.hovering) return;
+    const dt = t - last;
+    morphState.swap += dt;
+    if (morphState.swap >= 1100) {
+      morphState.swap = 0;
+      morphState.idx = (morphState.idx + 1) % MORPH_PHRASES.length;
+      titleMorphEl.style.transition = 'opacity .25s ease, filter .25s ease';
+      titleMorphEl.style.filter = 'blur(8px)';
+      titleMorphEl.style.opacity = '0';
+      setTimeout(() => {
+        titleMorphEl.textContent = MORPH_PHRASES[morphState.idx];
+        titleMorphEl.style.filter = 'blur(0)';
+        titleMorphEl.style.opacity = '1';
+      }, 260);
     }
-    
-    setTimeout(() => this.setupScrollReveal(), 100);
-  }
-  
-  renderSlider(item) {
-    const media = item.media || [item.image];
-    const slides = media.map((src, i) => {
-      const isVideo = src.endsWith('.mp4') || src.endsWith('.webm') || src.endsWith('.mov');
-      const activeClass = i === 0 ? ' active' : '';
-      if (isVideo) {
-        return `<div class="slider-slide${activeClass}">
-          <video src="${src}" muted loop playsinline preload="metadata"></video>
-        </div>`;
-      }
-      return `<div class="slider-slide${activeClass}">
-        <img src="${src}" alt="${item.title} — slide ${i + 1}" />
-      </div>`;
-    }).join('');
+    last = t;
+    morphState.raf = requestAnimationFrame(tick);
+  };
+  morphState.raf = requestAnimationFrame(tick);
+}
 
-    const dots = media.length > 1
-      ? `<div class="slider-dots">${media.map((_, i) =>
-          `<button class="slider-dot${i === 0 ? ' active' : ''}" data-index="${i}"></button>`
-        ).join('')}</div>`
-      : '';
+function stopMorphLoop() {
+  morphState.hovering = false;
+  if (morphState.raf) cancelAnimationFrame(morphState.raf);
+  morphState.raf = null;
+  morphState.idx = 0;
+  morphState.swap = 0;
+  titleWrap.classList.remove('hovering');
+  titleMorphEl.classList.remove('show');
+  titleMorphEl.style.filter = '';
+  titleMorphEl.style.opacity = '';
+  titleMorphEl.textContent = 'AKUMALI';
+}
 
-    const arrows = media.length > 1
-      ? `<button class="slider-arrow slider-prev" aria-label="Previous">&#8592;</button>
-         <button class="slider-arrow slider-next" aria-label="Next">&#8594;</button>`
-      : '';
+titleWrap.addEventListener('mouseenter', () => { if (TWEAKS.hoverMode === 'morph') startMorphLoop(); });
+titleWrap.addEventListener('mouseleave', () => { if (TWEAKS.hoverMode === 'morph') stopMorphLoop(); });
 
-    return `<div class="detail-slider" data-current="0" data-total="${media.length}">
-      <div class="slider-track">${slides}</div>
-      ${arrows}
-      ${dots}
-      <div class="scroll-cue">
-        <span>Scroll to explore</span>
-        <div class="scroll-line"></div>
-      </div>
-    </div>`;
-  }
+/* ============================================================
+ * Tile hover modes — shape / lift / off
+ * ============================================================ */
+function applyTileHover(mode) {
+  document.querySelectorAll('.cell').forEach(c => {
+    c.classList.remove('tile-hover-shape', 'tile-hover-lift', 'tile-hover-off');
+    c.classList.add(`tile-hover-${mode}`);
+  });
+}
 
-  initSlider(container) {
-    const slider = container.querySelector('.detail-slider');
-    if (!slider || parseInt(slider.dataset.total) <= 1) return;
+/* ============================================================
+ * Sequence ready timer
+ * ============================================================ */
+let readyTimer;
+function armReady() {
+  clearTimeout(readyTimer);
+  stageEl.classList.remove('ready');
+  readyTimer = setTimeout(() => {
+    ready = true;
+    stageEl.classList.add('ready');
+    document.querySelectorAll('.cell').forEach(c => { c.style.transition = ''; });
+  }, 6600);
+}
+armReady();
+initBentoMorph();
 
-    let current = 0;
-    const total = parseInt(slider.dataset.total);
-    const slides = slider.querySelectorAll('.slider-slide');
-    const dots = slider.querySelectorAll('.slider-dot');
+/* ============================================================
+ * Grid drag + momentum
+ * ============================================================ */
+const gridStageEl = document.getElementById('gridStage');
+let gridOffX = 0, gridOffY = 0;
+let gridVelX = 0, gridVelY = 0;
+let gridDragging = false;
+let gridDragMoved = false;
+let gridDragStartX = 0, gridDragStartY = 0;
+let gridMomRaf = null;
 
-    const goTo = (idx) => {
-      slides[current].classList.remove('active');
-      if (dots[current]) dots[current].classList.remove('active');
+function applyGridTransform() {
+  gridStageEl.style.transform = `translate(${gridOffX}px, ${gridOffY}px)`;
+}
 
-      const prevVideo = slides[current].querySelector('video');
-      if (prevVideo) prevVideo.pause();
-
-      current = (idx + total) % total;
-      slides[current].classList.add('active');
-      if (dots[current]) dots[current].classList.add('active');
-
-      const nextVideo = slides[current].querySelector('video');
-      if (nextVideo) nextVideo.play().catch(() => {});
-    };
-
-    slider.querySelector('.slider-prev').addEventListener('click', (e) => {
-      e.stopPropagation();
-      goTo(current - 1);
-    });
-    slider.querySelector('.slider-next').addEventListener('click', (e) => {
-      e.stopPropagation();
-      goTo(current + 1);
-    });
-    dots.forEach(dot => {
-      dot.addEventListener('click', (e) => {
-        e.stopPropagation();
-        goTo(parseInt(dot.dataset.index));
-      });
-    });
-
-    // Touch swipe
-    let touchStartX = 0;
-    slider.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-    }, { passive: true });
-    slider.addEventListener('touchend', (e) => {
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
-    }, { passive: true });
-
-    // Auto-play first video if present
-    const firstVideo = slides[0].querySelector('video');
-    if (firstVideo) firstVideo.play().catch(() => {});
-  }
-
-  renderProjectContent(item) {
-    return `
-      ${this.renderSlider(item)}
-      <div class="detail-body">
-        <div class="detail-intro reveal-on-scroll slow">
-          <p class="section-text">${item.description}</p>
-        </div>
-
-        <div class="detail-section reveal-on-scroll dramatic">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">The Challenge</h3>
-          <p class="section-text">${item.challenge}</p>
-        </div>
-
-        <div class="detail-section reveal-on-scroll slow">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">The Approach</h3>
-          <p class="section-text">${item.solution}</p>
-        </div>
-
-        <div class="detail-section reveal-on-scroll dramatic">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">The Outcome</h3>
-          <ul style="list-style: none;">
-            ${item.results.map(result => `<li style="padding: 8px 0; padding-left: 20px; position: relative; font-size: 14px; color: var(--color-text-secondary);">
-              <span style="position: absolute; left: 0; color: var(--color-accent);">—</span> ${result}
-            </li>`).join('')}
-          </ul>
-        </div>
-
-        <div class="detail-section reveal-on-scroll fast">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Stack</h3>
-          <div class="tech-stack">
-            ${item.tech.map(t => `<div class="tech-tag">${t}</div>`).join('')}
-          </div>
-        </div>
-
-        <div class="detail-section reveal-on-scroll fast">
-          <div class="about-cta-row">
-            ${item.link && !item.link.startsWith('mailto')
-              ? `<a href="${item.link}" target="_blank" rel="noopener" class="cta-button">View Project</a>
-                 <a href="mailto:gyamfuwaa@protonmail.com?subject=Project Inquiry — ${item.title}" class="cta-button cta-button--outline">Start Similar</a>`
-              : `<a href="mailto:gyamfuwaa@protonmail.com?subject=Project Inquiry — ${item.title}" class="cta-button">Start a Project</a>`}
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  
-  renderPricingContent() {
-    return `
-      <div class="detail-body">
-        <div class="detail-intro reveal-on-scroll slow">
-          <p class="section-text" style="font-size: 18px; line-height: 1.7;">You're not paying for code. You're paying for the gap between where your business is now and where it needs to be digitally.</p>
-        </div>
-
-        <div class="pricing-container reveal-on-scroll slow">
-          <div class="pricing-card">
-            <div class="pricing-title">Foundation</div>
-            <div class="pricing-price"><span>€</span>1,500</div>
-            <p class="pricing-description">For businesses entering the digital market or needing a credible online presence that converts.</p>
-            <ul class="pricing-features">
-              <li>Landing Page</li>
-              <li>Basic AI Integration</li>
-              <li>SEO Optimisation</li>
-              <li>Contact &amp; Lead Capture</li>
-            </ul>
-            <a href="mailto:gyamfuwaa@protonmail.com?subject=Foundation Project Inquiry" class="pricing-cta-btn">Start Foundation</a>
-          </div>
-
-          <div class="pricing-card featured">
-            <div class="pricing-badge">Most Popular</div>
-            <div class="pricing-title">System</div>
-            <div class="pricing-price"><span>€</span>4,000</div>
-            <p class="pricing-description">A complete web system built on strategy. For businesses ready to compete seriously in their market.</p>
-            <ul class="pricing-features">
-              <li>Full Website or Web App</li>
-              <li>Custom AI System</li>
-              <li>Admin Dashboard</li>
-              <li>Advanced SEO</li>
-            </ul>
-            <a href="mailto:gyamfuwaa@protonmail.com?subject=System Project Inquiry" class="pricing-cta-btn">Start System</a>
-          </div>
-
-          <div class="pricing-card">
-            <div class="pricing-title">Authority</div>
-            <div class="pricing-price"><span>€</span>7,500</div>
-            <p class="pricing-description">Award-level execution for brands that need to look like market leaders immediately.</p>
-            <ul class="pricing-features">
-              <li>Three.js / WebGL</li>
-              <li>Immersive Interactions</li>
-              <li>Advanced AI Integration</li>
-              <li>Awwwards-Ready Design</li>
-            </ul>
-            <a href="mailto:gyamfuwaa@protonmail.com?subject=Authority Project Inquiry" class="pricing-cta-btn">Start Authority</a>
-          </div>
-        </div>
-
-        <div class="why-section reveal-on-scroll slow">
-          <h3>What makes this different</h3>
-          <div class="why-grid">
-            <div class="why-card">
-              <div class="why-card-icon">01</div>
-              <div class="why-card-title">Strategy First</div>
-              <div class="why-card-text">Every project starts with understanding the business problem. Code is the last step, not the first.</div>
-            </div>
-            <div class="why-card">
-              <div class="why-card-icon">02</div>
-              <div class="why-card-title">AI-Native</div>
-              <div class="why-card-text">GPT-4, LangChain, custom agents. Intelligence built into your workflow — not as an afterthought.</div>
-            </div>
-            <div class="why-card">
-              <div class="why-card-icon">03</div>
-              <div class="why-card-title">Full-Stack</div>
-              <div class="why-card-text">React, Next.js, Node.js, Python, FastAPI. End-to-end ownership — no hand-offs, no gaps.</div>
-            </div>
-            <div class="why-card">
-              <div class="why-card-icon">04</div>
-              <div class="why-card-title">Fast &amp; Clean</div>
-              <div class="why-card-text">MVP in weeks. Production-grade code. Clear communication throughout. No scope creep.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="big-cta reveal-on-scroll fast">
-          <a href="mailto:gyamfuwaa@protonmail.com?subject=Start a Project" class="big-cta-btn">Start a Project</a>
-        </div>
-      </div>
-    `;
-  }
-  
-  renderAboutContent() {
-    return `
-      <div class="detail-body">
-        <div class="detail-intro reveal-on-scroll slow">
-          <h2 style="font-family: var(--font-display); font-size: clamp(28px, 4vw, 52px); font-weight: 700; margin-bottom: 24px; line-height: 1.05;">Akua Theresa Gyamfuwaa</h2>
-          <p class="section-text" style="font-size: 18px; line-height: 1.7;">I don't build websites. I build systems that make clients money — custom platforms, AI infrastructure, and digital products that convert.</p>
-        </div>
-
-        <div class="detail-section reveal-on-scroll slow">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">What I believe</h3>
-          <p class="section-text">Most digital work fails not because it looks wrong — but because it's built without strategic clarity. Every system I build starts with understanding the business problem first. Code is the last step.</p>
-        </div>
-
-        <div class="detail-section reveal-on-scroll slow">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">What I build</h3>
-          <p class="section-text">Full-stack web applications with React, Next.js, and Node.js. AI pipelines using GPT-4, LangChain, and custom agents. Automation systems that replace manual processes. Platforms that connect businesses with their customers.</p>
-        </div>
-
-        <div class="detail-section reveal-on-scroll fast">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Stack</h3>
-          <div class="tech-stack">
-            <div class="tech-tag">React</div>
-            <div class="tech-tag">Next.js</div>
-            <div class="tech-tag">Node.js</div>
-            <div class="tech-tag">Python</div>
-            <div class="tech-tag">FastAPI</div>
-            <div class="tech-tag">GPT-4 &amp; LangChain</div>
-            <div class="tech-tag">Firebase</div>
-            <div class="tech-tag">CrewAI</div>
-          </div>
-        </div>
-
-        <div class="detail-section reveal-on-scroll dramatic">
-          <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Currently</h3>
-          <p class="section-text">Based in Thailand. Accepting new projects. I work with founders, agencies, and businesses who are serious about what they build. Response within 24 hours.</p>
-        </div>
-
-        <div class="detail-section reveal-on-scroll fast">
-          <div class="about-cta-row">
-            <a href="mailto:gyamfuwaa@protonmail.com" class="cta-button">Start a Project</a>
-            <a href="resume_TG.html" target="_blank" class="cta-button cta-button--outline">View Resume</a>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  
-  setupScrollReveal() {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-        }
-      });
-    }, { threshold: 0.2 });
-    
-    document.querySelectorAll('.reveal-on-scroll, .detail-section').forEach(el => {
-      observer.observe(el);
-    });
-    
-    requestAnimationFrame(() => {
-      if (this.detailTitle) this.detailTitle.classList.add('revealed');
-      if (this.detailMeta) this.detailMeta.classList.add('revealed');
-    });
-  }
-  
-  updateHeroParallax() {
-    if (!this.isDetailOpen) return;
-
-    const scrollY = this.detailView.scrollTop;
-
-    // Slider case (project items)
-    const slider = this.detailView.querySelector('.detail-slider');
-    if (slider) {
-      const progress = Math.min(1, scrollY / slider.offsetHeight);
-      const cue = slider.querySelector('.scroll-cue');
-      if (cue) cue.style.opacity = 1 - progress * 1.2;
-      if (this.detailBody) {
-        this.detailBody.style.transform = `translateY(${scrollY * 0.08}px)`;
-      }
+function startMomentum() {
+  cancelAnimationFrame(gridMomRaf);
+  function tick() {
+    if (Math.abs(gridVelX) < 0.4 && Math.abs(gridVelY) < 0.4) {
+      setTimeout(() => { gridDragMoved = false; }, 20);
       return;
     }
-
-    if (!this.detailHero || !this.detailHeroImg) return;
-
-    const heroHeight = this.detailHero.offsetHeight;
-    const progress = Math.min(1, scrollY / heroHeight);
-
-    const scale = 1 + progress * 0.12;
-    const translateY = progress * 60;
-
-    this.detailHeroImg.style.transform = `
-      scale(${scale}) translateY(${translateY}px)
-    `;
-
-    const cue = this.detailHero.querySelector('.scroll-cue');
-    if (cue) {
-      cue.style.opacity = 1 - progress * 1.2;
-    }
-    
-    if (this.detailBody) {
-      const bodyOffset = scrollY * 0.08;
-      this.detailBody.style.transform = `translateY(${bodyOffset}px)`;
-    }
+    gridVelX *= 0.91;
+    gridVelY *= 0.91;
+    gridOffX += gridVelX;
+    gridOffY += gridVelY;
+    applyGridTransform();
+    gridMomRaf = requestAnimationFrame(tick);
   }
-  
-  applyScrollGravity() {
-    if (!this.isDetailOpen) return;
-    
-    const sections = this.detailSections?.querySelectorAll('.detail-section');
-    if (!sections) return;
-    
-    const center = window.innerHeight / 2;
-    
-    sections.forEach(section => {
-      const rect = section.getBoundingClientRect();
-      const dist = Math.abs(rect.top + rect.height / 2 - center);
-      
-      if (dist < 120) {
-        this.detailView.scrollTop += (rect.top - 100) * 0.02;
-      }
-    });
-  }
-  
-  handleCinematicPause() {
-    const quotes = this.detailSections?.querySelectorAll('.section-quote');
-    if (!quotes) return;
-    
-    const triggerZone = window.innerHeight * 0.4;
-    
-    quotes.forEach(q => {
-      const rect = q.getBoundingClientRect();
-      if (rect.top < triggerZone && rect.bottom > triggerZone) {
-        this.detailView.style.scrollBehavior = 'auto';
-        this.detailView.scrollTop += (rect.top - triggerZone) * 0.015;
-      }
-    });
-  }
-  
-  startDirectedScroll() {
-    let t = 0;
-    const duration = 1200;
-    const start = this.detailView.scrollTop;
-    const target = 120;
-    
-    const animate = () => {
-      t += 16;
-      const p = Math.min(1, t / duration);
-      const ease = 1 - Math.pow(2, -10 * p);
-      
-      this.detailView.scrollTop = start + (target - start) * ease;
-      
-      if (p < 1 && this.isDetailOpen) {
-        requestAnimationFrame(animate);
-      }
-    };
-    
-    setTimeout(() => animate(), 400);
-  }
-  
-  initMagneticElements() {
-    const targets = document.querySelectorAll(
-      '.gallery-image, .related-item, .close-btn'
-    );
-    
-    targets.forEach(el => {
-      el.addEventListener('mousemove', (e) => {
-        const rect = el.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        
-        el.style.transform = `
-          translate(${x * 0.08}px, ${y * 0.08}px) scale(1.02)
-        `;
-      });
-      
-      el.addEventListener('mouseleave', () => {
-        if (!this.isDetailOpen || !el.closest('.detail-view')) {
-          el.style.transform = '';
-        }
-      });
-    });
-  }
-  
-  getPinchDist(touches) {
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
-
-  onPinchMove(touches) {
-    const dist = this.getPinchDist(touches);
-    const scale = dist / this.lastPinchDist;
-    this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom * scale));
-    this.lastPinchDist = dist;
-    this.updateGalleryPosition();
-  }
-
-  sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  
-  attachDetailListeners() {
-    const detailView = document.getElementById('detailView');
-    detailView.addEventListener('scroll', () => {
-      this.updateProgressCircle();
-      this.updateHeroParallax();
-    });
-  }
-  
-  updateProgressCircle() {
-    const scrollHeight = document.getElementById('detailView').scrollHeight - window.innerHeight;
-    const scrollPos = document.getElementById('detailView').scrollTop;
-    const progress = scrollHeight > 0 ? scrollPos / scrollHeight : 0;
-    
-    const circle = document.getElementById('progressBar');
-    if (circle) {
-      const radius = 45;
-      const circumference = 2 * Math.PI * radius;
-      circle.style.strokeDashoffset = circumference * (1 - progress);
-    }
-  }
-  
-  startRenderLoop() {
-    const render = () => {
-      if (this.animationPhase === 'intro') {
-        this.updateIntro();
-      } else if (this.animationPhase === 'interactive' || this.animationPhase === 'detail') {
-        this.updateDragMomentum();
-      }
-      requestAnimationFrame(render);
-    };
-    render();
-  }
-  
-  updateDragMomentum() {
-    if (!this.isDragging) {
-      if (Math.abs(this.dragVelocity.x) > 0.05 || Math.abs(this.dragVelocity.y) > 0.05) {
-        this.dragOffset.x += this.dragVelocity.x;
-        this.dragOffset.y += this.dragVelocity.y;
-        this.dragVelocity.x *= 0.94;
-        this.dragVelocity.y *= 0.94;
-        this.updateGalleryPosition();
-      } else if (this.dragVelocity.x !== 0 || this.dragVelocity.y !== 0) {
-        this.dragVelocity = { x: 0, y: 0 };
-        this.updateGalleryPosition();
-      }
-    }
-  }
-  
-  updateIntro() {
-    if (!this.intro.startTime) this.intro.startTime = performance.now();
-
-    const elapsed = performance.now() - this.intro.startTime;
-    this.intro.progress = Math.min(elapsed / this.intro.duration, 1);
-
-    const t = this.easeOutCubic(this.intro.progress);
-
-    this.animateLetters(t);
-    // Cards stay hidden during intro — rectangle appears after letters finish
-
-    if (this.intro.progress >= 1 && !this.bundleInitialized) {
-      this.bundleInitialized = true;
-      this.intro.active = false;
-      this.animationPhase = 'bundled';
-      document.getElementById('galleryView').classList.add('interactive');
-      requestAnimationFrame(() => this.initBundledState());
-    }
-  }
-
-  initBundledState() {
-    const cards = [...document.querySelectorAll('.gallery-image')];
-    const n = cards.length;
-
-    // Curated collage positions: {rx, ry} relative to frame half-size, rot in deg, sc = scale
-    const layouts = [
-      { rx: -0.30, ry: -0.30, rot: -4.5, sc: 0.30 },
-      { rx:  0.05, ry: -0.33, rot:  2.0, sc: 0.28 },
-      { rx:  0.33, ry: -0.26, rot:  5.0, sc: 0.31 },
-      { rx: -0.28, ry:  0.04, rot:  1.5, sc: 0.27 },
-      { rx:  0.00, ry:  0.00, rot:  0.0, sc: 0.30 }, // center card — no rotation, dead center
-      { rx:  0.08, ry:  0.02, rot: -3.5, sc: 0.33 },
-      { rx:  0.34, ry:  0.08, rot: -2.0, sc: 0.27 },
-      { rx: -0.02, ry:  0.33, rot:  3.0, sc: 0.29 },
-    ];
-
-    // Create the visible frame
-    const frame = document.createElement('div');
-    frame.className = 'collage-frame';
-    document.body.appendChild(frame);
-    this._collageFrame = frame;
-
-    // Scatter on hover over the frame
-    frame.addEventListener('mouseenter', () => this.triggerScatter());
-
-    const fW = 380, fH = 460;
-    const fcx = window.innerWidth  / 2;
-    const fcy = window.innerHeight / 2;
-
-    this.bundleData = cards.map((card, i) => {
-      const L = layouts[i % layouts.length];
-      const bx = fcx + L.rx * fW;
-      const by = fcy + L.ry * fH;
-
-      const rect = card.getBoundingClientRect();
-      const sx = rect.left + rect.width  / 2;
-      const sy = rect.top  + rect.height / 2;
-
-      return { card, dx: bx - sx, dy: by - sy, rot: L.rot, sc: L.sc, i };
-    });
-
-    // Snap cards to collage positions (still invisible)
-    this.bundleData.forEach(({ card, dx, dy, rot, sc }) => {
-      card.style.transition = 'none';
-      card.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(${sc})`;
-      card.style.zIndex = '31';
-    });
-
-    // Frame fades in, then cards follow
-    requestAnimationFrame(() => {
-      frame.classList.add('visible');
-      setTimeout(() => {
-        this.bundleData.forEach(({ card }, i) => {
-          card.style.transition = `opacity 0.35s ease ${i * 0.03}s`;
-          card.style.opacity = '1';
-        });
-        // Clear transitions after fade-in completes
-        setTimeout(() => {
-          this.bundleData.forEach(({ card }) => { card.style.transition = 'none'; });
-        }, 350 + n * 30 + 100);
-      }, 150);
-    });
-  }
-
-  triggerScatter() {
-    if (this.animationPhase !== 'bundled') return;
-    this.animationPhase = 'scattering';
-
-    // Fade out the frame
-    if (this._collageFrame) {
-      this._collageFrame.style.transition = 'opacity 0.45s ease';
-      this._collageFrame.style.opacity = '0';
-      setTimeout(() => { this._collageFrame?.remove(); this._collageFrame = null; }, 500);
-    }
-
-    if (!this.bundleData) return;
-    const n = this.bundleData.length;
-
-    // Cards spring from collage positions to their natural grid positions
-    this.bundleData.forEach(({ card }, i) => {
-      card.style.transition = `transform 1s cubic-bezier(0.16,1,0.3,1) ${i * 0.05}s`;
-      card.style.transform = '';
-      card.style.zIndex = '';
-    });
-
-    setTimeout(() => {
-      this.animationPhase = 'interactive';
-      this.bundleData.forEach(({ card }) => {
-        card.style.transition = '';
-        card.style.transform = '';
-        card.style.zIndex = '';
-      });
-    }, 1000 + n * 50);
-  }
-  
-  easeOutCubic(t) {
-    return 1 - Math.pow(1 - t, 3);
-  }
-  
-  easeInOutQuad(t) {
-    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-  }
-  
-  animateLetters(t) {
-    const letters = document.querySelectorAll('.letter');
-    const total = letters.length;
-
-    // Typewriter: letters appear one-by-one in first 55% of intro
-    const typePhase = Math.min(1, t / 0.55);
-    letters.forEach((letter, i) => {
-      const threshold = i / total;
-      const visible = typePhase >= threshold;
-      letter.style.opacity = visible ? 1 : 0;
-      letter.style.transform = visible ? 'none' : 'translateY(14px) scale(0.88)';
-    });
-
-    // Blinking cursor: appears with first letter, fades at 80% of intro
-    if (!this._typeCursor) {
-      this._typeCursor = document.createElement('span');
-      this._typeCursor.className = 'type-cursor';
-      this._typeCursor.textContent = '_';
-      document.querySelector('.word-akua')?.appendChild(this._typeCursor);
-    }
-    const cursorOpacity = t < 0.8 ? 1 : Math.max(0, 1 - (t - 0.8) / 0.2);
-    this._typeCursor.style.opacity = cursorOpacity > 0 ? '' : '0';
-    if (cursorOpacity <= 0) this._typeCursor.style.animationPlayState = 'paused';
-  }
-
-  animateImagesIntro(t) {
-    const images = document.querySelectorAll('.gallery-image');
-    const total = images.length;
-    // Cards fade in after letters finish (after 50% of intro)
-    const startT = 0.52;
-    const adjustedT = Math.max(0, (t - startT) / (1 - startT));
-    images.forEach((img, idx) => {
-      const delay = (idx / total) * 0.4;
-      const progress = this.easeOutCubic(Math.max(0, Math.min(1, (adjustedT - delay) / 0.35)));
-      img.style.opacity = progress;
-      img.style.transform = `translateY(${(1 - progress) * 18}px)`;
-    });
-  }
+  gridMomRaf = requestAnimationFrame(tick);
 }
 
-// ============================================================================
-// PREMIUM ENHANCEMENTS
-// ============================================================================
+// Listen on the whole stage so any drag in the viewport moves the grid
+// Exclude toolbar buttons / panels from initiating drag
+const DRAG_EXCLUDE = '.top-bar, .bot-bar, .tweaks-panel, .gear, .btn, .theme-pill, .close-btn, .detail-view';
 
-class PremiumEnhancements {
-  constructor() {
-    this.setupBackground();
-    this.setupLetterHover();
-    this.setupSpotlight();
-    this.setupGrain();
-    if (window.innerWidth > 768) this.setupMagneticCursor();
-    this.setupKeyboardNav();
-    this.setupImagePreload();
-    this.setupAnalytics();
-    this.setupThemeToggle();
-  }
+stageEl.addEventListener('mousedown', (e) => {
+  if (!ready) return;
+  if (e.target.closest(DRAG_EXCLUDE)) return;
+  cancelAnimationFrame(gridMomRaf);
+  gridDragging = true;
+  gridDragMoved = false;
+  gridVelX = 0; gridVelY = 0;
+  gridDragStartX = e.clientX - gridOffX;
+  gridDragStartY = e.clientY - gridOffY;
+  stageEl.style.cursor = 'grabbing';
+  e.preventDefault();
+});
 
-  setupLetterHover() {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.style.cssText = 'position:absolute;width:0;height:0;pointer-events:none;';
-    svg.innerHTML = `
-      <defs>
-        <filter id="liquid-filter" x="-25%" y="-25%" width="150%" height="150%">
-          <feTurbulence id="letter-turb" type="turbulence"
-            baseFrequency="0.009 0.006" numOctaves="3" seed="3" result="noise"/>
-          <feDisplacementMap id="letter-disp" in="SourceGraphic" in2="noise"
-            scale="0" xChannelSelector="R" yChannelSelector="G"/>
-        </filter>
-      </defs>
+document.addEventListener('mousemove', (e) => {
+  if (!gridDragging) return;
+  const nx = e.clientX - gridDragStartX;
+  const ny = e.clientY - gridDragStartY;
+  gridVelX = nx - gridOffX;
+  gridVelY = ny - gridOffY;
+  if (Math.abs(gridVelX) > 2 || Math.abs(gridVelY) > 2) gridDragMoved = true;
+  gridOffX = nx; gridOffY = ny;
+  applyGridTransform();
+});
+
+document.addEventListener('mouseup', () => {
+  if (!gridDragging) return;
+  gridDragging = false;
+  stageEl.style.cursor = '';
+  startMomentum();
+});
+
+stageEl.addEventListener('touchstart', (e) => {
+  if (!ready) return;
+  if (e.target.closest(DRAG_EXCLUDE)) return;
+  cancelAnimationFrame(gridMomRaf);
+  gridDragging = true;
+  gridDragMoved = false;
+  gridVelX = 0; gridVelY = 0;
+  gridDragStartX = e.touches[0].clientX - gridOffX;
+  gridDragStartY = e.touches[0].clientY - gridOffY;
+}, { passive: true });
+
+document.addEventListener('touchmove', (e) => {
+  if (!gridDragging) return;
+  const nx = e.touches[0].clientX - gridDragStartX;
+  const ny = e.touches[0].clientY - gridDragStartY;
+  gridVelX = nx - gridOffX;
+  gridVelY = ny - gridOffY;
+  if (Math.abs(gridVelX) > 2 || Math.abs(gridVelY) > 2) gridDragMoved = true;
+  gridOffX = nx; gridOffY = ny;
+  applyGridTransform();
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+  if (!gridDragging) return;
+  gridDragging = false;
+  startMomentum();
+});
+
+/* Trackpad/wheel scroll also moves the grid */
+gridStageEl.addEventListener('wheel', (e) => {
+  if (!ready) return;
+  e.preventDefault();
+  cancelAnimationFrame(gridMomRaf);
+  gridOffX -= e.deltaX * 0.7;
+  gridOffY -= e.deltaY * 0.7;
+  applyGridTransform();
+}, { passive: false });
+
+/* Freeze title clip-path when reveal animation ends so letters can bounce outside bounds */
+document.getElementById('title').addEventListener('animationend', function () {
+  this.style.letterSpacing = '.14em';
+  this.style.textIndent = '.14em';
+  this.style.opacity = '1';
+  this.style.clipPath = 'none';
+  this.style.animation = 'none';
+}, { once: true });
+
+/* ============================================================
+ * Portfolio overlay
+ * ============================================================ */
+const detailView = document.getElementById('detailView');
+const dTitle     = document.getElementById('dTitle');
+const dSub       = document.getElementById('dSub');
+const dMeta      = document.getElementById('dMeta');
+const dMain      = document.getElementById('dMain');
+const dEyebrow   = document.getElementById('dEyebrow');
+
+function openDetail(item) {
+  if (!ready) return;
+
+  let eyebrow = `PROJECT · ${String(item.id).padStart(2, '0')} / ${(item.category || 'STUDIO').toUpperCase()}`;
+  if (item.type === 'service') eyebrow = 'STUDIO · SERVICES & PRICING';
+  if (item.type === 'about')   eyebrow = 'STUDIO · ABOUT AKUA';
+
+  dEyebrow.textContent = eyebrow;
+  dTitle.textContent = item.title;
+  dSub.textContent = item.subtitle;
+
+  if (item.type === 'service') {
+    dMeta.innerHTML = '<span>Strategy · Architecture · Engineering</span>';
+    dMain.innerHTML = renderPricingContent();
+  } else if (item.type === 'about') {
+    dMeta.innerHTML = '<span>Developer & AI Builder</span><span>Based in Thailand</span>';
+    dMain.innerHTML = renderAboutContent();
+  } else {
+    const techLine1 = (item.tech || []).slice(0, 3).join(' · ');
+    const techLine2 = (item.tech || []).length > 3 ? (item.tech || []).slice(3).join(' · ') : '';
+    dMeta.innerHTML = `
+      <span>${item.category || ''}</span>
+      <span>${techLine1}</span>
+      ${techLine2 ? `<span>${techLine2}</span>` : ''}
     `;
-    document.body.appendChild(svg);
-
-    const heroText = document.querySelector('.hero-text');
-    if (!heroText) return;
-
-    const turb = document.getElementById('letter-turb');
-    const disp = document.getElementById('letter-disp');
-    let raf = null;
-    let isHovering = false;
-    let currentScale = 0;
-    let targetScale = 0;
-    let t = 0;
-
-    const tick = () => {
-      t += 0.014;
-      turb.setAttribute('baseFrequency',
-        `${0.008 + Math.sin(t) * 0.006} ${0.005 + Math.cos(t * 0.75) * 0.004}`
-      );
-      const lerp = isHovering ? 0.065 : 0.028;
-      currentScale += (targetScale - currentScale) * lerp;
-      disp.setAttribute('scale', currentScale.toFixed(2));
-
-      if (isHovering || currentScale > 0.1) {
-        raf = requestAnimationFrame(tick);
-      } else {
-        raf = null;
-        heroText.classList.remove('liquid-active');
-      }
-    };
-
-    document.addEventListener('mousemove', (e) => {
-      const r = heroText.getBoundingClientRect();
-      const pad = 12;
-      const over = e.clientX >= r.left - pad && e.clientX <= r.right + pad
-                && e.clientY >= r.top  - pad && e.clientY <= r.bottom + pad;
-
-      if (over && !isHovering) {
-        isHovering = true;
-        targetScale = 26;
-        heroText.classList.add('liquid-active');
-        heroText.classList.add('color-hot');
-        if (!raf) raf = requestAnimationFrame(tick);
-        this.startBubbles(heroText);
-      } else if (!over && isHovering) {
-        isHovering = false;
-        targetScale = 0;
-        heroText.classList.remove('color-hot');
-        this.stopBubbles();
-        if (!raf) raf = requestAnimationFrame(tick);
-      }
-    });
+    dMain.innerHTML = renderProjectContent(item);
+    initSlider(detailView);
   }
 
-  startBubbles(heroText) {
-    const spawn = () => {
-      const letters = heroText.querySelectorAll('.letter');
-      if (!letters.length) return;
-      const letter = letters[Math.floor(Math.random() * letters.length)];
-      const r = letter.getBoundingClientRect();
+  detailView.classList.add('active');
+  detailView.setAttribute('aria-hidden', 'false');
+  detailView.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
 
-      const size = 6 + Math.random() * 22;
-      const x = r.left + Math.random() * r.width;
-      const y = r.top + r.height * (0.1 + Math.random() * 0.9);
-      const drift = (Math.random() - 0.5) * 55;
-
-      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-      const bubbleBg = isDark ? 'rgba(245,240,232,0.12)' : 'rgba(13,13,13,0.07)';
-      const bubbleBorder = isDark ? 'rgba(245,240,232,0.08)' : 'rgba(13,13,13,0.04)';
-      const b = document.createElement('div');
-      b.style.cssText = `
-        position:fixed;width:${size}px;height:${size}px;
-        left:${x}px;top:${y}px;
-        background:${bubbleBg};
-        border:1px solid ${bubbleBorder};
-        border-radius:50%;pointer-events:none;z-index:100;
-      `;
-      document.body.appendChild(b);
-
-      b.animate([
-        { transform: 'translate(0,0) scale(0)',                    opacity: 0    },
-        { transform: `translate(${drift*.3}px,-22px) scale(1)`,   opacity: 0.75, offset: 0.25 },
-        { transform: `translate(${drift}px,-90px) scale(0.3)`,    opacity: 0    }
-      ], { duration: 1400 + Math.random() * 900, easing: 'ease-out' })
-        .onfinish = () => b.remove();
-    };
-
-    spawn();
-    this.bubbleInterval = setInterval(() => {
-      spawn();
-      if (Math.random() > 0.4) spawn();
-      if (Math.random() > 0.7) spawn();
-    }, 130);
-  }
-
-  stopBubbles() {
-    clearInterval(this.bubbleInterval);
-    this.bubbleInterval = null;
-  }
-
-  setupBackground() {
-    const canvas = document.getElementById('galleryCanvas');
-    if (!canvas) return;
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'bg-blobs';
-
-    const blobDefs = [
-      { size: 750, left: 0.12, top: 0.22, color: 'rgba(201,168,76,0.11)', anim: 'bgBlob1', dur: 24, px: 0.06,  py: 0.05  },
-      { size: 620, left: 0.78, top: 0.58, color: 'rgba(100,160,140,0.08)', anim: 'bgBlob2', dur: 30, px: -0.05, py: 0.04  },
-      { size: 560, left: 0.48, top: 0.82, color: 'rgba(160,120,180,0.07)', anim: 'bgBlob3', dur: 20, px: 0.03,  py: -0.06 },
-    ];
-
-    this.blobEls = [];
-    blobDefs.forEach(b => {
-      const el = document.createElement('div');
-      el.style.cssText = `
-        position:absolute;
-        width:${b.size}px;height:${b.size}px;
-        left:${b.left * 100}%;top:${b.top * 100}%;
-        transform:translate(-50%,-50%);
-        background:radial-gradient(circle,${b.color},transparent 70%);
-        border-radius:50%;
-        filter:blur(80px);
-        animation:${b.anim} ${b.dur}s ease-in-out infinite alternate;
-        will-change:transform;
-      `;
-      wrapper.appendChild(el);
-      this.blobEls.push({ el, px: b.px, py: b.py });
-    });
-
-    canvas.insertBefore(wrapper, canvas.firstChild);
-
-    // Mouse parallax on blobs
-    let mx = 0.5, my = 0.5, cx = 0.5, cy = 0.5;
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX / window.innerWidth;
-      my = e.clientY / window.innerHeight;
-    });
-
-    const parallaxTick = () => {
-      cx += (mx - cx) * 0.04;
-      cy += (my - cy) * 0.04;
-      const dx = (cx - 0.5) * 2;
-      const dy = (cy - 0.5) * 2;
-      this.blobEls.forEach(({ el, px, py }) => {
-        el.style.transform = `translate(calc(-50% + ${dx * px * 120}px), calc(-50% + ${dy * py * 120}px))`;
-      });
-      requestAnimationFrame(parallaxTick);
-    };
-    parallaxTick();
-  }
-
-  setupMagneticCursor() {
-    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
-
-    const dot = document.createElement('div');
-    dot.className = 'premium-cursor';
-    document.body.appendChild(dot);
-
-    const ring = document.createElement('div');
-    ring.className = 'premium-cursor-ring';
-    document.body.appendChild(ring);
-
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      dot.style.left = mouseX + 'px';
-      dot.style.top = mouseY + 'px';
-    });
-
-    const animateRing = () => {
-      ringX += (mouseX - ringX) * 0.12;
-      ringY += (mouseY - ringY) * 0.12;
-      ring.style.left = ringX + 'px';
-      ring.style.top = ringY + 'px';
-      requestAnimationFrame(animateRing);
-    };
-    animateRing();
-
-    // Scale cursor on interactive elements
-    document.querySelectorAll('.gallery-image, .cta-button, button, a').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        dot.classList.add('hovering');
-        ring.classList.add('hovering');
-      });
-      el.addEventListener('mouseleave', () => {
-        dot.classList.remove('hovering');
-        ring.classList.remove('hovering');
-      });
-    });
-
-    // Magnetic pull on CTA buttons
-    document.querySelectorAll('.cta-button').forEach(btn => {
-      btn.addEventListener('mousemove', (e) => {
-        const rect = btn.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        const dist = Math.hypot(x, y);
-        if (dist < 60) {
-          const pull = (1 - dist / 60) * 7;
-          btn.style.transform = `translate(${(x / dist) * pull}px, ${(y / dist) * pull}px)`;
-        }
-      });
-      btn.addEventListener('mouseleave', () => {
-        btn.style.transform = '';
-      });
-    });
-  }
-
-  setupKeyboardNav() {
-    // Tab + Enter on gallery cards
-    document.querySelectorAll('.gallery-image').forEach(card => {
-      card.setAttribute('tabindex', '0');
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          card.click();
-        }
-      });
-    });
-
-    // Escape closes detail view
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const detailView = document.getElementById('detailView');
-        if (detailView?.classList.contains('active')) {
-          document.getElementById('closeBtn').click();
-        }
-      }
-    });
-  }
-
-  setupImagePreload() {
-    // Pre-cache full project images as the card comes near the viewport
-    const observer = new IntersectionObserver((entries) => {
+  // Staggered entrances — observe after clip-path transition finishes (0.7s)
+  setTimeout(() => {
+    const items = Array.from(dMain.children);
+    const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const id = parseInt(entry.target.dataset.id);
-        const project = portfolioItems.find(p => p.id === id);
-        if (project?.media) {
-          project.media.forEach(src => {
-            if (!src.endsWith('.mp4') && !src.endsWith('.webm') && !src.endsWith('.mov')) {
-              new Image().src = src;
-            }
-          });
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
         }
-        observer.unobserve(entry.target);
       });
-    }, { rootMargin: '300px' });
-
-    document.querySelectorAll('.gallery-image').forEach(el => observer.observe(el));
-  }
-
-  setupAnalytics() {
-    // Plausible-ready event tracking (no-op if Plausible not installed)
-    const track = (name, props = {}) => {
-      if (window.plausible) window.plausible(name, { props });
-    };
-
-    document.querySelectorAll('.gallery-image').forEach(card => {
-      card.addEventListener('click', () => {
-        const id = parseInt(card.dataset.id);
-        const project = portfolioItems.find(p => p.id === id);
-        if (project) track('Project Opened', { name: project.title });
-      });
+    }, { threshold: 0.05, root: detailView });
+    items.forEach((el, i) => {
+      el.style.transitionDelay = `${i * 65}ms`;
+      io.observe(el);
     });
-
-    document.querySelectorAll('.cta-button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        track('CTA Clicked', { text: btn.textContent.trim() });
-      });
-    });
-  }
-
-  setupThemeToggle() {
-    const toggle = document.getElementById('themeToggle');
-    if (!toggle) return;
-    toggle.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme') || 'dark';
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-    });
-  }
-
-  setupLensDistortion() {
-    const vs = `
-      attribute vec2 aPos;
-      varying vec2 vUV;
-      void main(){vUV=aPos*0.5+0.5;gl_Position=vec4(aPos,0.0,1.0);}
-    `;
-    const fs = `
-      precision mediump float;
-      uniform sampler2D uTex;
-      uniform vec2 uMouse;
-      uniform float uStr;
-      varying vec2 vUV;
-      void main(){
-        vec2 uv=vUV;
-        vec2 d=uv-uMouse;
-        float dist=length(d);
-        float r=0.32;
-        if(dist<r){
-          float t=1.0-dist/r;
-          uv-=normalize(d)*uStr*t*t*0.22;
-        }
-        uv=clamp(uv,0.001,0.999);
-        gl_FragColor=texture2D(uTex,uv);
-      }
-    `;
-
-    const compile = (gl, type, src) => {
-      const s = gl.createShader(type);
-      gl.shaderSource(s, src);
-      gl.compileShader(s);
-      return s;
-    };
-
-    document.querySelectorAll('.gallery-image').forEach(card => {
-      const imgEl = card.querySelector('.img-base');
-      if (!imgEl) return;
-
-      let cvs = null, gl = null, prog = null;
-      let uMouse, uStr;
-      let mx = 0.5, my = 0.5, cmx = 0.5, cmy = 0.5;
-      let str = 0, targetStr = 0, raf = null;
-
-      const boot = () => {
-        const fx = card.querySelector('.img-fx');
-        cvs = document.createElement('canvas');
-        cvs.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;';
-        cvs.width = fx.offsetWidth || 300;
-        cvs.height = fx.offsetHeight || 420;
-        fx.appendChild(cvs);
-
-        gl = cvs.getContext('webgl');
-        if (!gl) return false;
-
-        prog = gl.createProgram();
-        gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, vs));
-        gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, fs));
-        gl.linkProgram(prog);
-        gl.useProgram(prog);
-
-        const buf = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
-        const loc = gl.getAttribLocation(prog, 'aPos');
-        gl.enableVertexAttribArray(loc);
-        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-
-        uMouse = gl.getUniformLocation(prog, 'uMouse');
-        uStr   = gl.getUniformLocation(prog, 'uStr');
-
-        const tex = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, tex);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-        const upload = () => { try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgEl); } catch(e){} };
-        if (imgEl.complete && imgEl.naturalWidth) upload();
-        else imgEl.addEventListener('load', upload, { once: true });
-
-        return true;
-      };
-
-      const tick = () => {
-        cmx += (mx - cmx) * 0.11;
-        cmy += (my - cmy) * 0.11;
-        str += (targetStr - str) * 0.09;
-
-        if (gl && prog) {
-          gl.viewport(0, 0, cvs.width, cvs.height);
-          gl.uniform2f(uMouse, cmx, 1 - cmy);
-          gl.uniform1f(uStr, str);
-          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-        }
-
-        if (targetStr > 0 || str > 0.002) {
-          raf = requestAnimationFrame(tick);
-        } else {
-          raf = null;
-          cvs?.remove(); cvs = null; gl = null; prog = null;
-        }
-      };
-
-      card.addEventListener('mouseenter', () => {
-        if (!cvs && !boot()) return;
-        targetStr = 1;
-        if (!raf) raf = requestAnimationFrame(tick);
-      });
-      card.addEventListener('mousemove', (e) => {
-        const r = card.getBoundingClientRect();
-        mx = (e.clientX - r.left) / r.width;
-        my = (e.clientY - r.top) / r.height;
-      });
-      card.addEventListener('mouseleave', () => { targetStr = 0; });
-    });
-  }
-
-  setupSpotlight() {
-    const el = document.createElement('div');
-    el.className = 'cursor-spotlight';
-    document.body.appendChild(el);
-
-    let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
-    let cx = tx, cy = ty;
-
-    document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
-
-    const tick = () => {
-      cx += (tx - cx) * 0.09;
-      cy += (ty - cy) * 0.09;
-      el.style.transform = `translate(${cx}px, ${cy}px)`;
-      requestAnimationFrame(tick);
-    };
-    tick();
-  }
-
-  setupGrain() {
-    const canvas = document.createElement('canvas');
-    canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;opacity:0.028;';
-    document.body.appendChild(canvas);
-    const ctx = canvas.getContext('2d');
-
-    const resize = () => {
-      canvas.width = Math.ceil(window.innerWidth / 2);
-      canvas.height = Math.ceil(window.innerHeight / 2);
-      canvas.style.imageRendering = 'pixelated';
-    };
-    resize();
-    window.addEventListener('resize', resize, { passive: true });
-
-    const frame = () => {
-      const w = canvas.width, h = canvas.height;
-      const img = ctx.createImageData(w, h);
-      const d = img.data;
-      for (let i = 0; i < d.length; i += 4) {
-        const v = (Math.random() * 255) | 0;
-        d[i] = d[i+1] = d[i+2] = v;
-        d[i+3] = 255;
-      }
-      ctx.putImageData(img, 0, 0);
-      requestAnimationFrame(frame);
-    };
-    frame();
-  }
-
+  }, 720);
 }
 
-// ============================================================================
-// INITIALIZE
-// ============================================================================
+function closeDetail() {
+  detailView.classList.remove('active');
+  detailView.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  new PortfolioController();
-  new PremiumEnhancements();
+document.getElementById('closeBtn').addEventListener('click', closeDetail);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && detailView.classList.contains('active')) closeDetail();
+});
+
+/* ============================================================
+ * Content renderers
+ * ============================================================ */
+function renderSlider(item) {
+  const media = item.media || (item.image ? [item.image] : []);
+  if (!media.length) return '';
+
+  const slides = media.map((src, i) => {
+    const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+    const active = i === 0 ? ' active' : '';
+    if (isVideo) {
+      return `<div class="slider-slide${active}"><video src="${src}" muted loop playsinline preload="metadata"></video></div>`;
+    }
+    return `<div class="slider-slide${active}"><img src="${src}" alt="${item.title} — ${i + 1}" /></div>`;
+  }).join('');
+
+  const dots = media.length > 1
+    ? `<div class="slider-dots">${media.map((_, i) =>
+        `<button class="slider-dot${i === 0 ? ' active' : ''}" data-index="${i}"></button>`
+      ).join('')}</div>`
+    : '';
+
+  const arrows = media.length > 1
+    ? `<button class="slider-arrow slider-prev" aria-label="Previous">&#8592;</button>
+       <button class="slider-arrow slider-next" aria-label="Next">&#8594;</button>`
+    : '';
+
+  return `<div class="detail-slider" data-current="0" data-total="${media.length}">
+    <div class="slider-track">${slides}</div>
+    ${arrows}${dots}
+  </div>`;
+}
+
+function initSlider(container) {
+  const slider = container.querySelector('.detail-slider');
+  if (!slider || parseInt(slider.dataset.total) <= 1) return;
+
+  let current = 0;
+  const total = parseInt(slider.dataset.total);
+  const slides = slider.querySelectorAll('.slider-slide');
+  const dots = slider.querySelectorAll('.slider-dot');
+
+  const goTo = (idx) => {
+    const prev = slides[current];
+    prev.classList.remove('active');
+    if (dots[current]) dots[current].classList.remove('active');
+    const prevVid = prev.querySelector('video');
+    if (prevVid) prevVid.pause();
+
+    current = (idx + total) % total;
+    slides[current].classList.add('active');
+    if (dots[current]) dots[current].classList.add('active');
+    const nextVid = slides[current].querySelector('video');
+    if (nextVid) nextVid.play().catch(() => {});
+  };
+
+  slider.querySelector('.slider-prev').addEventListener('click', (e) => { e.stopPropagation(); goTo(current - 1); });
+  slider.querySelector('.slider-next').addEventListener('click', (e) => { e.stopPropagation(); goTo(current + 1); });
+  dots.forEach(dot => {
+    dot.addEventListener('click', (e) => { e.stopPropagation(); goTo(parseInt(dot.dataset.index)); });
+  });
+
+  let touchStartX = 0;
+  slider.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  slider.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
+  });
+
+  const firstVid = slides[0].querySelector('video');
+  if (firstVid) firstVid.play().catch(() => {});
+}
+
+function renderProjectContent(item) {
+  const results = item.results || [];
+  const tech = item.tech || [];
+  const link = item.link || null;
+
+  return `
+    ${renderSlider(item)}
+    <h3>Overview</h3>
+    <p class="section-text">${item.description}</p>
+
+    ${item.challenge ? `<h3>The Challenge</h3><p class="section-text">${item.challenge}</p>` : ''}
+    ${item.solution  ? `<h3>The Approach</h3><p class="section-text">${item.solution}</p>`  : ''}
+
+    ${results.length ? `
+      <h3>Outcomes</h3>
+      <ul class="results-list">
+        ${results.map(r => `<li>${r}</li>`).join('')}
+      </ul>
+    ` : ''}
+
+    ${tech.length ? `
+      <h3>Stack</h3>
+      <div class="tech-list">${tech.map(t => `<span>${t}</span>`).join('')}</div>
+    ` : ''}
+
+    ${link ? `
+      <a class="detail-cta" href="${link}" target="${link.startsWith('mailto') ? '_self' : '_blank'}" rel="noopener">
+        ${link.startsWith('mailto') ? 'Start a project →' : 'View project →'}
+      </a>
+    ` : ''}
+  `;
+}
+
+function renderPricingContent() {
+  return `
+    <p class="section-text" style="font-size:20px;line-height:1.7;">You're not paying for code. You're paying for the gap between where your business is now and where it needs to be digitally.</p>
+
+    <div class="pricing-container">
+      <div class="pricing-card">
+        <div class="pricing-title">Foundation</div>
+        <div class="pricing-price"><span>€</span>1,500</div>
+        <p class="pricing-description">For businesses entering the digital market or needing a credible online presence that converts.</p>
+        <ul class="pricing-features">
+          <li>Landing Page</li>
+          <li>SEO Optimisation</li>
+          <li>Contact & Lead Capture</li>
+          <li>Mobile-First Design</li>
+        </ul>
+        <a href="mailto:gyamfuwaa@protonmail.com?subject=Foundation Project Inquiry" class="pricing-cta-btn">Start Foundation</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-title">System</div>
+        <div class="pricing-price"><span>€</span>4,000</div>
+        <p class="pricing-description">A complete web system built on strategy. For businesses ready to compete seriously in their market.</p>
+        <ul class="pricing-features">
+          <li>Full Website or Web App</li>
+          <li>Custom AI System</li>
+          <li>Admin Dashboard</li>
+          <li>Advanced SEO</li>
+        </ul>
+        <a href="mailto:gyamfuwaa@protonmail.com?subject=System Project Inquiry" class="pricing-cta-btn">Start System</a>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-title">Authority</div>
+        <div class="pricing-price"><span>€</span>7,500</div>
+        <p class="pricing-description">Award-level execution for brands that need to look like market leaders immediately.</p>
+        <ul class="pricing-features">
+          <li>Three.js / WebGL</li>
+          <li>Immersive Interactions</li>
+          <li>Advanced AI Integration</li>
+          <li>Awwwards-Ready Design</li>
+        </ul>
+        <a href="mailto:gyamfuwaa@protonmail.com?subject=Authority Project Inquiry" class="pricing-cta-btn">Start Authority</a>
+      </div>
+    </div>
+
+    <div class="why-section">
+      <h3>What makes this different</h3>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-card-icon">01</div>
+          <div class="why-card-title">Strategy First</div>
+          <div class="why-card-text">Every project starts with understanding the business problem. Code is the last step, not the first.</div>
+        </div>
+        <div class="why-card">
+          <div class="why-card-icon">02</div>
+          <div class="why-card-title">AI-Native</div>
+          <div class="why-card-text">GPT-4, LangChain, custom agents. Intelligence built into your workflow — not as an afterthought.</div>
+        </div>
+        <div class="why-card">
+          <div class="why-card-icon">03</div>
+          <div class="why-card-title">Full-Stack</div>
+          <div class="why-card-text">React, Next.js, Node.js, Python, FastAPI. End-to-end ownership — no hand-offs, no gaps.</div>
+        </div>
+        <div class="why-card">
+          <div class="why-card-icon">04</div>
+          <div class="why-card-title">Fast & Clean</div>
+          <div class="why-card-text">MVP in weeks. Production-grade code. Clear communication throughout. No scope creep.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="big-cta">
+      <a href="mailto:gyamfuwaa@protonmail.com?subject=Start a Project" class="big-cta-btn">Start a Project →</a>
+    </div>
+  `;
+}
+
+function renderAboutContent() {
+  return `
+    <h3>Who</h3>
+    <p class="section-text" style="font-size:20px;">Akua Theresa Gyamfuwaa — full-stack developer and AI builder based in Thailand. I don't build websites. I build systems that make clients money.</p>
+
+    <h3>What I believe</h3>
+    <p class="section-text">Most digital work fails not because it looks wrong — but because it's built without strategic clarity. Every system I build starts with understanding the business problem first. Code is the last step.</p>
+
+    <h3>What I build</h3>
+    <p class="section-text">Full-stack web applications with React, Next.js, and Node.js. AI pipelines using GPT-4, LangChain, and custom agents. Automation systems that replace manual processes. Platforms that connect businesses with their customers.</p>
+
+    <h3>Stack</h3>
+    <div class="tech-list">
+      <span>React</span><span>Next.js</span><span>Node.js</span><span>Python</span>
+      <span>FastAPI</span><span>GPT-4 & LangChain</span><span>Firebase</span><span>CrewAI</span>
+    </div>
+
+    <h3>Currently</h3>
+    <p class="section-text">Based in Thailand. Accepting new projects. I work with founders, agencies, and businesses who are serious about what they build. Response within 24 hours.</p>
+
+    <div class="about-cta-row">
+      <a href="mailto:gyamfuwaa@protonmail.com" class="cta-button">Start a Project</a>
+      <a href="resume_TG.html" target="_blank" class="cta-button cta-button--outline">View Resume</a>
+    </div>
+  `;
+}
+
+/* ============================================================
+ * Tweaks panel
+ * ============================================================ */
+const tweaksPanel = document.getElementById('tweaksPanel');
+const gearBtn     = document.getElementById('gearBtn');
+gearBtn.addEventListener('click', () => tweaksPanel.classList.toggle('open'));
+document.getElementById('tweaksClose').addEventListener('click', () => tweaksPanel.classList.remove('open'));
+
+document.querySelectorAll('.tweak-seg').forEach(seg => {
+  const key = seg.dataset.tweak;
+  seg.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      TWEAKS[key] = btn.dataset.value;
+      applyTweak(key, btn.dataset.value);
+    });
+  });
+});
+
+function applyTweak(key, value) {
+  if (key === 'hoverMode') {
+    stopMorphLoop();
+    applyHoverMode(value);
+  } else if (key === 'theme') {
+    const t = value === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('akumali-theme', t);
+    const lbl = document.getElementById('themePillLabel');
+    if (lbl) lbl.textContent = t === 'dark' ? 'DARK' : 'LIGHT';
+  } else if (key === 'tileHover') {
+    applyTileHover(value);
+  }
+}
+
+/* Sync theme toggle button to stored preference */
+(function () {
+  const stored = localStorage.getItem('akumali-theme') || 'light';
+  if (stored === 'dark') {
+    const seg = document.querySelector('[data-tweak="theme"]');
+    if (seg) {
+      seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      const darkBtn = seg.querySelector('[data-value="dark"]');
+      if (darkBtn) darkBtn.classList.add('active');
+    }
+  }
+})();
+
+/* Pill toggle */
+const themePill = document.getElementById('themePill');
+const themePillLabel = document.getElementById('themePillLabel');
+if (themePill) {
+  const storedTheme = localStorage.getItem('akumali-theme') || 'light';
+  if (themePillLabel) themePillLabel.textContent = storedTheme === 'dark' ? 'DARK' : 'LIGHT';
+  TWEAKS.theme = storedTheme;
+
+  themePill.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('akumali-theme', next);
+    if (themePillLabel) themePillLabel.textContent = isDark ? 'LIGHT' : 'DARK';
+    TWEAKS.theme = next;
+    const seg = document.querySelector('[data-tweak="theme"]');
+    if (seg) {
+      seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      const btn = seg.querySelector(`[data-value="${next}"]`);
+      if (btn) btn.classList.add('active');
+    }
+  });
+}
+
+/* Initial apply */
+applyHoverMode(TWEAKS.hoverMode);
+applyTileHover(TWEAKS.tileHover);
+
+/* ============================================================
+ * Replay / Skip
+ * ============================================================ */
+function replay() {
+  clearBentoTimers();
+  cancelAnimationFrame(gridMomRaf);
+  gridOffX = 0; gridOffY = 0; gridVelX = 0; gridVelY = 0;
+  gridStageEl.style.transform = '';
+  ready = false;
+  stageEl.classList.remove('ready');
+  offTileHover();
+  stopMorphLoop();
+
+  const title = document.querySelector('.title');
+  title.style.animation = 'none';
+  title.style.clipPath = '';
+  title.style.letterSpacing = '';
+  title.style.textIndent = '';
+  title.style.opacity = '';
+  void title.offsetWidth;
+  title.style.animation = '';
+
+  document.querySelectorAll('.roles li').forEach(li => {
+    li.style.animation = 'none'; void li.offsetWidth; li.style.animation = '';
+  });
+
+  const oldRect = document.querySelector('.fill-rect');
+  const newRect = oldRect.cloneNode(true);
+  oldRect.replaceWith(newRect);
+
+  renderGrid();
+  applyHoverMode(TWEAKS.hoverMode);
+  applyTileHover(TWEAKS.tileHover);
+
+  document.querySelectorAll('.top-bar, .bot-bar, .grid-meta, .controls, .gear')
+    .forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
+
+  armReady();
+  initBentoMorph();
+}
+
+document.getElementById('replayBtn').addEventListener('click', replay);
+document.getElementById('skipBtn').addEventListener('click', () => {
+  clearBentoTimers();
+  clearTimeout(readyTimer);
+
+  document.querySelectorAll('.title, .roles li, .top-bar, .bot-bar, .grid-meta, .controls, .gear')
+    .forEach(el => {
+      el.style.animation = 'none';
+      el.style.opacity = '1';
+      el.style.filter = '';
+      el.style.transform = '';
+      el.style.clipPath = '';
+    });
+
+  const titleEl = document.querySelector('.title');
+  titleEl.style.clipPath = 'none';
+  titleEl.style.letterSpacing = '.14em';
+  titleEl.style.textIndent = '.14em';
+
+  const rect = document.querySelector('.fill-rect');
+  rect.style.animation = 'none'; rect.style.opacity = '0';
+
+  document.querySelectorAll('.cell').forEach(c => {
+    const i = parseInt(c.dataset.i);
+    c.style.animation = 'none';
+    c.style.transition = '';
+    if (i === 4) { c.style.opacity = '0'; return; }
+    const layout = BENTO_LAYOUTS[i];
+    c.style.opacity = '1';
+    c.style.transform = `translate(${layout.x}px, ${layout.y}px)`;
+    c.style.width = `${layout.w}px`;
+    c.style.height = `${layout.h}px`;
+    c.classList.add('revealed');
+  });
+
+  document.querySelectorAll('.cell-img').forEach(ci => {
+    ci.style.animation = 'none';
+    ci.style.opacity = '1';
+    ci.style.transform = 'scale(1)';
+    ci.style.filter = 'saturate(.65) contrast(1.05) brightness(.95)';
+  });
+
+  ready = true;
+  stageEl.classList.add('ready');
 });
