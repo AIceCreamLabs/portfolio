@@ -4,19 +4,18 @@
 
 const PORTFOLIO_ITEMS = [
   {
-    id: 1,
-    title: 'Ntoma',
-    subtitle: 'AI Fashion Pattern Tool',
-    category: 'AI Product',
-    image: 'ntoma.png',
-    media: ['ntoma.png', 'ntoma-demo.mp4'],
-    type: 'project',
-    description: 'AI-powered garment pattern generation. Upload any photo, get a production-ready sewing pattern with flat drawings, virtual fit preview, and DXF factory export.',
-    challenge: 'Fashion designers and home sewers spend hours or hundreds of euros getting patterns made from reference photos. There was no affordable, fast alternative.',
-    solution: 'Built a full AI pipeline: computer vision garment analysis, technical flat drawing generation, mathematically correct pattern pieces, virtual fit on body silhouette, and multi-size grading — all from a single photo.',
-    results: ['Photo → pattern in under 2 minutes', 'XS–XL grading automatic', 'DXF export for factory production', 'Assembly guide included', 'Early access waitlist live'],
-    tech: ['React', 'FastAPI', 'Python', 'OpenAI Vision', 'Vercel'],
-    link: 'https://ntoma.vercel.app'
+    id: 6,
+    title: 'Hire Me',
+    subtitle: 'Services & Pricing',
+    category: 'Studio',
+    image: 'hire-me.png',
+    type: 'service',
+    description: 'Custom web development and AI integration services. Three tiers — Foundation, System, and Authority.',
+    challenge: 'Most studios sell hours. I sell systems that make money.',
+    solution: 'Strategy-first engagements with measurable outcomes. Every project begins with positioning, then architecture, then code.',
+    results: ['Foundation — €2,500', 'System — €5,500', 'Authority — €12,000', 'MVP in weeks, not months'],
+    tech: ['Strategy', 'Architecture', 'Engineering'],
+    link: 'mailto:akumalis@protonmail.com?subject=Project Inquiry'
   },
   {
     id: 2,
@@ -24,7 +23,7 @@ const PORTFOLIO_ITEMS = [
     subtitle: 'Bilingual Practice Website',
     category: 'Web Development',
     image: 'psych.png',
-    media: ['psych.png', 'psych0.png', 'psych1.png', 'psych2.png', 'psych3.png', 'psych4.png', 'psych5.png', 'psych-demo.mp4'],
+    media: ['psych-demo.mp4', 'psych7.png', 'psych6.png', 'psych5.png', 'psych4.png', 'psych3.png', 'psych2.png', 'psych1.png', 'psych.png'],
     type: 'project',
     description: 'Clean, professional website for a psychotherapy practice in Lithuania. Designed for trust, accessibility, and client conversion.',
     challenge: 'The client needed a website that felt warm and trustworthy — not clinical. Had to work perfectly in Lithuanian and English.',
@@ -39,7 +38,7 @@ const PORTFOLIO_ITEMS = [
     subtitle: 'Editorial Studio Portfolio',
     category: 'Web Development',
     image: 'can.png',
-    media: ['can.png', 'can-demo.mp4'],
+    media: ['can-demo.mp4', 'can.png'],
     type: 'project',
     description: 'Editorial architecture portfolio website with smooth scroll effects, large-format imagery, and bilingual navigation — built for a French architecture studio.',
     challenge: 'The client wanted a website that felt like a printed architecture monograph — slow, intentional, image-led. Not a typical corporate template.',
@@ -54,28 +53,29 @@ const PORTFOLIO_ITEMS = [
     subtitle: 'AI Legal Document Advisor',
     category: 'AI Integration',
     image: 'aice.png',
-    media: ['aice.png', 'aice_logo.png', 'aicelegal1.png', 'aicelegal2.png', 'aicelegal3.png', 'aicelegal.mp4'],
+    media: ['aicelegal.mp4', 'aicelegal3.png', 'aicelegal2.png', 'aicelegal1.png', 'aice_logo.png', 'aice.png'],
     type: 'project',
     description: 'AI-powered legal document analysis platform for EU law firms. Analyses contracts and flags GDPR and EU AI Act compliance issues automatically.',
     challenge: 'Legal teams were reviewing compliance manually — slow, expensive, and inconsistent across documents and jurisdictions.',
     solution: 'Built a document processing pipeline using LLM APIs to extract clauses, flag compliance risks, and generate plain-language summaries. Firebase backend with secure document handling.',
     results: ['Automated GDPR compliance flagging', 'EU AI Act risk scoring', 'Plain-language summaries', 'Secure document pipeline'],
     tech: ['Node.js', 'Firebase', 'LangChain', 'OpenAI', 'React'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
+    link: 'mailto:akumalis@protonmail.com'
   },
   {
-    id: 6,
-    title: 'Hire Me',
-    subtitle: 'Services & Pricing',
-    category: 'Studio',
-    image: 'hire-me.png',
-    type: 'service',
-    description: 'Custom web development and AI integration services. Three tiers — Foundation, System, and Authority.',
-    challenge: 'Most studios sell hours. I sell systems that make money.',
-    solution: 'Strategy-first engagements with measurable outcomes. Every project begins with positioning, then architecture, then code.',
-    results: ['Foundation — €1,500', 'System — €4,000', 'Authority — €7,500', 'MVP in weeks, not months'],
-    tech: ['Strategy', 'Architecture', 'Engineering'],
-    link: 'mailto:gyamfuwaa@protonmail.com?subject=Project Inquiry'
+    id: 1,
+    title: 'Ntoma',
+    subtitle: 'AI Fashion Pattern Tool',
+    category: 'AI Product',
+    image: 'ntoma.png',
+    media: ['ntoma4.mp4', 'ntoma3.png', 'ntoma2.png', 'ntoma1.png', 'ntoma.png'],
+    type: 'project',
+    description: 'AI-powered garment pattern generation. Upload any photo, get a production-ready sewing pattern with flat drawings, virtual fit preview, and DXF factory export.',
+    challenge: 'Fashion designers and home sewers spend hours or hundreds of euros getting patterns made from reference photos. There was no affordable, fast alternative.',
+    solution: 'Built a full AI pipeline: computer vision garment analysis, technical flat drawing generation, mathematically correct pattern pieces, virtual fit on body silhouette, and multi-size grading — all from a single photo.',
+    results: ['Photo → pattern in under 2 minutes', 'XS–XL grading automatic', 'DXF export for factory production', 'Assembly guide included', 'Early access waitlist live'],
+    tech: ['React', 'FastAPI', 'Python', 'OpenAI Vision', 'Vercel'],
+    link: 'https://ntoma.vercel.app'
   },
   {
     id: 5,
@@ -83,56 +83,58 @@ const PORTFOLIO_ITEMS = [
     subtitle: 'Services Marketplace',
     category: 'Web App',
     image: 'gigzo.png',
-    media: ['gigzo.png', 'gigzo1.png', 'gigzo2.png', 'gigzo3.png', 'gigzo5.png', 'gigzo_lg.png', 'gigzo.mp4'],
+    media: ['gigzo.mp4', 'gigzo_lg.png', 'gigzo5.png', 'gigzo3.png', 'gigzo2.png', 'gigzo1.png', 'gigzo.png'],
     type: 'project',
     description: 'Domestic services marketplace for expats in Thailand. Connects customers with verified cleaning, laundry, and household service providers.',
     challenge: 'Expats in Thailand had no reliable, English-language platform to find and book domestic services. Providers had no digital booking system.',
     solution: 'Built a full-stack marketplace with provider onboarding, booking system, payment integration, and AI-powered customer support agents using CrewAI and LangChain.',
     results: ['Full marketplace MVP built', 'Booking + payment integration', 'AI customer onboarding agents', 'Provider management system'],
     tech: ['React', 'Node.js', 'Firebase', 'CrewAI', 'LangChain', 'Stripe'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
+    link: 'mailto:akumalis@protonmail.com'
   },
   {
     id: 8,
-    title: 'Lumina',
+    title: 'Square',
     subtitle: 'Brand Identity System',
     category: 'Design System',
-    image: 'hire-me.png',
+    image: 'square.jpeg',
+    media: ['square.mp4','square4.png','square3.png','square2.png','square1.png','square.jpeg'],
     type: 'project',
     description: 'Comprehensive brand identity and design system for a luxury wellness brand. Type, color, motion, and component library.',
     challenge: 'Client needed a brand that read as premium across web, print, and motion — without veering into clichéd "luxury" territory.',
     solution: 'Restrained typographic system anchored by a custom display face, paired with a warm-neutral palette and motion guidelines.',
     results: ['Full design system', 'Web + print components', 'Motion guidelines', 'Brand book delivered'],
     tech: ['Figma', 'After Effects', 'Webflow'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
+    link: 'mailto:akumalis@protonmail.com'
   },
   {
     id: 7,
-    title: 'About Akua',
+    title: 'About Theresa',
     subtitle: 'Developer & AI Builder',
     category: 'Studio',
-    image: 'about-me.png',
+    image: 'about-me.webp',
     type: 'about',
     description: 'Full-stack developer and AI builder based in Thailand. Building real products that work — not demos that look pretty.',
     challenge: 'Most digital work fails not because it looks wrong — but because it is built without strategic clarity.',
     solution: 'Strategy first. Then architecture. Then code. End-to-end ownership of every project — no hand-offs, no gaps.',
     results: ['Based in Thailand', 'Available worldwide', 'Response within 24h', 'Strategy + Engineering'],
     tech: ['React', 'Next.js', 'Python', 'FastAPI', 'LangChain', 'CrewAI'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
+    link: 'mailto:akumalis@protonmail.com'
   },
   {
     id: 9,
     title: 'Atelier',
     subtitle: 'Studio Practice',
     category: 'Studio',
-    image: null,
+    image: 'studio.jpeg',
+    media: ['studio.mp4', 'studio5.png', 'studio4.png', 'studio3.png', 'studio2.png', 'studio1.png'],
     type: 'project',
     description: 'A focused practice — one set of hands across strategy, design, and engineering. End-to-end ownership of every project.',
     challenge: 'Most agencies hand off between roles. The result is incoherence. We work end-to-end.',
     solution: 'One operator per project. Strategy and execution from the same hand. Tight feedback loops, no scope drift.',
     results: ['Solo-led practice', 'Strategy-led engagements', 'Selected clients only', 'Long-form retainers'],
     tech: ['Strategy', 'Design', 'Engineering'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
+    link: 'mailto:akumalis@protonmail.com'
   }
 ];
 
@@ -156,10 +158,10 @@ const TWEAKS = {
 const BENTO_LAYOUTS = [
   { x: 0,   y: 0,   w: 124, h: 94  },
   { x: 142, y: 0,   w: 150, h: 94  },
-  { x: 310, y: 0,   w: 111, h: 220 },
+  { x: 310, y: 0,   w: 111, h: 160 },
   { x: 0,   y: 112, w: 124, h: 156 },
   { x: 142, y: 112, w: 150, h: 156 },
-  { x: 310, y: 238, w: 111, h: 48  },
+  { x: 310, y: 178, w: 111, h: 90  },
   { x: 0,   y: 286, w: 124, h: 124 },
   { x: 142, y: 286, w: 94,  h: 124 },
   { x: 254, y: 286, w: 184, h: 124 },
@@ -171,9 +173,17 @@ function clearBentoTimers() {
   bentoTimers = [];
 }
 
+function getBentoConfig() {
+  const vw = window.innerWidth;
+  if (vw < 500) return { cellPx: 84, scale: 0.55 };
+  if (vw < 900) return { cellPx: 84, scale: 0.65 };
+  return { cellPx: 130, scale: 1 };
+}
+
 function initBentoMorph() {
   clearBentoTimers();
   const ease = 'cubic-bezier(.2,.8,.2,1)';
+  const { cellPx, scale } = getBentoConfig();
 
   // Fire at 4600ms — cellCalve ends at 4500ms, so all cells are stable at their calve positions
   bentoTimers.push(setTimeout(() => {
@@ -189,14 +199,14 @@ function initBentoMorph() {
       cell.style.animation = 'none';
       cell.style.opacity = '1';
       cell.style.transform = `translate(${curX}px, ${curY}px)`;
-      cell.style.width = '130px';
-      cell.style.height = '130px';
+      cell.style.width = `${cellPx}px`;
+      cell.style.height = `${cellPx}px`;
       void cell.offsetHeight;
       cell.style.transition = `transform 1.1s ${ease}, width 1.1s ${ease}, height 1.1s ${ease}`;
       requestAnimationFrame(() => requestAnimationFrame(() => {
-        cell.style.transform = `translate(${layout.x}px, ${layout.y}px)`;
-        cell.style.width = `${layout.w}px`;
-        cell.style.height = `${layout.h}px`;
+        cell.style.transform = `translate(${layout.x * scale}px, ${layout.y * scale}px)`;
+        cell.style.width = `${layout.w * scale}px`;
+        cell.style.height = `${layout.h * scale}px`;
       }));
     });
   }, 4600));
@@ -230,7 +240,7 @@ function renderGrid() {
     const item = lbl.item;
 
     const imgHtml = item.image
-      ? `<img src="${item.image}" alt="${item.title}" class="cell-photo">`
+      ? `<img src="${item.image}" alt="${item.title}" class="cell-photo" loading="lazy">`
       : '';
 
     cell.innerHTML = `
@@ -286,10 +296,11 @@ const titleMorphEl = document.getElementById('titleMorph');
 let morphState = { idx: 0, raf: null, swap: 0, hovering: false };
 
 function applyHoverMode(mode) {
-  titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-off');
+  titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-3d', 'hover-off');
   if (mode === 'bounce') titleWrap.classList.add('hover-bounce');
   else if (mode === 'morph') titleWrap.classList.add('hover-morph');
   else if (mode === 'liquid') titleWrap.classList.add('hover-liquid');
+  else if (mode === '3d') titleWrap.classList.add('hover-3d');
   else titleWrap.classList.add('hover-off');
 }
 
@@ -336,8 +347,24 @@ function stopMorphLoop() {
   titleMorphEl.textContent = 'AKUMALI';
 }
 
-titleWrap.addEventListener('mouseenter', () => { if (TWEAKS.hoverMode === 'morph') startMorphLoop(); });
-titleWrap.addEventListener('mouseleave', () => { if (TWEAKS.hoverMode === 'morph') stopMorphLoop(); });
+titleWrap.addEventListener('mouseenter', () => {
+  if (TWEAKS.hoverMode === 'morph') startMorphLoop();
+  if (TWEAKS.hoverMode === '3d') {
+    gsap.fromTo(document.querySelectorAll('.title .letter'),
+      { rotateX: 0 },
+      { rotateX: 360, duration: 0.65, stagger: 0.08, ease: 'power2.inOut',
+        transformOrigin: '50% 50% -24px', color: 'var(--brass)' }
+    );
+  }
+});
+titleWrap.addEventListener('mouseleave', () => {
+  if (TWEAKS.hoverMode === 'morph') stopMorphLoop();
+  if (TWEAKS.hoverMode === '3d') {
+    gsap.to(document.querySelectorAll('.title .letter'),
+      { rotateX: 0, color: 'var(--ink)', duration: 0.4, stagger: 0.04, ease: 'power1.out' }
+    );
+  }
+});
 
 /* ============================================================
  * Tile hover modes — shape / lift / off
@@ -494,7 +521,7 @@ function openDetail(item) {
 
   let eyebrow = `PROJECT · ${String(item.id).padStart(2, '0')} / ${(item.category || 'STUDIO').toUpperCase()}`;
   if (item.type === 'service') eyebrow = 'STUDIO · SERVICES & PRICING';
-  if (item.type === 'about')   eyebrow = 'STUDIO · ABOUT AKUA';
+  if (item.type === 'about')   eyebrow = 'STUDIO · ABOUT Theresa';
 
   dEyebrow.textContent = eyebrow;
   dTitle.textContent = item.title;
@@ -522,6 +549,7 @@ function openDetail(item) {
   detailView.setAttribute('aria-hidden', 'false');
   detailView.scrollTop = 0;
   document.body.style.overflow = 'hidden';
+  document.getElementById('closeBtn').classList.add('visible');
 
   // Staggered entrances — observe after clip-path transition finishes (0.7s)
   setTimeout(() => {
@@ -545,6 +573,7 @@ function closeDetail() {
   detailView.classList.remove('active');
   detailView.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
+  document.getElementById('closeBtn').classList.remove('visible');
 }
 
 document.getElementById('closeBtn').addEventListener('click', closeDetail);
@@ -660,76 +689,92 @@ function renderProjectContent(item) {
 
 function renderPricingContent() {
   return `
-    <p class="section-text" style="font-size:20px;line-height:1.7;">You're not paying for code. You're paying for the gap between where your business is now and where it needs to be digitally.</p>
+    <h3>About</h3>
+    <p class="section-text">I'm a full-stack designer and engineer. I work at the intersection of strategy, design, and code — building digital products that make money for founders and leaders who think differently.</p>
+    <p class="section-text">I don't separate thinking from making. Strategy informs design. Design informs code. The best products come from one person holding the whole vision — not handing it off between specialists.</p>
+    <p class="section-text">My background is fashion and design. That shapes how I approach problems: aesthetics matter, but only when they serve the business. I've built AI-powered pattern generation systems (Ntoma), editorial platforms with custom backends (CAN Architecture), legal intelligence tools (AICE), and avant-garde fashion brands (Moor Noir). Everything starts with asking: what problem are we actually solving?</p>
+    <p class="section-text">React, Next.js, Node.js, Python, FastAPI, Firebase. GPT-4, Claude, LangChain. SEO, analytics, conversion. I ship production code fast. I don't do scope creep.</p>
+    <p class="section-text">Based in Thailand. Work with teams globally. Always thinking about the next product, the next problem, the next business waiting to be built.</p>
+
+    <h3>Services & Pricing</h3>
+    <p class="section-text" style="font-size:15px;color:var(--ink-dim);">I build digital products. From landing pages to full SaaS platforms. Strategy first, code second.</p>
 
     <div class="pricing-container">
       <div class="pricing-card">
         <div class="pricing-title">Foundation</div>
-        <div class="pricing-price"><span>€</span>1,500</div>
-        <p class="pricing-description">For businesses entering the digital market or needing a credible online presence that converts.</p>
+        <div class="pricing-price"><span>€</span>2,500–3,500</div>
+        <p class="pricing-description">Website or landing page + CMS backend. You manage content. 3–4 weeks.</p>
         <ul class="pricing-features">
-          <li>Landing Page</li>
-          <li>SEO Optimisation</li>
-          <li>Contact & Lead Capture</li>
+          <li>Website or Landing Page</li>
+          <li>Editable Backend</li>
+          <li>SEO Optimized</li>
           <li>Mobile-First Design</li>
         </ul>
-        <a href="mailto:gyamfuwaa@protonmail.com?subject=Foundation Project Inquiry" class="pricing-cta-btn">Start Foundation</a>
+        <a href="mailto:akumalis@protonmail.com?subject=Foundation Project Inquiry" class="pricing-cta-btn">Start Foundation</a>
       </div>
       <div class="pricing-card featured">
         <div class="pricing-badge">Most Popular</div>
         <div class="pricing-title">System</div>
-        <div class="pricing-price"><span>€</span>4,000</div>
-        <p class="pricing-description">A complete web system built on strategy. For businesses ready to compete seriously in their market.</p>
+        <div class="pricing-price"><span>€</span>5,500–8,500</div>
+        <p class="pricing-description">Full web app or product with custom features + AI. 8–12 weeks.</p>
         <ul class="pricing-features">
-          <li>Full Website or Web App</li>
-          <li>Custom AI System</li>
-          <li>Admin Dashboard</li>
-          <li>Advanced SEO</li>
+          <li>Web App or SaaS Product</li>
+          <li>Admin Dashboard + Database</li>
+          <li>1 Custom AI Feature</li>
+          <li>Advanced SEO + Analytics</li>
         </ul>
-        <a href="mailto:gyamfuwaa@protonmail.com?subject=System Project Inquiry" class="pricing-cta-btn">Start System</a>
+        <a href="mailto:akumalis@protonmail.com?subject=System Project Inquiry" class="pricing-cta-btn">Start System</a>
       </div>
       <div class="pricing-card">
         <div class="pricing-title">Authority</div>
-        <div class="pricing-price"><span>€</span>7,500</div>
-        <p class="pricing-description">Award-level execution for brands that need to look like market leaders immediately.</p>
+        <div class="pricing-price"><span>€</span>12,000–18,000</div>
+        <p class="pricing-description">Market-leading product. Advanced AI, immersive design, full ecosystem. 12–16 weeks.</p>
         <ul class="pricing-features">
-          <li>Three.js / WebGL</li>
-          <li>Immersive Interactions</li>
+          <li>Complete Product System</li>
           <li>Advanced AI Integration</li>
-          <li>Awwwards-Ready Design</li>
+          <li>Custom Design (Three.js optional)</li>
+          <li>Launch + Ongoing Support</li>
         </ul>
-        <a href="mailto:gyamfuwaa@protonmail.com?subject=Authority Project Inquiry" class="pricing-cta-btn">Start Authority</a>
+        <a href="mailto:akumalis@protonmail.com?subject=Authority Project Inquiry" class="pricing-cta-btn">Start Authority</a>
       </div>
     </div>
 
-    <div class="why-section">
-      <h3>What makes this different</h3>
-      <div class="why-grid">
-        <div class="why-card">
-          <div class="why-card-icon">01</div>
-          <div class="why-card-title">Strategy First</div>
-          <div class="why-card-text">Every project starts with understanding the business problem. Code is the last step, not the first.</div>
-        </div>
-        <div class="why-card">
-          <div class="why-card-icon">02</div>
-          <div class="why-card-title">AI-Native</div>
-          <div class="why-card-text">GPT-4, LangChain, custom agents. Intelligence built into your workflow — not as an afterthought.</div>
-        </div>
-        <div class="why-card">
-          <div class="why-card-icon">03</div>
-          <div class="why-card-title">Full-Stack</div>
-          <div class="why-card-text">React, Next.js, Node.js, Python, FastAPI. End-to-end ownership — no hand-offs, no gaps.</div>
-        </div>
-        <div class="why-card">
-          <div class="why-card-icon">04</div>
-          <div class="why-card-title">Fast & Clean</div>
-          <div class="why-card-text">MVP in weeks. Production-grade code. Clear communication throughout. No scope creep.</div>
-        </div>
+    <div class="retainer-card">
+      <div class="retainer-header">
+        <div class="pricing-title">Retainer Partnership</div>
+        <div class="pricing-price" style="font-size:28px;margin-bottom:0;"><span>€</span>3,500–6,500<span style="font-size:14px;color:var(--ink-dim);"> / month</span></div>
+      </div>
+      <p class="pricing-description">For founders scaling. I work 15–25 hours/week: quarterly positioning refinement, feature direction, design reviews, new product exploration, and team mentoring.</p>
+    </div>
+
+    <h3>Why This Works</h3>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-card-icon">01</div>
+        <div class="why-card-title">Strategy First</div>
+        <div class="why-card-text">I solve the business problem. Code is the tool, not the goal.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-icon">02</div>
+        <div class="why-card-title">AI-Native</div>
+        <div class="why-card-text">GPT-4, Claude, LangChain. Intelligence that compounds your business.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-icon">03</div>
+        <div class="why-card-title">Full-Stack Ownership</div>
+        <div class="why-card-text">React, Node.js, Python, Firebase. No handoffs. One vision end-to-end.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-icon">04</div>
+        <div class="why-card-title">You Ship Fast</div>
+        <div class="why-card-text">Production-ready in weeks. Not months. Not fancy for fancy's sake.</div>
       </div>
     </div>
 
     <div class="big-cta">
-      <a href="mailto:gyamfuwaa@protonmail.com?subject=Start a Project" class="big-cta-btn">Start a Project →</a>
+      <p style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:20px;">Ready to talk?</p>
+      <a href="mailto:akumalis@protonmail.com?subject=Project Inquiry" class="big-cta-btn">Start a Project →</a>
+      <p style="font-size:11px;color:var(--ink-mute);margin-top:16px;letter-spacing:.06em;">Response within 24 hours. Based in Thailand, work with teams globally.</p>
     </div>
   `;
 }
@@ -737,7 +782,7 @@ function renderPricingContent() {
 function renderAboutContent() {
   return `
     <h3>Who</h3>
-    <p class="section-text" style="font-size:20px;">Akua Theresa Gyamfuwaa — full-stack developer and AI builder based in Thailand. I don't build websites. I build systems that make clients money.</p>
+    <p class="section-text" style="font-size:20px;">Theresa Gyamfuwaa — full-stack developer and AI builder based in Thailand. I don't build websites. I build systems that make clients money.</p>
 
     <h3>What I believe</h3>
     <p class="section-text">Most digital work fails not because it looks wrong — but because it's built without strategic clarity. Every system I build starts with understanding the business problem first. Code is the last step.</p>
@@ -755,7 +800,7 @@ function renderAboutContent() {
     <p class="section-text">Based in Thailand. Accepting new projects. I work with founders, agencies, and businesses who are serious about what they build. Response within 24 hours.</p>
 
     <div class="about-cta-row">
-      <a href="mailto:gyamfuwaa@protonmail.com" class="cta-button">Start a Project</a>
+      <a href="mailto:akumalis@protonmail.com" class="cta-button">Start a Project</a>
       <a href="resume_TG.html" target="_blank" class="cta-button cta-button--outline">View Resume</a>
     </div>
   `;
@@ -900,6 +945,7 @@ document.getElementById('skipBtn').addEventListener('click', () => {
   const rect = document.querySelector('.fill-rect');
   rect.style.animation = 'none'; rect.style.opacity = '0';
 
+  const { scale: skipScale } = getBentoConfig();
   document.querySelectorAll('.cell').forEach(c => {
     const i = parseInt(c.dataset.i);
     c.style.animation = 'none';
@@ -907,9 +953,9 @@ document.getElementById('skipBtn').addEventListener('click', () => {
     if (i === 4) { c.style.opacity = '0'; return; }
     const layout = BENTO_LAYOUTS[i];
     c.style.opacity = '1';
-    c.style.transform = `translate(${layout.x}px, ${layout.y}px)`;
-    c.style.width = `${layout.w}px`;
-    c.style.height = `${layout.h}px`;
+    c.style.transform = `translate(${layout.x * skipScale}px, ${layout.y * skipScale}px)`;
+    c.style.width = `${layout.w * skipScale}px`;
+    c.style.height = `${layout.h * skipScale}px`;
     c.classList.add('revealed');
   });
 
