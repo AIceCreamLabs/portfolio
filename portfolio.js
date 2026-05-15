@@ -297,8 +297,9 @@ let morphState = { idx: 0, raf: null, swap: 0, hovering: false };
 
 function applyHoverMode(mode) {
   teardownScatter();
-  gsap.killTweensOf(document.querySelectorAll('.title .letter'));
-  gsap.set(document.querySelectorAll('.title .letter'), { rotateX: 0, x: 0, y: 0, color: 'var(--ink)' });
+  const _letters = document.querySelectorAll('.title .letter');
+  gsap.killTweensOf(_letters);
+  gsap.set(_letters, { clearProps: 'all' });
   titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-3d', 'hover-scatter', 'hover-off');
   if (mode === 'bounce')   titleWrap.classList.add('hover-bounce');
   else if (mode === 'morph')   titleWrap.classList.add('hover-morph');
