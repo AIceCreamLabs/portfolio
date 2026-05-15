@@ -296,11 +296,15 @@ const titleMorphEl = document.getElementById('titleMorph');
 let morphState = { idx: 0, raf: null, swap: 0, hovering: false };
 
 function applyHoverMode(mode) {
-  titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-3d', 'hover-off');
-  if (mode === 'bounce') titleWrap.classList.add('hover-bounce');
-  else if (mode === 'morph') titleWrap.classList.add('hover-morph');
-  else if (mode === 'liquid') titleWrap.classList.add('hover-liquid');
-  else if (mode === '3d') titleWrap.classList.add('hover-3d');
+  teardownScatter();
+  gsap.killTweensOf(document.querySelectorAll('.title .letter'));
+  gsap.set(document.querySelectorAll('.title .letter'), { rotateX: 0, x: 0, y: 0, color: 'var(--ink)' });
+  titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-3d', 'hover-scatter', 'hover-off');
+  if (mode === 'bounce')   titleWrap.classList.add('hover-bounce');
+  else if (mode === 'morph')   titleWrap.classList.add('hover-morph');
+  else if (mode === 'liquid')  titleWrap.classList.add('hover-liquid');
+  else if (mode === '3d')      titleWrap.classList.add('hover-3d');
+  else if (mode === 'scatter') { titleWrap.classList.add('hover-scatter'); setupScatter(); }
   else titleWrap.classList.add('hover-off');
 }
 
@@ -349,22 +353,70 @@ function stopMorphLoop() {
 
 titleWrap.addEventListener('mouseenter', () => {
   if (TWEAKS.hoverMode === 'morph') startMorphLoop();
-  if (TWEAKS.hoverMode === '3d') {
-    gsap.fromTo(document.querySelectorAll('.title .letter'),
-      { rotateX: 0 },
-      { rotateX: 360, duration: 0.65, stagger: 0.08, ease: 'power2.inOut',
-        transformOrigin: '50% 50% -24px', color: 'var(--brass)' }
-    );
-  }
+  if (TWEAKS.hoverMode === '3d') trigger3DFlip();
 });
 titleWrap.addEventListener('mouseleave', () => {
   if (TWEAKS.hoverMode === 'morph') stopMorphLoop();
-  if (TWEAKS.hoverMode === '3d') {
-    gsap.to(document.querySelectorAll('.title .letter'),
-      { rotateX: 0, color: 'var(--ink)', duration: 0.4, stagger: 0.04, ease: 'power1.out' }
-    );
-  }
 });
+
+/* ── 3D flip ── */
+function trigger3DFlip() {
+  const letters = document.querySelectorAll('.title .letter');
+  gsap.killTweensOf(letters);
+  gsap.fromTo(letters,
+    { rotateX: 0, color: 'var(--ink)' },
+    { rotateX: 360, color: 'var(--brass)',
+      duration: 0.6, stagger: 0.08, ease: 'power2.inOut',
+      transformPerspective: 500, transformOrigin: 'center center',
+      onComplete() { gsap.to(letters, { color: 'var(--ink)', duration: 0.4 }); }
+    }
+  );
+}
+
+/* ── Scatter (cursor-repulsion) ── */
+let scatterActive = false;
+let scatterXSetters = [], scatterYSetters = [];
+
+function setupScatter() {
+  scatterActive = true;
+  const letters = [...document.querySelectorAll('.title .letter')];
+  scatterXSetters = letters.map(l => gsap.quickTo(l, 'x', { duration: 0.5, ease: 'power3.out' }));
+  scatterYSetters = letters.map(l => gsap.quickTo(l, 'y', { duration: 0.5, ease: 'power3.out' }));
+
+  titleWrap._scatterMove = (e) => {
+    letters.forEach((letter, i) => {
+      const r = letter.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.hypot(dx, dy);
+      const reach = 90;
+      if (dist < reach) {
+        const force = (1 - dist / reach) * 52;
+        scatterXSetters[i](-(dx / dist) * force);
+        scatterYSetters[i](-(dy / dist) * force * 0.7);
+      } else {
+        scatterXSetters[i](0);
+        scatterYSetters[i](0);
+      }
+    });
+  };
+  titleWrap._scatterLeave = () => {
+    letters.forEach((_, i) => { scatterXSetters[i](0); scatterYSetters[i](0); });
+  };
+  titleWrap.addEventListener('mousemove', titleWrap._scatterMove);
+  titleWrap.addEventListener('mouseleave', titleWrap._scatterLeave);
+}
+
+function teardownScatter() {
+  if (!scatterActive) return;
+  scatterActive = false;
+  if (titleWrap._scatterMove)  titleWrap.removeEventListener('mousemove', titleWrap._scatterMove);
+  if (titleWrap._scatterLeave) titleWrap.removeEventListener('mouseleave', titleWrap._scatterLeave);
+  const letters = document.querySelectorAll('.title .letter');
+  gsap.to(letters, { x: 0, y: 0, duration: 0.5, ease: 'power2.out' });
+}
 
 /* ============================================================
  * Tile hover modes — shape / lift / off
@@ -829,6 +881,7 @@ document.querySelectorAll('.tweak-seg').forEach(seg => {
 function applyTweak(key, value) {
   if (key === 'hoverMode') {
     stopMorphLoop();
+    teardownScatter();
     applyHoverMode(value);
   } else if (key === 'theme') {
     const t = value === 'dark' ? 'dark' : 'light';

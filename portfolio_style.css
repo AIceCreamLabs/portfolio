@@ -215,14 +215,6 @@ html[data-theme="dark"] .grain {
 .title-wrap.hover-bounce:hover .title .letter:nth-child(6) { animation-delay: 0.35s; }
 .title-wrap.hover-bounce:hover .title .letter:nth-child(7) { animation-delay: 0.42s; }
 
-/* 3D letter hover */
-.title-wrap.hover-3d {
-  perspective: 600px;
-}
-.title-wrap.hover-3d .title {
-  transform-style: preserve-3d;
-}
-
 /* Pill toggle */
 .theme-pill {
   display: inline-flex; align-items: center; gap: 8px;
