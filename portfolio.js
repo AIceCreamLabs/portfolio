@@ -400,48 +400,45 @@ function setupScatter() {
   const stageRect = stageEl.getBoundingClientRect();
   const gap = 4;
 
-  /* Canvas appended to stageEl (position:relative) so z-index 2 is within stage's stacking context
-     — sits BELOW .grid-stage (z-index:3) and ABOVE .hero (z-index:2, same level but earlier DOM) */
+  /* Canvas covers the full stage so particles can travel anywhere on screen */
   scatterCanvas = document.createElement('canvas');
-  scatterCanvas.width  = Math.ceil(titleRect.width);
-  scatterCanvas.height = Math.ceil(titleRect.height);
+  scatterCanvas.width  = Math.ceil(stageEl.clientWidth);
+  scatterCanvas.height = Math.ceil(stageEl.clientHeight);
   Object.assign(scatterCanvas.style, {
-    position: 'absolute',
-    left: (titleRect.left - stageRect.left) + 'px',
-    top:  (titleRect.top  - stageRect.top)  + 'px',
-    pointerEvents: 'none',
-    zIndex: '2'
+    position: 'absolute', left: '0', top: '0',
+    pointerEvents: 'none', zIndex: '2'
   });
   stageEl.appendChild(scatterCanvas);
   scatterCtx = scatterCanvas.getContext('2d');
 
-  /* Sample pixel shapes of each letter glyph */
+  /* Particle home positions in stage space */
+  const titleOffX = titleRect.left - stageRect.left;
+  const titleOffY = titleRect.top  - stageRect.top;
+
   scatterPtls = [];
   const cs = getComputedStyle(titleEl);
   document.querySelectorAll('.title .letter').forEach(letter => {
-    const r  = letter.getBoundingClientRect();
-    const lx = r.left - titleRect.left;
-    const ly = r.top  - titleRect.top;
-    const w  = Math.ceil(r.width);
-    const h  = Math.ceil(r.height);
+    const lr = letter.getBoundingClientRect();
+    const lx = lr.left - titleRect.left;
+    const ly = lr.top  - titleRect.top;
+    const w  = Math.ceil(lr.width);
+    const h  = Math.ceil(lr.height);
 
     const off = document.createElement('canvas');
     off.width = w; off.height = h;
     const oc  = off.getContext('2d');
-    oc.fillStyle = '#000';
-    oc.fillRect(0, 0, w, h);
+    oc.fillStyle = '#000'; oc.fillRect(0, 0, w, h);
     oc.fillStyle = '#fff';
     oc.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-    oc.textAlign = 'center';
-    oc.textBaseline = 'middle';
+    oc.textAlign = 'center'; oc.textBaseline = 'middle';
     oc.fillText(letter.textContent, w / 2, h / 2);
 
     const data = oc.getImageData(0, 0, w, h).data;
     for (let y = 0; y < h; y += gap) {
       for (let x = 0; x < w; x += gap) {
         if (data[(y * w + x) * 4] > 80) {
-          const hx = lx + x, hy = ly + y;
-          /* Start particles exploded far from home with outward velocity */
+          const hx = titleOffX + lx + x;
+          const hy = titleOffY + ly + y;
           const angle = Math.random() * Math.PI * 2;
           const burst = 120 + Math.random() * 220;
           const speed = 4 + Math.random() * 6;
@@ -457,44 +454,70 @@ function setupScatter() {
     }
   });
 
-  /* Hide DOM title letters — canvas takes over */
   titleEl.style.opacity = '0';
-
   const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1c1916';
 
-  /* Mouse tracking relative to canvas origin (= titleRect left/top in viewport coords) */
-  titleWrap._scatterMove  = e => {
-    scatterMouse.x = e.clientX - titleRect.left;
-    scatterMouse.y = e.clientY - titleRect.top;
+  /* Mouse in stage space; hovering flag drives pressure buildup */
+  let hovering = false;
+  let pressure = 0;
+
+  titleWrap._scatterMove = e => {
+    scatterMouse.x = e.clientX - stageRect.left;
+    scatterMouse.y = e.clientY - stageRect.top;
+    hovering = true;
   };
-  titleWrap._scatterLeave = () => { scatterMouse.x = -9999; scatterMouse.y = -9999; };
+  titleWrap._scatterLeave = () => {
+    scatterMouse.x = -9999; scatterMouse.y = -9999;
+    hovering = false;
+  };
   titleWrap.addEventListener('mousemove',  titleWrap._scatterMove);
   titleWrap.addEventListener('mouseleave', titleWrap._scatterLeave);
 
-  const r = gap * 0.7;
-  const reach = 110;
+  const ptlR = gap * 0.7;
 
   const tick = () => {
     if (!scatterActive) return;
+
+    /* Pressure builds while cursor is over the title, decays on leave */
+    pressure = hovering
+      ? Math.min(1, pressure + 0.004)   /* ~4 s to reach full chaos */
+      : Math.max(0, pressure - 0.012);  /* ~1.4 s to calm back down  */
+
+    const reach  = 120 + pressure * 480;          /* 120 → 600 px           */
+    const force  = 16  + pressure * 60;           /* repulsion strength      */
+    const spring = 0.09 * (1 - pressure * 0.93);  /* spring nearly gone at 1 */
+    const damp   = 0.80 - pressure * 0.07;        /* less damping = longer drift */
+
     scatterCtx.clearRect(0, 0, scatterCanvas.width, scatterCanvas.height);
     scatterCtx.fillStyle = ink;
+
     scatterPtls.forEach(p => {
+      /* Cursor repulsion */
       const dx   = p.x - scatterMouse.x;
       const dy   = p.y - scatterMouse.y;
       const dist = Math.hypot(dx, dy);
       if (dist < reach && dist > 0) {
-        const f = ((reach - dist) / reach) ** 2 * 14;
+        const f = ((reach - dist) / reach) ** 2 * force;
         p.vx += (dx / dist) * f;
         p.vy += (dy / dist) * f;
       }
-      /* Spring back to home */
-      p.vx += (p.hx - p.x) * 0.09; p.vx *= 0.78; p.x += p.vx;
-      p.vy += (p.hy - p.y) * 0.09; p.vy *= 0.78; p.y += p.vy;
+
+      /* Global turbulence kicks in after ~30% pressure — word dissolves on its own */
+      if (pressure > 0.3) {
+        const t = ((pressure - 0.3) / 0.7) * 2.2;
+        p.vx += (Math.random() - 0.5) * t;
+        p.vy += (Math.random() - 0.5) * t;
+      }
+
+      /* Spring home (weakened by pressure) */
+      p.vx += (p.hx - p.x) * spring; p.vx *= damp; p.x += p.vx;
+      p.vy += (p.hy - p.y) * spring; p.vy *= damp; p.y += p.vy;
 
       scatterCtx.beginPath();
-      scatterCtx.arc(Math.round(p.x), Math.round(p.y), r, 0, Math.PI * 2);
+      scatterCtx.arc(Math.round(p.x), Math.round(p.y), ptlR, 0, Math.PI * 2);
       scatterCtx.fill();
     });
+
     scatterRAF = requestAnimationFrame(tick);
   };
   scatterRAF = requestAnimationFrame(tick);
