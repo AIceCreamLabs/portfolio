@@ -148,7 +148,8 @@ const CELL_LABELS = PORTFOLIO_ITEMS.map((p, i) => ({
 const TWEAKS = {
   hoverMode: 'bounce',
   theme: 'light',
-  tileHover: 'shape'
+  tileHover: 'shape',
+  background: 'off'
 };
 
 /* ============================================================
@@ -164,7 +165,7 @@ const BENTO_LAYOUTS = [
   { x: 310, y: 178, w: 111, h: 90  },
   { x: 0,   y: 286, w: 124, h: 124 },
   { x: 142, y: 286, w: 94,  h: 124 },
-  { x: 254, y: 286, w: 184, h: 124 },
+  { x: 254, y: 286, w: 167, h: 124 },
 ];
 
 let bentoTimers = [];
@@ -396,20 +397,25 @@ function setupScatter() {
   scatterActive = true;
   const titleEl   = document.querySelector('.title');
   const titleRect = titleEl.getBoundingClientRect();
-  const gap = 5;
+  const stageRect = stageEl.getBoundingClientRect();
+  const gap = 4;
 
-  /* Canvas overlay */
+  /* Canvas appended to stageEl (position:relative) so z-index 2 is within stage's stacking context
+     — sits BELOW .grid-stage (z-index:3) and ABOVE .hero (z-index:2, same level but earlier DOM) */
   scatterCanvas = document.createElement('canvas');
   scatterCanvas.width  = Math.ceil(titleRect.width);
   scatterCanvas.height = Math.ceil(titleRect.height);
   Object.assign(scatterCanvas.style, {
-    position: 'fixed', left: titleRect.left + 'px', top: titleRect.top + 'px',
-    pointerEvents: 'none', zIndex: '2'
+    position: 'absolute',
+    left: (titleRect.left - stageRect.left) + 'px',
+    top:  (titleRect.top  - stageRect.top)  + 'px',
+    pointerEvents: 'none',
+    zIndex: '2'
   });
-  document.body.appendChild(scatterCanvas);
+  stageEl.appendChild(scatterCanvas);
   scatterCtx = scatterCanvas.getContext('2d');
 
-  /* Particles from actual letter pixel shapes (canvas pixel sampling) */
+  /* Sample pixel shapes of each letter glyph */
   scatterPtls = [];
   const cs = getComputedStyle(titleEl);
   document.querySelectorAll('.title .letter').forEach(letter => {
@@ -419,7 +425,6 @@ function setupScatter() {
     const w  = Math.ceil(r.width);
     const h  = Math.ceil(r.height);
 
-    /* Render just this character white-on-black */
     const off = document.createElement('canvas');
     off.width = w; off.height = h;
     const oc  = off.getContext('2d');
@@ -436,22 +441,38 @@ function setupScatter() {
       for (let x = 0; x < w; x += gap) {
         if (data[(y * w + x) * 4] > 80) {
           const hx = lx + x, hy = ly + y;
-          scatterPtls.push({ hx, hy, x: hx, y: hy, vx: 0, vy: 0 });
+          /* Start particles exploded far from home with outward velocity */
+          const angle = Math.random() * Math.PI * 2;
+          const burst = 120 + Math.random() * 220;
+          const speed = 4 + Math.random() * 6;
+          scatterPtls.push({
+            hx, hy,
+            x: hx + Math.cos(angle) * burst,
+            y: hy + Math.sin(angle) * burst,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed
+          });
         }
       }
     }
   });
 
-  /* Hide DOM title, show canvas */
+  /* Hide DOM title letters — canvas takes over */
   titleEl.style.opacity = '0';
 
   const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1c1916';
 
-  /* Mouse tracking (relative to canvas) */
-  titleWrap._scatterMove  = e => { scatterMouse.x = e.clientX - titleRect.left; scatterMouse.y = e.clientY - titleRect.top; };
+  /* Mouse tracking relative to canvas origin (= titleRect left/top in viewport coords) */
+  titleWrap._scatterMove  = e => {
+    scatterMouse.x = e.clientX - titleRect.left;
+    scatterMouse.y = e.clientY - titleRect.top;
+  };
   titleWrap._scatterLeave = () => { scatterMouse.x = -9999; scatterMouse.y = -9999; };
   titleWrap.addEventListener('mousemove',  titleWrap._scatterMove);
   titleWrap.addEventListener('mouseleave', titleWrap._scatterLeave);
+
+  const r = gap * 0.7;
+  const reach = 110;
 
   const tick = () => {
     if (!scatterActive) return;
@@ -461,15 +482,18 @@ function setupScatter() {
       const dx   = p.x - scatterMouse.x;
       const dy   = p.y - scatterMouse.y;
       const dist = Math.hypot(dx, dy);
-      const reach = 72;
       if (dist < reach && dist > 0) {
-        const f = ((reach - dist) / reach) ** 2 * 7;
+        const f = ((reach - dist) / reach) ** 2 * 14;
         p.vx += (dx / dist) * f;
         p.vy += (dy / dist) * f;
       }
-      p.vx += (p.hx - p.x) * 0.07; p.vx *= 0.82; p.x += p.vx;
-      p.vy += (p.hy - p.y) * 0.07; p.vy *= 0.82; p.y += p.vy;
-      scatterCtx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, gap - 1, gap - 1);
+      /* Spring back to home */
+      p.vx += (p.hx - p.x) * 0.09; p.vx *= 0.78; p.x += p.vx;
+      p.vy += (p.hy - p.y) * 0.09; p.vy *= 0.78; p.y += p.vy;
+
+      scatterCtx.beginPath();
+      scatterCtx.arc(Math.round(p.x), Math.round(p.y), r, 0, Math.PI * 2);
+      scatterCtx.fill();
     });
     scatterRAF = requestAnimationFrame(tick);
   };
@@ -485,6 +509,187 @@ function teardownScatter() {
   if (scatterCanvas) { scatterCanvas.remove(); scatterCanvas = null; }
   document.querySelector('.title').style.opacity = '1';
   scatterPtls = [];
+}
+
+/* ============================================================
+ * Background effects — dots / lines / off
+ * ============================================================ */
+let bgEl    = null;
+let bgRAF   = null;
+let bgType  = 'off';
+
+function teardownBg() {
+  if (bgRAF) { cancelAnimationFrame(bgRAF); bgRAF = null; }
+  if (bgEl) {
+    if (bgEl._cleanup) bgEl._cleanup();
+    bgEl.remove(); bgEl = null;
+  }
+  bgType = 'off';
+}
+
+/* Hex background — flat-top hexagons that tessellate perfectly, cursor-reactive */
+function setupDotsBg() {
+  const canvas = document.createElement('canvas');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  Object.assign(canvas.style, {
+    position: 'fixed', inset: '0', width: '100vw', height: '100vh',
+    pointerEvents: 'none', zIndex: '0'
+  });
+  stageEl.before(canvas);
+  bgEl = canvas;
+
+  const ctx = canvas.getContext('2d');
+
+  const mouse = { x: -9999, y: -9999 };
+  const onMove = e => { mouse.x = e.clientX; mouse.y = e.clientY; };
+  window.addEventListener('mousemove', onMove);
+  canvas._cleanup = () => window.removeEventListener('mousemove', onMove);
+
+  /* LCG */
+  let seed = 61823;
+  const lcg = () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 0xffffffff; };
+
+  /* Flat-top hexagon tessellation.
+     Circumradius R → x-step = 3R/2, y-step = R√3, odd cols offset by R√3/2 */
+  const R = 26;
+  const cxStep = R * 1.5;
+  const cyStep = R * Math.sqrt(3);
+  const hexes = [];
+
+  for (let col = -1; col * cxStep < canvas.width + R * 2; col++) {
+    const yOff = col % 2 !== 0 ? cyStep * 0.5 : 0;
+    for (let row = -1; row * cyStep < canvas.height + R * 2; row++) {
+      hexes.push({
+        cx: col * cxStep,
+        cy: row * cyStep + yOff,
+        phase: lcg() * Math.PI * 2,
+        speed: 0.3 + lcg() * 0.8
+      });
+    }
+  }
+
+  /* Draw a flat-top hex centred at (cx,cy) with circumradius r */
+  function hexPath(cx, cy, r) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 3) * i;
+      i === 0
+        ? ctx.moveTo(cx + r * Math.cos(a), cy + r * Math.sin(a))
+        : ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+    }
+    ctx.closePath();
+  }
+
+  const reach = 200;
+  const tick = (t) => {
+    if (!bgEl) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1c1916';
+
+    hexes.forEach(h => {
+      const pulse = 0.5 + 0.5 * Math.sin(t * 0.0006 * h.speed + h.phase);
+      const dist  = Math.hypot(h.cx - mouse.x, h.cy - mouse.y);
+      const prox  = dist < reach ? 1 - dist / reach : 0;
+
+      /* At rest: faint outline. Near cursor: outline thickens + fill blooms in */
+      hexPath(h.cx, h.cy, R * 0.94);
+
+      ctx.strokeStyle = ink;
+      ctx.lineWidth   = 0.6 + prox * 0.8;
+      ctx.globalAlpha = 0.05 + pulse * 0.04 + prox * 0.1;
+      ctx.stroke();
+
+      if (prox > 0.01) {
+        ctx.fillStyle   = ink;
+        ctx.globalAlpha = prox * prox * 0.3;
+        ctx.fill();
+      }
+    });
+
+    ctx.globalAlpha = 1;
+    bgRAF = requestAnimationFrame(tick);
+  };
+  bgRAF = requestAnimationFrame(tick);
+}
+
+/* Lines background — three wavy colored bands, cursor warps the nearest line */
+function setupLinesBg() {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 1440 900');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+  Object.assign(svg.style, {
+    position: 'fixed', inset: '0', width: '100vw', height: '100vh',
+    pointerEvents: 'none', zIndex: '0', opacity: '0.24'
+  });
+  stageEl.before(svg);
+  bgEl = svg;
+
+  const mouse = { x: -9999, y: -9999 };
+  const onMove = e => { mouse.x = e.clientX; mouse.y = e.clientY; };
+  window.addEventListener('mousemove', onMove);
+  svg._cleanup = () => window.removeEventListener('mousemove', onMove);
+
+  const bands = [
+    { color: '#e8505b', y: [185, 235], amp: [52, 32], freq: [0.003,  0.004 ], w: ['2.5', '1.2'] },
+    { color: '#f9d56e', y: [430, 480], amp: [62, 38], freq: [0.0025, 0.0035], w: ['2.5', '1.2'] },
+    { color: '#14b1ab', y: [680, 728], amp: [58, 36], freq: [0.0028, 0.0038], w: ['2.5', '1.2'] },
+  ];
+
+  const paths = [];
+  bands.forEach(b => {
+    b.w.forEach((sw, i) => {
+      const path = document.createElementNS(ns, 'path');
+      path.setAttribute('stroke', b.color);
+      path.setAttribute('stroke-width', sw);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', i === 0 ? '1' : '0.4');
+      svg.appendChild(path);
+      paths.push({ el: path, y0: b.y[i], amp: b.amp[i], freq: b.freq[i] });
+    });
+  });
+
+  /* Cursor in SVG-space: viewport → viewBox coords */
+  const toSvg = () => ({
+    x: mouse.x / window.innerWidth  * 1440,
+    y: mouse.y / window.innerHeight * 900
+  });
+
+  const pts   = 80;
+  const sigma = 110; /* horizontal spread of cursor warp in SVG units */
+
+  const tick = (t) => {
+    if (!bgEl) return;
+    const csr = toSvg();
+
+    paths.forEach(p => {
+      let d = `M0,${p.y0}`;
+      for (let i = 1; i <= pts; i++) {
+        const px   = (i / pts) * 1440;
+        const baseY = p.y0 + Math.sin(px * p.freq + t * 0.0007) * p.amp;
+
+        /* Gaussian pull: each point attracts toward cursor Y, weighted by x-proximity */
+        const dx      = px - csr.x;
+        const gaussX  = Math.exp(-(dx * dx) / (2 * sigma * sigma));
+        const maxPull = 55;
+        const pull    = gaussX * Math.max(-maxPull, Math.min(maxPull, (csr.y - baseY) * 0.45));
+
+        d += ` L${px.toFixed(1)},${(baseY + pull).toFixed(1)}`;
+      }
+      p.el.setAttribute('d', d);
+    });
+
+    bgRAF = requestAnimationFrame(tick);
+  };
+  bgRAF = requestAnimationFrame(tick);
+}
+
+function setBackground(type) {
+  teardownBg();
+  bgType = type;
+  if (type === 'dots')  setupDotsBg();
+  if (type === 'lines') setupLinesBg();
 }
 
 /* ============================================================
@@ -960,6 +1165,8 @@ function applyTweak(key, value) {
     if (lbl) lbl.textContent = t === 'dark' ? 'DARK' : 'LIGHT';
   } else if (key === 'tileHover') {
     applyTileHover(value);
+  } else if (key === 'background') {
+    setBackground(value);
   }
 }
 
