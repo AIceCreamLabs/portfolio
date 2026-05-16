@@ -8,9 +8,9 @@ const PORTFOLIO_ITEMS = [
     title: 'Hire Me',
     subtitle: 'Services & Pricing',
     category: 'Studio',
-    image: 'hire-me.png',
+    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80&fit=crop',
     type: 'service',
-    description: 'Custom web development and AI integration services. Three tiers — Foundation, System, and Authority.',
+    description: 'Three engagement tiers. One fixed outcome: your digital presence commands the room. Strategy-first. No hand-offs. No scope drift.',
     challenge: 'Most studios sell hours. I sell systems that make money.',
     solution: 'Strategy-first engagements with measurable outcomes. Every project begins with positioning, then architecture, then code.',
     results: ['Foundation — €2,500', 'System — €5,500', 'Authority — €12,000', 'MVP in weeks, not months'],
@@ -112,7 +112,7 @@ const PORTFOLIO_ITEMS = [
     title: 'About Theresa',
     subtitle: 'Developer & AI Builder',
     category: 'Studio',
-    image: 'about-me.webp',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80&fit=crop',
     type: 'about',
     description: 'Full-stack developer and AI builder based in Thailand. Building real products that work — not demos that look pretty.',
     challenge: 'Most digital work fails not because it looks wrong — but because it is built without strategic clarity.',
@@ -126,10 +126,10 @@ const PORTFOLIO_ITEMS = [
     title: 'Atelier',
     subtitle: 'Studio Practice',
     category: 'Studio',
-    image: 'studio.jpeg',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&fit=crop',
     media: ['studio.mp4', 'studio5.png', 'studio4.png', 'studio3.png', 'studio2.png', 'studio1.png'],
     type: 'project',
-    description: 'A focused practice — one set of hands across strategy, design, and engineering. End-to-end ownership of every project.',
+    description: 'One operator. End-to-end. Strategy, design, and engineering from a single hand — because coherence is not an accident.',
     challenge: 'Most agencies hand off between roles. The result is incoherence. We work end-to-end.',
     solution: 'One operator per project. Strategy and execution from the same hand. Tight feedback loops, no scope drift.',
     results: ['Solo-led practice', 'Strategy-led engagements', 'Selected clients only', 'Long-form retainers'],
@@ -144,13 +144,6 @@ const CELL_LABELS = PORTFOLIO_ITEMS.map((p, i) => ({
   idx: String(i + 1).padStart(3, '0'),
   item: p
 }));
-
-const TWEAKS = {
-  hoverMode: 'bounce',
-  theme: 'light',
-  tileHover: 'shape',
-  background: 'off'
-};
 
 /* ============================================================
  * Bento morph — target layout after calve
@@ -355,8 +348,8 @@ function stopMorphLoop() {
   titleMorphEl.textContent = 'AKUMALI';
 }
 
-titleWrap.addEventListener('mouseenter', () => { if (TWEAKS.hoverMode === 'morph') startMorphLoop(); });
-titleWrap.addEventListener('mouseleave', () => { if (TWEAKS.hoverMode === 'morph') stopMorphLoop(); });
+titleWrap.addEventListener('mouseenter', () => { if (titleWrap.classList.contains('hover-morph')) startMorphLoop(); });
+titleWrap.addEventListener('mouseleave', () => { if (titleWrap.classList.contains('hover-morph')) stopMorphLoop(); });
 
 /* ── 3D rolling text (CSS :hover-driven, stagger set inline) ── */
 function setup3DRoll() {
@@ -822,10 +815,6 @@ if (isMobile) {
     document.getElementById('skipBtn').click();
     renderMobileGrid();
   }, 80);
-
-  /* Hide mouse-only tweak */
-  const scatterBtn = document.querySelector('[data-value="scatter"]');
-  if (scatterBtn) scatterBtn.style.display = 'none';
 }
 
 /* ============================================================
@@ -861,7 +850,7 @@ function startMomentum() {
 
 // Listen on the whole stage so any drag in the viewport moves the grid
 // Exclude toolbar buttons / panels from initiating drag
-const DRAG_EXCLUDE = '.top-bar, .bot-bar, .tweaks-panel, .gear, .btn, .theme-pill, .close-btn, .detail-view';
+const DRAG_EXCLUDE = '.top-bar, .bot-bar, .btn, .close-btn, .detail-view';
 
 stageEl.addEventListener('mousedown', (e) => {
   if (!ready) return;
@@ -1245,84 +1234,10 @@ function renderAboutContent() {
   `;
 }
 
-/* ============================================================
- * Tweaks panel
- * ============================================================ */
-const tweaksPanel = document.getElementById('tweaksPanel');
-const gearBtn     = document.getElementById('gearBtn');
-gearBtn.addEventListener('click', () => tweaksPanel.classList.toggle('open'));
-document.getElementById('tweaksClose').addEventListener('click', () => tweaksPanel.classList.remove('open'));
-
-document.querySelectorAll('.tweak-seg').forEach(seg => {
-  const key = seg.dataset.tweak;
-  seg.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      TWEAKS[key] = btn.dataset.value;
-      applyTweak(key, btn.dataset.value);
-    });
-  });
-});
-
-function applyTweak(key, value) {
-  if (key === 'hoverMode') {
-    stopMorphLoop();
-    teardownScatter();
-    applyHoverMode(value);
-  } else if (key === 'theme') {
-    const t = value === 'dark' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', t);
-    localStorage.setItem('akumali-theme', t);
-    const lbl = document.getElementById('themePillLabel');
-    if (lbl) lbl.textContent = t === 'dark' ? 'DARK' : 'LIGHT';
-  } else if (key === 'tileHover') {
-    applyTileHover(value);
-  } else if (key === 'background') {
-    setBackground(value);
-  }
-}
-
-/* Sync theme toggle button to stored preference */
-(function () {
-  const stored = localStorage.getItem('akumali-theme') || 'light';
-  if (stored === 'dark') {
-    const seg = document.querySelector('[data-tweak="theme"]');
-    if (seg) {
-      seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-      const darkBtn = seg.querySelector('[data-value="dark"]');
-      if (darkBtn) darkBtn.classList.add('active');
-    }
-  }
-})();
-
-/* Pill toggle */
-const themePill = document.getElementById('themePill');
-const themePillLabel = document.getElementById('themePillLabel');
-if (themePill) {
-  const storedTheme = localStorage.getItem('akumali-theme') || 'light';
-  if (themePillLabel) themePillLabel.textContent = storedTheme === 'dark' ? 'DARK' : 'LIGHT';
-  TWEAKS.theme = storedTheme;
-
-  themePill.addEventListener('click', () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const next = isDark ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('akumali-theme', next);
-    if (themePillLabel) themePillLabel.textContent = isDark ? 'LIGHT' : 'DARK';
-    TWEAKS.theme = next;
-    const seg = document.querySelector('[data-tweak="theme"]');
-    if (seg) {
-      seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-      const btn = seg.querySelector(`[data-value="${next}"]`);
-      if (btn) btn.classList.add('active');
-    }
-  });
-}
-
-/* Initial apply */
-applyHoverMode(TWEAKS.hoverMode);
-applyTileHover(TWEAKS.tileHover);
+/* Locked configuration — Structural Authority */
+applyHoverMode('scatter');
+applyTileHover('shape');
+setBackground('dots');
 
 /* ============================================================
  * Replay / Skip
@@ -1355,10 +1270,10 @@ function replay() {
   oldRect.replaceWith(newRect);
 
   renderGrid();
-  applyHoverMode(TWEAKS.hoverMode);
-  applyTileHover(TWEAKS.tileHover);
+  applyHoverMode('scatter');
+  applyTileHover('shape');
 
-  document.querySelectorAll('.top-bar, .bot-bar, .grid-meta, .controls, .gear')
+  document.querySelectorAll('.top-bar, .bot-bar, .grid-meta, .controls')
     .forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
 
   armReady();
@@ -1370,7 +1285,7 @@ document.getElementById('skipBtn').addEventListener('click', () => {
   clearBentoTimers();
   clearTimeout(readyTimer);
 
-  document.querySelectorAll('.title, .roles li, .top-bar, .bot-bar, .grid-meta, .controls, .gear')
+  document.querySelectorAll('.title, .roles li, .top-bar, .bot-bar, .grid-meta, .controls')
     .forEach(el => {
       el.style.animation = 'none';
       el.style.opacity = '1';
