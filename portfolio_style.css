@@ -461,23 +461,16 @@ html[data-theme="dark"] .theme-pill-dot { transform: translateX(14px); }
   --ey: calc((var(--cell) + var(--gap))*2);
 }
 
-/* Clip-path shapes per cell */
-.cell[data-i="0"] { --rect: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-                    --shape: polygon(0% 0%, 100% 0%,  78% 100%, 0% 100%); }
-.cell[data-i="1"] { --rect: polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);
-                    --shape: polygon(50% 0%, 100% 38%, 100% 100%, 0% 100%, 0% 38%); }
-.cell[data-i="2"] { --rect: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-                    --shape: polygon(0% 0%, 100% 0%, 100% 100%, 22% 100%); }
-.cell[data-i="3"] { --rect: polygon(0% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
-                    --shape: polygon(0% 0%, 100% 0%, 100% 62%, 50% 100%, 0% 62%); }
-.cell[data-i="5"] { --rect: polygon(0% 0%, 100% 0%, 100% 50%, 100% 100%, 0% 100%);
-                    --shape: polygon(0% 0%, 72% 0%, 100% 50%, 72% 100%, 0% 100%); }
-.cell[data-i="6"] { --rect: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-                    --shape: polygon(0% 0%, 100% 0%,  78% 100%, 0% 100%); }
-.cell[data-i="7"] { --rect: polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);
-                    --shape: polygon(50% 0%, 100% 45%, 100% 100%, 0% 100%, 0% 45%); }
-.cell[data-i="8"] { --rect: polygon(0% 0%, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
-                    --shape: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+/*
+ * Clip-path shapes — all cells share the same geometric language.
+ * Rest: full rectangle (8 points for smooth interpolation).
+ * Hover: chamfered octagon — every corner cut at the same 14% diagonal.
+ * One shape family across the whole grid; sizes differ, language doesn't.
+ */
+.cell {
+  --rect:  polygon(0% 0%, 100% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%, 0% 100%, 0% 0%);
+  --shape: polygon(14% 0%, 86% 0%, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0% 86%, 0% 14%);
+}
 
 .cell .cell-img {
   clip-path: var(--rect);
