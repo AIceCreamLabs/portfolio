@@ -530,8 +530,6 @@ function teardownBg() {
 /* Hex background — flat-top hexagons that tessellate perfectly, cursor-reactive */
 function setupDotsBg() {
   const canvas = document.createElement('canvas');
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
   Object.assign(canvas.style, {
     position: 'fixed', inset: '0', width: '100vw', height: '100vh',
     pointerEvents: 'none', zIndex: '0'
@@ -541,35 +539,54 @@ function setupDotsBg() {
 
   const ctx = canvas.getContext('2d');
 
+  /* Cached ink — recomputed only on theme change via MutationObserver */
+  let ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1c1916';
+  const themeObserver = new MutationObserver(() => {
+    ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1c1916';
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
   const mouse = { x: -9999, y: -9999 };
   const onMove = e => { mouse.x = e.clientX; mouse.y = e.clientY; };
   window.addEventListener('mousemove', onMove);
-  canvas._cleanup = () => window.removeEventListener('mousemove', onMove);
 
-  /* LCG */
-  let seed = 61823;
-  const lcg = () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 0xffffffff; };
+  canvas._cleanup = () => {
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('resize', onResize);
+    themeObserver.disconnect();
+  };
 
   /* Flat-top hexagon tessellation.
      Circumradius R → x-step = 3R/2, y-step = R√3, odd cols offset by R√3/2 */
   const R = 26;
   const cxStep = R * 1.5;
   const cyStep = R * Math.sqrt(3);
-  const hexes = [];
+  let hexes = [];
 
-  for (let col = -1; col * cxStep < canvas.width + R * 2; col++) {
-    const yOff = col % 2 !== 0 ? cyStep * 0.5 : 0;
-    for (let row = -1; row * cyStep < canvas.height + R * 2; row++) {
-      hexes.push({
-        cx: col * cxStep,
-        cy: row * cyStep + yOff,
-        phase: lcg() * Math.PI * 2,
-        speed: 0.3 + lcg() * 0.8
-      });
+  function buildHexes() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    hexes = [];
+    let seed = 61823;
+    const lcg = () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 0xffffffff; };
+    for (let col = -1; col * cxStep < canvas.width + R * 2; col++) {
+      const yOff = col % 2 !== 0 ? cyStep * 0.5 : 0;
+      for (let row = -1; row * cyStep < canvas.height + R * 2; row++) {
+        hexes.push({
+          cx: col * cxStep,
+          cy: row * cyStep + yOff,
+          phase: lcg() * Math.PI * 2,
+          speed: 0.3 + lcg() * 0.8
+        });
+      }
     }
   }
+  buildHexes();
 
-  /* Draw a flat-top hex centred at (cx,cy) with circumradius r */
+  let resizeTimer;
+  const onResize = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(buildHexes, 120); };
+  window.addEventListener('resize', onResize);
+
   function hexPath(cx, cy, r) {
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
@@ -585,14 +602,12 @@ function setupDotsBg() {
   const tick = (t) => {
     if (!bgEl) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1c1916';
 
     hexes.forEach(h => {
       const pulse = 0.5 + 0.5 * Math.sin(t * 0.0006 * h.speed + h.phase);
       const dist  = Math.hypot(h.cx - mouse.x, h.cy - mouse.y);
       const prox  = dist < reach ? 1 - dist / reach : 0;
 
-      /* At rest: faint outline. Near cursor: outline thickens + fill blooms in */
       hexPath(h.cx, h.cy, R * 0.94);
 
       ctx.strokeStyle = ink;
@@ -1298,3 +1313,36 @@ document.getElementById('skipBtn').addEventListener('click', () => {
   ready = true;
   stageEl.classList.add('ready');
 });
+
+/* ============================================================
+ * Custom cursor — brass ring + dot, only on fine-pointer devices
+ * ============================================================ */
+if (window.matchMedia('(pointer: fine)').matches) {
+  const cursorEl = document.createElement('div');
+  cursorEl.className = 'custom-cursor';
+  cursorEl.innerHTML = '<div class="custom-cursor-dot"></div>';
+  document.body.appendChild(cursorEl);
+
+  let aimX = 0, aimY = 0, curX = 0, curY = 0;
+
+  window.addEventListener('mousemove', e => { aimX = e.clientX; aimY = e.clientY; });
+
+  (function cursorLoop() {
+    curX += (aimX - curX) * 0.14;
+    curY += (aimY - curY) * 0.14;
+    cursorEl.style.transform = `translate(calc(${curX}px - 50%), calc(${curY}px - 50%))`;
+    requestAnimationFrame(cursorLoop);
+  })();
+
+  const INTERACTIVE = 'a, button, .cell, [role="button"]';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(INTERACTIVE)) cursorEl.classList.add('hovering');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(INTERACTIVE)) cursorEl.classList.remove('hovering');
+  });
+
+  /* Hide while over detail view scrollbar area */
+  document.addEventListener('mouseleave', () => cursorEl.classList.add('hidden'));
+  document.addEventListener('mouseenter', () => cursorEl.classList.remove('hidden'));
+}
