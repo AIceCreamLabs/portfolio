@@ -1159,6 +1159,72 @@ html[data-theme="dark"] .theme-pill-dot { transform: translateX(14px); }
   }
 }
 
+/* ====== Portrait gate ====== */
+@media (max-width: 768px) and (orientation: portrait) {
+  .portrait-gate {
+    display: flex !important;
+  }
+}
+
+.portrait-gate {
+  display: none;
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--paper-1);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  text-align: center;
+  padding: 40px 32px;
+}
+
+.portrait-gate-icon {
+  width: 48px; height: 48px;
+  border: 1.5px solid var(--brass);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  animation: portrait-rotate 2.8s ease-in-out infinite;
+}
+
+.portrait-gate-icon svg {
+  width: 22px; height: 22px;
+  stroke: var(--brass);
+  fill: none;
+  stroke-width: 1.5;
+}
+
+@keyframes portrait-rotate {
+  0%, 30%  { transform: rotate(0deg); }
+  60%, 90% { transform: rotate(90deg); }
+  100%     { transform: rotate(0deg); }
+}
+
+.portrait-gate-label {
+  font: 400 9px/1 "IBM Plex Mono", monospace;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--brass-hi);
+}
+
+.portrait-gate-title {
+  font: 600 18px/1.1 "JetBrains Mono", monospace;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.portrait-gate-sub {
+  font: 300 10px/1.6 "IBM Plex Mono", monospace;
+  letter-spacing: .14em;
+  color: var(--ink-mute);
+  max-width: 220px;
+}
+
+.portrait-gate-rule {
+  width: 40px; height: 1px;
+  background: color-mix(in srgb, var(--brass) 40%, transparent);
+}
+
 /* ====== Touch / coarse pointer ====== */
 @media (pointer: coarse) {
   /* Meet Apple's 44×44pt minimum tap target */
