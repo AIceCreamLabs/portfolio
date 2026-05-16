@@ -404,7 +404,7 @@ function setupScatter() {
   scatterCanvas.height = Math.ceil(titleRect.height);
   Object.assign(scatterCanvas.style, {
     position: 'fixed', left: titleRect.left + 'px', top: titleRect.top + 'px',
-    pointerEvents: 'none', zIndex: '10'
+    pointerEvents: 'none', zIndex: '2'
   });
   document.body.appendChild(scatterCanvas);
   scatterCtx = scatterCanvas.getContext('2d');
@@ -483,7 +483,7 @@ function teardownScatter() {
   if (titleWrap._scatterMove)  titleWrap.removeEventListener('mousemove',  titleWrap._scatterMove);
   if (titleWrap._scatterLeave) titleWrap.removeEventListener('mouseleave', titleWrap._scatterLeave);
   if (scatterCanvas) { scatterCanvas.remove(); scatterCanvas = null; }
-  document.querySelector('.title').style.opacity = '';
+  document.querySelector('.title').style.opacity = '1';
   scatterPtls = [];
 }
 
