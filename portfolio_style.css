@@ -450,8 +450,6 @@ html[data-theme="dark"] .theme-pill-dot { transform: translateX(14px); }
 .cell[data-i="4"] {
   --ex: calc(var(--cell) + var(--gap));
   --ey: calc(var(--cell) + var(--gap));
-  --rect: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-  --shape: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 .cell[data-i="5"] { --ex: calc((var(--cell) + var(--gap))*2);           --ey: calc(var(--cell) + var(--gap)); }
 .cell[data-i="6"] { --ex: 0px;                                          --ey: calc((var(--cell) + var(--gap))*2); }
@@ -462,14 +460,19 @@ html[data-theme="dark"] .theme-pill-dot { transform: translateX(14px); }
 }
 
 /*
- * Clip-path shapes — all cells share the same geometric language.
- * Rest: full rectangle (8 points for smooth interpolation).
- * Hover: chamfered octagon — every corner cut at the same 14% diagonal.
- * One shape family across the whole grid; sizes differ, language doesn't.
+ * Clip-path shapes — one geometric language across all tiles.
+ *
+ * Rest:  full rectangle, 6 points (collapsed so interpolation is clean).
+ * Hover: L-notch from bottom-right corner — purely 0°/90°, purely directional.
+ *        Points 4 & 5 slide left together, opening the notch like a drawer.
+ *        The exposed corner reveals the cell background + project number.
+ *
+ * Notch dimensions: 32% wide × 28% tall (from bottom-right).
+ * Gold shelf line draws along the notch's top edge on hover.
  */
 .cell {
-  --rect:  polygon(0% 0%, 100% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%, 0% 100%, 0% 0%);
-  --shape: polygon(14% 0%, 86% 0%, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0% 86%, 0% 14%);
+  --rect:  polygon(0% 0%, 100% 0%, 100% 72%, 100% 72%, 100% 100%, 0% 100%);
+  --shape: polygon(0% 0%, 100% 0%, 100% 72%, 68% 72%, 68% 100%, 0% 100%);
 }
 
 .cell .cell-img {
@@ -506,6 +509,45 @@ html[data-theme="dark"] .theme-pill-dot { transform: translateX(14px); }
 .stage.ready .cell:hover .cell-img .label,
 .stage.ready .cell:hover .cell-img .idx {
   opacity: 0;
+}
+
+/* ── Notch metadata — project number in the revealed corner ── */
+.cell-notch {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 32%; height: 28%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity .28s .18s ease;
+  pointer-events: none;
+  z-index: 4;
+}
+.stage.ready .cell:hover .cell-notch {
+  opacity: 1;
+}
+.cell-notch-num {
+  font: 400 7px/1 "IBM Plex Mono", monospace;
+  letter-spacing: .24em;
+  color: var(--brass-hi);
+}
+
+/* ── Gold shelf — draws left→right along the notch's top edge ── */
+.stage.ready .cell.revealed::after {
+  content: '';
+  position: absolute;
+  bottom: 28%;        /* matches the 72% clip point */
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--brass);
+  transition: width .55s var(--ease);
+  pointer-events: none;
+  z-index: 4;
+}
+.stage.ready .cell.revealed:hover::after {
+  width: 68%;         /* matches the 68% notch inset */
 }
 
 /* ====== Hover caption ====== */

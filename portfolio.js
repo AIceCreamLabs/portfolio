@@ -251,6 +251,9 @@ function renderGrid() {
         <span class="idx">${lbl.idx}</span>
         <span class="label">${lbl.project}</span>
       </div>
+      <div class="cell-notch" aria-hidden="true">
+        <span class="cell-notch-num">${lbl.idx}</span>
+      </div>
     `;
 
     cell.addEventListener('mouseenter', () => onTileHover(i));
