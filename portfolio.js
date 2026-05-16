@@ -757,12 +757,70 @@ function armReady() {
 armReady();
 initBentoMorph();
 
-/* On touch devices skip the intro immediately — 6s wait is unacceptable on mobile */
+/* ============================================================
+ * Mobile layout — card grid replaces bento grid
+ * ============================================================ */
+function renderMobileGrid() {
+  const center = document.querySelector('.center');
+  if (!center) return;
+
+  /* Section label */
+  const label = document.createElement('div');
+  label.className = 'mobile-section-label';
+  label.textContent = 'VOL · I — NINE FRAGMENTS';
+  center.appendChild(label);
+
+  const grid = document.createElement('div');
+  grid.className = 'mobile-grid';
+  grid.id = 'mobileGrid';
+  center.appendChild(grid);
+
+  PORTFOLIO_ITEMS.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'mobile-card';
+
+    const num = String(idx + 1).padStart(3, '0');
+
+    const imgHtml = item.image
+      ? `<img src="${item.image}" alt="${item.title}" loading="lazy">`
+      : `<div class="mobile-card-ph">${item.title.charAt(0)}</div>`;
+
+    card.innerHTML = `
+      ${imgHtml}
+      <span class="mobile-card-idx">${num}</span>
+      <div class="mobile-card-overlay">
+        <span class="mobile-card-name">${item.title}</span>
+        <span class="mobile-card-cat">${item.category || ''}</span>
+      </div>
+    `;
+
+    card.addEventListener('click', () => openDetail(item));
+    grid.appendChild(card);
+  });
+}
+
 if (isMobile) {
-  requestAnimationFrame(() => requestAnimationFrame(() => {
+  /* Wait for first paint so skip runs against a laid-out DOM */
+  setTimeout(() => {
+    /* Force title visible before skip touches it */
+    const titleEl = document.querySelector('.title');
+    if (titleEl) {
+      titleEl.style.animation = 'none';
+      titleEl.style.opacity   = '1';
+      titleEl.style.clipPath  = 'none';
+      titleEl.style.letterSpacing = '.14em';
+      titleEl.style.textIndent    = '.14em';
+    }
+    document.querySelectorAll('.roles li').forEach(li => {
+      li.style.animation = 'none';
+      li.style.opacity   = '1';
+    });
+
     document.getElementById('skipBtn').click();
-  }));
-  /* Hide mouse-only hover tweaks so they don't confuse touch users */
+    renderMobileGrid();
+  }, 80);
+
+  /* Hide mouse-only tweak */
   const scatterBtn = document.querySelector('[data-value="scatter"]');
   if (scatterBtn) scatterBtn.style.display = 'none';
 }
