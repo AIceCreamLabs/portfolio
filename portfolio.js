@@ -273,6 +273,7 @@ const morphEl  = document.getElementById('morph');
 const wordEl   = document.getElementById('morphWord');
 const heroEl   = document.getElementById('hero');
 const stageEl  = document.getElementById('stage');
+const isMobile = window.matchMedia('(pointer: coarse)').matches;
 
 let ready = false;
 
@@ -756,6 +757,16 @@ function armReady() {
 armReady();
 initBentoMorph();
 
+/* On touch devices skip the intro immediately — 6s wait is unacceptable on mobile */
+if (isMobile) {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.getElementById('skipBtn').click();
+  }));
+  /* Hide mouse-only hover tweaks so they don't confuse touch users */
+  const scatterBtn = document.querySelector('[data-value="scatter"]');
+  if (scatterBtn) scatterBtn.style.display = 'none';
+}
+
 /* ============================================================
  * Grid drag + momentum
  * ============================================================ */
@@ -775,7 +786,6 @@ function startMomentum() {
   cancelAnimationFrame(gridMomRaf);
   function tick() {
     if (Math.abs(gridVelX) < 0.4 && Math.abs(gridVelY) < 0.4) {
-      setTimeout(() => { gridDragMoved = false; }, 20);
       return;
     }
     gridVelX *= 0.91;
@@ -821,6 +831,7 @@ document.addEventListener('mouseup', () => {
   gridDragging = false;
   stageEl.style.cursor = '';
   startMomentum();
+  setTimeout(() => { gridDragMoved = false; }, 20);
 });
 
 stageEl.addEventListener('touchstart', (e) => {
@@ -849,6 +860,9 @@ document.addEventListener('touchend', () => {
   if (!gridDragging) return;
   gridDragging = false;
   startMomentum();
+  /* iOS fires a synthetic click ~300ms after touchend.
+     Keep gridDragMoved true past that window so drags never open cells. */
+  if (gridDragMoved) setTimeout(() => { gridDragMoved = false; }, 380);
 });
 
 /* Trackpad/wheel scroll also moves the grid */
