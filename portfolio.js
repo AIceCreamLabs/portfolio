@@ -296,13 +296,13 @@ const titleMorphEl = document.getElementById('titleMorph');
 let morphState = { idx: 0, raf: null, swap: 0, hovering: false };
 
 function applyHoverMode(mode) {
+  teardown3DRoll();
   teardownScatter();
-  document.querySelectorAll('.title .letter').forEach(l => l.style.transform = '');
-  titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-3d', 'hover-scatter', 'hover-off', 'flipping');
+  titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-3d', 'hover-scatter', 'hover-off');
   if (mode === 'bounce')   titleWrap.classList.add('hover-bounce');
   else if (mode === 'morph')   titleWrap.classList.add('hover-morph');
   else if (mode === 'liquid')  titleWrap.classList.add('hover-liquid');
-  else if (mode === '3d')      titleWrap.classList.add('hover-3d');
+  else if (mode === '3d')      { titleWrap.classList.add('hover-3d'); setup3DRoll(); }
   else if (mode === 'scatter') { titleWrap.classList.add('hover-scatter'); setupScatter(); }
   else titleWrap.classList.add('hover-off');
 }
@@ -350,57 +350,107 @@ function stopMorphLoop() {
   titleMorphEl.textContent = 'AKUMALI';
 }
 
-titleWrap.addEventListener('mouseenter', () => {
-  if (TWEAKS.hoverMode === 'morph') startMorphLoop();
-  if (TWEAKS.hoverMode === '3d') trigger3DFlip();
-});
-titleWrap.addEventListener('mouseleave', () => {
-  if (TWEAKS.hoverMode === 'morph') stopMorphLoop();
-});
+titleWrap.addEventListener('mouseenter', () => { if (TWEAKS.hoverMode === 'morph') startMorphLoop(); });
+titleWrap.addEventListener('mouseleave', () => { if (TWEAKS.hoverMode === 'morph') stopMorphLoop(); });
 
-/* ── 3D flip (CSS class toggle, no GSAP) ── */
-function trigger3DFlip() {
-  if (titleWrap.classList.contains('flipping')) return;
-  titleWrap.classList.add('flipping');
-  setTimeout(() => titleWrap.classList.remove('flipping'), 1200);
+/* ── 3D rolling text (CSS :hover-driven, stagger set inline) ── */
+function setup3DRoll() {
+  document.querySelectorAll('.title .letter').forEach((letter, i) => {
+    const ch   = letter.textContent;
+    const roll = document.createElement('span');
+    roll.className = 'letter-roll';
+    const top  = document.createElement('span');
+    top.className = 'letter-top';
+    top.textContent = ch;
+    const bot  = document.createElement('span');
+    bot.className = 'letter-bot';
+    bot.textContent = ch;
+    const delay = `${(i * 0.04).toFixed(2)}s`;
+    top.style.transitionDelay = delay;
+    bot.style.transitionDelay = delay;
+    roll.appendChild(top);
+    roll.appendChild(bot);
+    letter.replaceWith(roll);
+  });
 }
 
-/* ── Scatter (rAF spring, no GSAP) ── */
-let scatterActive = false;
-let scatterRAF    = null;
+function teardown3DRoll() {
+  document.querySelectorAll('.title .letter-roll').forEach(roll => {
+    const ch   = roll.querySelector('.letter-top').textContent;
+    const span = document.createElement('span');
+    span.className = 'letter';
+    span.textContent = ch;
+    roll.replaceWith(span);
+  });
+}
+
+/* ── Scatter (canvas particles, rAF physics) ── */
+let scatterActive  = false;
+let scatterRAF     = null;
+let scatterCanvas  = null;
+let scatterCtx     = null;
+let scatterPtls    = [];
 const scatterMouse = { x: -9999, y: -9999 };
-let scatterOffsets = [];
 
 function setupScatter() {
   scatterActive = true;
-  const letters = [...document.querySelectorAll('.title .letter')];
-  scatterOffsets = letters.map(() => ({ x: 0, y: 0, vx: 0, vy: 0 }));
+  const titleEl   = document.querySelector('.title');
+  const titleRect = titleEl.getBoundingClientRect();
+  const gap = 5;
 
-  titleWrap._scatterMove  = (e) => { scatterMouse.x = e.clientX; scatterMouse.y = e.clientY; };
-  titleWrap._scatterLeave = ()  => { scatterMouse.x = -9999;      scatterMouse.y = -9999; };
+  /* Canvas overlay */
+  scatterCanvas = document.createElement('canvas');
+  scatterCanvas.width  = Math.ceil(titleRect.width);
+  scatterCanvas.height = Math.ceil(titleRect.height);
+  Object.assign(scatterCanvas.style, {
+    position: 'fixed', left: titleRect.left + 'px', top: titleRect.top + 'px',
+    pointerEvents: 'none', zIndex: '10'
+  });
+  document.body.appendChild(scatterCanvas);
+  scatterCtx = scatterCanvas.getContext('2d');
+
+  /* Particles from letter bounding boxes */
+  scatterPtls = [];
+  document.querySelectorAll('.title .letter').forEach(letter => {
+    const r  = letter.getBoundingClientRect();
+    const lx = r.left - titleRect.left;
+    const ly = r.top  - titleRect.top;
+    for (let y = gap / 2; y < r.height; y += gap) {
+      for (let x = gap / 2; x < r.width; x += gap) {
+        const hx = lx + x, hy = ly + y;
+        scatterPtls.push({ hx, hy, x: hx, y: hy, vx: 0, vy: 0 });
+      }
+    }
+  });
+
+  /* Hide DOM title, show canvas */
+  titleEl.style.opacity = '0';
+
+  const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1c1916';
+
+  /* Mouse tracking (relative to canvas) */
+  titleWrap._scatterMove  = e => { scatterMouse.x = e.clientX - titleRect.left; scatterMouse.y = e.clientY - titleRect.top; };
+  titleWrap._scatterLeave = () => { scatterMouse.x = -9999; scatterMouse.y = -9999; };
   titleWrap.addEventListener('mousemove',  titleWrap._scatterMove);
   titleWrap.addEventListener('mouseleave', titleWrap._scatterLeave);
 
   const tick = () => {
     if (!scatterActive) return;
-    letters.forEach((letter, i) => {
-      const r  = letter.getBoundingClientRect();
-      const cx = r.left + r.width  / 2;
-      const cy = r.top  + r.height / 2;
-      const dx = scatterMouse.x - cx;
-      const dy = scatterMouse.y - cy;
-      const dist  = Math.hypot(dx, dy);
-      const reach = 90;
-      let tx = 0, ty = 0;
-      if (dist > 0 && dist < reach) {
-        const force = (1 - dist / reach) * 52;
-        tx = -(dx / dist) * force;
-        ty = -(dy / dist) * force * 0.7;
+    scatterCtx.clearRect(0, 0, scatterCanvas.width, scatterCanvas.height);
+    scatterCtx.fillStyle = ink;
+    scatterPtls.forEach(p => {
+      const dx   = p.x - scatterMouse.x;
+      const dy   = p.y - scatterMouse.y;
+      const dist = Math.hypot(dx, dy);
+      const reach = 72;
+      if (dist < reach && dist > 0) {
+        const f = ((reach - dist) / reach) ** 2 * 7;
+        p.vx += (dx / dist) * f;
+        p.vy += (dy / dist) * f;
       }
-      const o = scatterOffsets[i];
-      o.vx += (tx - o.x) * 0.15; o.vx *= 0.6; o.x += o.vx;
-      o.vy += (ty - o.y) * 0.15; o.vy *= 0.6; o.y += o.vy;
-      letter.style.transform = `translate(${o.x.toFixed(2)}px,${o.y.toFixed(2)}px)`;
+      p.vx += (p.hx - p.x) * 0.07; p.vx *= 0.82; p.x += p.vx;
+      p.vy += (p.hy - p.y) * 0.07; p.vy *= 0.82; p.y += p.vy;
+      scatterCtx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, gap - 1, gap - 1);
     });
     scatterRAF = requestAnimationFrame(tick);
   };
@@ -410,11 +460,12 @@ function setupScatter() {
 function teardownScatter() {
   if (!scatterActive) return;
   scatterActive = false;
-  cancelAnimationFrame(scatterRAF);
-  scatterRAF = null;
+  cancelAnimationFrame(scatterRAF); scatterRAF = null;
   if (titleWrap._scatterMove)  titleWrap.removeEventListener('mousemove',  titleWrap._scatterMove);
   if (titleWrap._scatterLeave) titleWrap.removeEventListener('mouseleave', titleWrap._scatterLeave);
-  document.querySelectorAll('.title .letter').forEach(l => l.style.transform = '');
+  if (scatterCanvas) { scatterCanvas.remove(); scatterCanvas = null; }
+  document.querySelector('.title').style.opacity = '';
+  scatterPtls = [];
 }
 
 /* ============================================================
