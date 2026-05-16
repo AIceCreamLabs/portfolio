@@ -297,10 +297,8 @@ let morphState = { idx: 0, raf: null, swap: 0, hovering: false };
 
 function applyHoverMode(mode) {
   teardownScatter();
-  const _letters = document.querySelectorAll('.title .letter');
-  gsap.killTweensOf(_letters);
-  gsap.set(_letters, { clearProps: 'all' });
-  titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-3d', 'hover-scatter', 'hover-off');
+  document.querySelectorAll('.title .letter').forEach(l => l.style.transform = '');
+  titleWrap.classList.remove('hover-bounce', 'hover-morph', 'hover-liquid', 'hover-3d', 'hover-scatter', 'hover-off', 'flipping');
   if (mode === 'bounce')   titleWrap.classList.add('hover-bounce');
   else if (mode === 'morph')   titleWrap.classList.add('hover-morph');
   else if (mode === 'liquid')  titleWrap.classList.add('hover-liquid');
@@ -360,63 +358,63 @@ titleWrap.addEventListener('mouseleave', () => {
   if (TWEAKS.hoverMode === 'morph') stopMorphLoop();
 });
 
-/* ── 3D flip ── */
+/* ── 3D flip (CSS class toggle, no GSAP) ── */
 function trigger3DFlip() {
-  const letters = document.querySelectorAll('.title .letter');
-  gsap.killTweensOf(letters);
-  gsap.fromTo(letters,
-    { rotateX: 0, color: 'var(--ink)' },
-    { rotateX: 360, color: 'var(--brass)',
-      duration: 0.6, stagger: 0.08, ease: 'power2.inOut',
-      transformPerspective: 500, transformOrigin: 'center center',
-      onComplete() { gsap.to(letters, { color: 'var(--ink)', duration: 0.4 }); }
-    }
-  );
+  if (titleWrap.classList.contains('flipping')) return;
+  titleWrap.classList.add('flipping');
+  setTimeout(() => titleWrap.classList.remove('flipping'), 1200);
 }
 
-/* ── Scatter (cursor-repulsion) ── */
+/* ── Scatter (rAF spring, no GSAP) ── */
 let scatterActive = false;
-let scatterXSetters = [], scatterYSetters = [];
+let scatterRAF    = null;
+const scatterMouse = { x: -9999, y: -9999 };
+let scatterOffsets = [];
 
 function setupScatter() {
   scatterActive = true;
   const letters = [...document.querySelectorAll('.title .letter')];
-  scatterXSetters = letters.map(l => gsap.quickTo(l, 'x', { duration: 0.5, ease: 'power3.out' }));
-  scatterYSetters = letters.map(l => gsap.quickTo(l, 'y', { duration: 0.5, ease: 'power3.out' }));
+  scatterOffsets = letters.map(() => ({ x: 0, y: 0, vx: 0, vy: 0 }));
 
-  titleWrap._scatterMove = (e) => {
-    letters.forEach((letter, i) => {
-      const r = letter.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.hypot(dx, dy);
-      const reach = 90;
-      if (dist < reach) {
-        const force = (1 - dist / reach) * 52;
-        scatterXSetters[i](-(dx / dist) * force);
-        scatterYSetters[i](-(dy / dist) * force * 0.7);
-      } else {
-        scatterXSetters[i](0);
-        scatterYSetters[i](0);
-      }
-    });
-  };
-  titleWrap._scatterLeave = () => {
-    letters.forEach((_, i) => { scatterXSetters[i](0); scatterYSetters[i](0); });
-  };
-  titleWrap.addEventListener('mousemove', titleWrap._scatterMove);
+  titleWrap._scatterMove  = (e) => { scatterMouse.x = e.clientX; scatterMouse.y = e.clientY; };
+  titleWrap._scatterLeave = ()  => { scatterMouse.x = -9999;      scatterMouse.y = -9999; };
+  titleWrap.addEventListener('mousemove',  titleWrap._scatterMove);
   titleWrap.addEventListener('mouseleave', titleWrap._scatterLeave);
+
+  const tick = () => {
+    if (!scatterActive) return;
+    letters.forEach((letter, i) => {
+      const r  = letter.getBoundingClientRect();
+      const cx = r.left + r.width  / 2;
+      const cy = r.top  + r.height / 2;
+      const dx = scatterMouse.x - cx;
+      const dy = scatterMouse.y - cy;
+      const dist  = Math.hypot(dx, dy);
+      const reach = 90;
+      let tx = 0, ty = 0;
+      if (dist > 0 && dist < reach) {
+        const force = (1 - dist / reach) * 52;
+        tx = -(dx / dist) * force;
+        ty = -(dy / dist) * force * 0.7;
+      }
+      const o = scatterOffsets[i];
+      o.vx += (tx - o.x) * 0.15; o.vx *= 0.6; o.x += o.vx;
+      o.vy += (ty - o.y) * 0.15; o.vy *= 0.6; o.y += o.vy;
+      letter.style.transform = `translate(${o.x.toFixed(2)}px,${o.y.toFixed(2)}px)`;
+    });
+    scatterRAF = requestAnimationFrame(tick);
+  };
+  scatterRAF = requestAnimationFrame(tick);
 }
 
 function teardownScatter() {
   if (!scatterActive) return;
   scatterActive = false;
-  if (titleWrap._scatterMove)  titleWrap.removeEventListener('mousemove', titleWrap._scatterMove);
+  cancelAnimationFrame(scatterRAF);
+  scatterRAF = null;
+  if (titleWrap._scatterMove)  titleWrap.removeEventListener('mousemove',  titleWrap._scatterMove);
   if (titleWrap._scatterLeave) titleWrap.removeEventListener('mouseleave', titleWrap._scatterLeave);
-  const letters = document.querySelectorAll('.title .letter');
-  gsap.to(letters, { x: 0, y: 0, duration: 0.5, ease: 'power2.out' });
+  document.querySelectorAll('.title .letter').forEach(l => l.style.transform = '');
 }
 
 /* ============================================================
