@@ -301,7 +301,7 @@ body {
 }
 @keyframes cellImgFade {
   from { opacity: 0; transform: scale(1.04); filter: saturate(0) brightness(.5) blur(6px); }
-  to   { opacity: 1; transform: scale(1);    filter: saturate(.35) contrast(1.08) brightness(.88) blur(0); }
+  to   { opacity: 1; transform: scale(1);    filter: grayscale(1) contrast(3.5) brightness(1.25) blur(0); }
 }
 
 /* Tints per cell */
@@ -435,7 +435,25 @@ body {
 
 .cell .cell-img {
   clip-path: var(--rect);
-  transition: clip-path .7s var(--ease), filter .45s ease, transform .6s var(--ease-out);
+  transition: clip-path .7s var(--ease), filter .65s ease, transform .6s var(--ease-out);
+}
+
+/* Architectural hatching overlay — fades out on hover with the photo reveal */
+.cell.revealed .cell-img::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 2;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      -52deg,
+      transparent 0px,
+      transparent 5px,
+      rgba(245,240,232,.055) 5px,
+      rgba(245,240,232,.055) 6px
+    );
+  opacity: 1;
+  transition: opacity .65s ease;
+  mix-blend-mode: overlay;
 }
 
 .stage.ready .cell { pointer-events: auto; }
@@ -454,9 +472,13 @@ body {
 }
 .stage.ready .cell:hover .cell-img {
   clip-path: var(--shape);
-  filter: saturate(.85) contrast(1.15) brightness(1.05)
+  /* sketch → photo: colour develops in like a darkroom print */
+  filter: saturate(.72) contrast(1.1) brightness(.92)
     drop-shadow(0 0 .5px var(--brass-hi))
-    drop-shadow(0 0 18px rgba(201,168,76,.28));
+    drop-shadow(0 0 18px rgba(201,168,76,.22));
+}
+.stage.ready .cell:hover .cell-img::before {
+  opacity: 0;  /* hatching dissolves as photo appears */
 }
 .stage.ready .cell .cell-img .label,
 .stage.ready .cell .cell-img .idx {
