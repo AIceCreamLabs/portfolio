@@ -409,16 +409,35 @@ function setupScatter() {
   document.body.appendChild(scatterCanvas);
   scatterCtx = scatterCanvas.getContext('2d');
 
-  /* Particles from letter bounding boxes */
+  /* Particles from actual letter pixel shapes (canvas pixel sampling) */
   scatterPtls = [];
+  const cs = getComputedStyle(titleEl);
   document.querySelectorAll('.title .letter').forEach(letter => {
     const r  = letter.getBoundingClientRect();
     const lx = r.left - titleRect.left;
     const ly = r.top  - titleRect.top;
-    for (let y = gap / 2; y < r.height; y += gap) {
-      for (let x = gap / 2; x < r.width; x += gap) {
-        const hx = lx + x, hy = ly + y;
-        scatterPtls.push({ hx, hy, x: hx, y: hy, vx: 0, vy: 0 });
+    const w  = Math.ceil(r.width);
+    const h  = Math.ceil(r.height);
+
+    /* Render just this character white-on-black */
+    const off = document.createElement('canvas');
+    off.width = w; off.height = h;
+    const oc  = off.getContext('2d');
+    oc.fillStyle = '#000';
+    oc.fillRect(0, 0, w, h);
+    oc.fillStyle = '#fff';
+    oc.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    oc.textAlign = 'center';
+    oc.textBaseline = 'middle';
+    oc.fillText(letter.textContent, w / 2, h / 2);
+
+    const data = oc.getImageData(0, 0, w, h).data;
+    for (let y = 0; y < h; y += gap) {
+      for (let x = 0; x < w; x += gap) {
+        if (data[(y * w + x) * 4] > 80) {
+          const hx = lx + x, hy = ly + y;
+          scatterPtls.push({ hx, hy, x: hx, y: hy, vx: 0, vy: 0 });
+        }
       }
     }
   });
