@@ -469,11 +469,17 @@ function initStoryAnimations(detail) {
 
 function initStoryReveals(detailEl) {
   const reveals = detailEl.querySelectorAll('.story__reveal');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => e.target.classList.toggle('is-visible', e.isIntersecting));
-  }, { root: detailEl, rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
-  reveals.forEach(el => obs.observe(el));
-  storyCleanup.push(() => obs.disconnect());
+  // Delay so opening animation settles before observer fires
+  const tid = setTimeout(() => {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('is-visible');
+      });
+    }, { root: detailEl, rootMargin: '0px 0px -38% 0px', threshold: 0.12 });
+    reveals.forEach(el => obs.observe(el));
+    storyCleanup.push(() => obs.disconnect());
+  }, 500);
+  storyCleanup.push(() => clearTimeout(tid));
 }
 
 function initSectionReveals(detailEl) {
