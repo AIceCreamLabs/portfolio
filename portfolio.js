@@ -163,6 +163,13 @@ const GRID_IMAGES = [
 ];
 
 /* ─── Grid render — 6-item 3-column grid like tutorial ─── */
+function makeRollingText(text) {
+  const letters = (str) => [...str].map((ch, i) =>
+    `<span class="letter" style="transition-delay:${i * 15}ms">${ch.trim() ? ch : '&nbsp;'}</span>`
+  ).join('');
+  return `<span class="rolling-text__block">${letters(text)}</span><span class="rolling-text__block rolling-text__block--brass">${letters(text)}</span>`;
+}
+
 function renderGrid() {
   const grid = document.getElementById('galleryGrid');
   if (!grid) return;
@@ -170,18 +177,19 @@ function renderGrid() {
 
   GRID_IMAGES.forEach((img, i) => {
     const item = PORTFOLIO_ITEMS[img.projectIdx];
-    const num = String(i + 1).padStart(2, '0');
     const li = document.createElement('li');
     li.className = 'gallery__item';
     li.dataset.index = i;
     li.dataset.project = img.projectIdx;
     li.innerHTML = `
       <img class="gallery__image" src="${img.src}" alt="${item.title}" loading="lazy" />
+      <span class="gallery__label"><span class="rolling-text">${makeRollingText(item.title)}</span></span>
     `;
     grid.appendChild(li);
   });
 }
 
+/* ─── Tile hover: displacement distortion ─── */
 /* ─── Helpers ─── */
 function lerp(a, b, t) { return a + (b - a) * t; }
 function eio(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
@@ -251,13 +259,19 @@ class StickyGrid {
 
   toggleContent(isVisible) {
     if (!this.subheading || !this.description || !this.btn) return;
+    const akumali = document.getElementById('akumaliFixed');
     gsap.timeline({ defaults: { overwrite: true } })
       .to([this.subheading, this.description, this.btn], {
         opacity: isVisible ? 1 : 0,
         duration: 0.4,
         ease: `power1.${isVisible ? 'inOut' : 'out'}`,
         pointerEvents: isVisible ? 'all' : 'none',
-      });
+      })
+      .to(akumali, {
+        opacity: isVisible ? 0 : 1,
+        duration: 0.4,
+        ease: 'power1.out',
+      }, '<');
   }
 }
 
@@ -282,145 +296,191 @@ function destroyLenis() {
 let isMobile = false;
 let detailObserver = null;
 let detailProgressOff = null;
-let formationsScrollOff = null;
-let formationVideoObs = null;
+let storyCleanup = [];
 
-/*
- * Two-group formation layout (OnScrollLayoutFormations style):
- *   F0 — scattered editorial across full viewport
- *   F1 — group A forms top row, group B forms bottom row, text reads in the gap
- *   F2 — all items collapse into a clean grid
- *
- * Videos are shown in the detail hero; only still images go into formations.
- */
-function getShowcaseFormations(vw, vh, n) {
-  const g = 12;
+function buildStory(item) {
+  const media      = item.media || [];
+  const firstVideo = media.find(s => s.endsWith('.mp4') || s.endsWith('.webm'));
+  const stills     = media.filter(s => !s.endsWith('.mp4') && !s.endsWith('.webm'));
 
-  // F0: scattered, editorial feel
-  const baseF0 = [
-    { x: vw*0.03, y: vh*0.04, w: vw*0.38, h: vh*0.44 },
-    { x: vw*0.44, y: vh*0.02, w: vw*0.22, h: vh*0.27 },
-    { x: vw*0.68, y: vh*0.07, w: vw*0.28, h: vh*0.38 },
-    { x: vw*0.04, y: vh*0.52, w: vw*0.26, h: vh*0.42 },
-    { x: vw*0.32, y: vh*0.60, w: vw*0.37, h: vh*0.33 },
-    { x: vw*0.71, y: vh*0.52, w: vw*0.26, h: vh*0.42 },
-  ].slice(0, n);
+  const ch1MediaSrc = firstVideo || stills[0] || '';
+  const ch1IsVideo  = !!firstVideo;
 
-  // F1: two horizontal rows with a text band in the middle (~18% of vh)
-  const topCount = Math.ceil(n / 2);
-  const botCount = n - topCount;
-  const rowH     = vh * 0.38;
-  const topY     = vh * 0.04;
-  const botY     = vh * 0.60;
-  const f1 = [];
-  const topColW = (vw - g * (topCount + 1)) / Math.max(topCount, 1);
-  for (let i = 0; i < topCount; i++) {
-    f1.push({ x: g + i * (topColW + g), y: topY, w: topColW, h: rowH });
-  }
-  const botColW = botCount > 0 ? (vw - g * (botCount + 1)) / botCount : 0;
-  for (let i = 0; i < botCount; i++) {
-    f1.push({ x: g + i * (botColW + g), y: botY, w: botColW, h: rowH });
-  }
+  const photoStart = ch1IsVideo ? 0 : 1;
+  const ph2 = stills.slice(photoStart, photoStart + 2);
+  const ph3 = stills.slice(photoStart + 2, photoStart + 4);
+  const closing = stills[stills.length - 1] || item.image || '';
 
-  // F2: clean grid (3 columns, wrapping rows)
-  const cols = Math.min(3, n);
-  const rows = Math.ceil(n / cols);
-  const cw   = (vw - g * (cols + 1)) / cols;
-  const rh   = (vh - g * (rows + 1)) / rows;
-  const f2   = Array.from({ length: n }, (_, i) => ({
-    x: g + (i % cols) * (cw + g),
-    y: g + Math.floor(i / cols) * (rh + g),
-    w: cw, h: rh,
-  }));
+  const outcomes   = (item.results || []).slice(1);
+  const tags       = (item.tech || []).map(t => `<span class="tag">${t}</span>`).join('');
+  const isExternal = item.link && !item.link.startsWith('mailto');
 
-  return [baseF0, f1, f2];
-}
+  const photoGrid = photos => photos.length ? `
+    <div class="story__photos story__photos--2 story__reveal">
+      ${photos.map(src => `
+        <div class="story__photo-wrap">
+          <img src="${src}" alt="${item.title}" loading="lazy" />
+        </div>`).join('')}
+    </div>` : '';
 
-function applyFormation(els, formations, progress) {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const numSegs = formations.length - 1;
-  const segLen  = 1 / numSegs;
-  els.forEach((el, i) => {
-    const fi = Math.min(Math.floor(progress / segLen), numSegs - 1);
-    const t  = eio(Math.max(0, Math.min(1, (progress - fi * segLen) / segLen)));
-    const a  = formations[fi][i];
-    const b  = formations[fi + 1][i];
-    if (!a || !b) return;
-    gsap.set(el, {
-      x:      lerp(a.x, b.x, t),
-      y:      lerp(a.y, b.y, t),
-      scaleX: lerp(a.w, b.w, t) / vw,
-      scaleY: lerp(a.h, b.h, t) / vh,
-    });
-  });
-}
+  return `
+    <div class="story__ch1" id="storyCh1">
+      <div class="story__ch1-inner">
+        <div class="story__left">
+          <div class="story__text-block" data-block="0">
+            <span class="detail__label">THE GOAL</span>
+            <p class="story__body">${item.description || ''}</p>
+          </div>
+          <div class="story__text-block" data-block="1">
+            <span class="detail__label">THE PROBLEM</span>
+            <p class="story__body">${item.challenge || ''}</p>
+          </div>
+          <div class="story__text-block" data-block="2">
+            <span class="detail__label">THE INSIGHT</span>
+            <p class="story__pullquote">${item.results?.[0] || ''}</p>
+          </div>
+        </div>
+        <div class="story__right">
+          <div class="story__media-wrap" id="storyMediaWrap">
+            ${ch1IsVideo
+              ? `<video class="story__video" src="${ch1MediaSrc}" muted loop playsinline></video>`
+              : (ch1MediaSrc ? `<img src="${ch1MediaSrc}" alt="${item.title}" />` : '')}
+          </div>
+        </div>
+      </div>
+    </div>
 
-function populateFormations(item) {
-  const wrapper = document.getElementById('detailFormationsWrapper');
-  const stage   = document.getElementById('detailFormationsStage');
-  stage.innerHTML = '';
-  if (formationsScrollOff) { formationsScrollOff(); formationsScrollOff = null; }
-  if (formationVideoObs)   { formationVideoObs.disconnect(); formationVideoObs = null; }
+    <div class="story__ch2">
+      <div class="story__center-wrap story__reveal">
+        <span class="detail__label">THE DESIGN</span>
+        <p class="story__center-text">${item.solution || ''}</p>
+      </div>
+      ${photoGrid(ph2)}
+    </div>
 
-  // Videos go to the hero — only still images in formations
-  const images = (item.media || [])
-    .filter(s => !s.endsWith('.mp4') && !s.endsWith('.webm'))
-    .slice(0, 6);
+    <div class="story__ch3">
+      ${outcomes.length ? `
+      <div class="story__outcomes-wrap story__reveal">
+        <span class="detail__label">OUTCOMES</span>
+        <ul class="detail__outcomes">
+          ${outcomes.map(r => `<li>${r}</li>`).join('')}
+        </ul>
+      </div>` : ''}
+      ${photoGrid(ph3)}
+    </div>
 
-  if (!images.length || isMobile) { wrapper.classList.add('is-empty'); return; }
-  wrapper.classList.remove('is-empty');
-
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const formations = getShowcaseFormations(vw, vh, images.length);
-
-  // Build image elements
-  const els = images.map((src, i) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'detail__formations-item';
-    const img = document.createElement('img');
-    img.src = src; img.alt = item.title;
-    img.loading = i < 3 ? 'eager' : 'lazy';
-    wrap.appendChild(img);
-    stage.appendChild(wrap);
-    return wrap;
-  });
-
-  // Mid-band text — appears between the two groups at F1
-  const midText = document.createElement('div');
-  midText.className = 'detail__showcase-mid';
-  // Vertically centered in the gap between rows (42%–58% of viewport)
-  gsap.set(midText, { top: '42%', opacity: 0 });
-  midText.innerHTML = `
-    <span class="detail__showcase-eyebrow">${item.category || ''}</span>
-    <p class="detail__showcase-subtitle">${item.subtitle || ''}</p>
+    <div class="story__ch4">
+      ${closing ? `
+      <div class="story__closing-img story__reveal">
+        <img src="${closing}" alt="${item.title}" loading="lazy" />
+      </div>` : ''}
+      <div class="story__closing-text-wrap story__reveal">
+        <p class="story__closing-line">${item.subtitle || ''}</p>
+        <div class="detail__tags">${tags}</div>
+        <a class="detail__link" href="${item.link}"${isExternal ? ' target="_blank" rel="noopener"' : ''}>
+          ${isExternal ? 'View project →' : 'Get in touch →'}
+        </a>
+      </div>
+    </div>
   `;
-  stage.appendChild(midText);
+}
 
-  // Initial positions at F0
-  applyFormation(els, formations, 0);
+function buildAboutStory(item) {
+  const tags = (item.tech || []).map(t => `<span class="tag">${t}</span>`).join('');
 
-  // Text visibility: fades in as F1 forms, fades out as F2 forms
-  // progress 0.35→0.50: fade in | 0.50→0.65: hold | 0.65→0.80: fade out
-  function textOpacity(p) {
-    if (p < 0.35) return 0;
-    if (p < 0.50) return (p - 0.35) / 0.15;
-    if (p < 0.65) return 1;
-    if (p < 0.80) return 1 - (p - 0.65) / 0.15;
-    return 0;
+  return `
+    <div class="story__ch1" id="storyCh1">
+      <div class="story__ch1-inner story__ch1-inner--full">
+        <div class="story__left">
+          <div class="story__text-block" data-block="0">
+            <span class="detail__label">WHO I AM</span>
+            <p class="story__body">${item.description || ''}</p>
+          </div>
+          <div class="story__text-block" data-block="1">
+            <span class="detail__label">THE MISALIGNMENT</span>
+            <p class="story__body">${item.challenge || ''}</p>
+          </div>
+          <div class="story__text-block" data-block="2">
+            <span class="detail__label">HOW I WORK</span>
+            <p class="story__pullquote">${item.solution || ''}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="story__ch2">
+      <div class="story__center-wrap story__reveal">
+        <span class="detail__label">THE FACTS</span>
+        <ul class="detail__outcomes">
+          ${(item.results || []).map(r => `<li>${r}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+
+    <div class="story__ch4">
+      <div class="story__closing-text-wrap story__reveal">
+        <p class="story__closing-line">${item.subtitle || ''}</p>
+        <div class="detail__tags">${tags}</div>
+        <a class="detail__link" href="${item.link}">Get in touch →</a>
+      </div>
+    </div>
+  `;
+}
+
+function blockOpacity(p, inStart, inEnd, outStart, outEnd) {
+  if (p < inStart)  return 0;
+  if (p < inEnd)    return (p - inStart) / (inEnd - inStart);
+  if (p < outStart) return 1;
+  if (p < outEnd)   return 1 - (p - outStart) / (outEnd - outStart);
+  return 0;
+}
+
+function initStoryAnimations(detail) {
+  if (isMobile) {
+    const vid = detail.querySelector('.story__video');
+    if (vid) vid.play().catch(() => {});
+    return;
   }
 
-  const detail = document.getElementById('detail');
+  const ch1       = document.getElementById('storyCh1');
+  const blocks    = ch1 ? Array.from(ch1.querySelectorAll('.story__text-block')) : [];
+  const mediaWrap = document.getElementById('storyMediaWrap');
+  const vid       = mediaWrap ? mediaWrap.querySelector('video') : null;
+
+  gsap.set(blocks, { opacity: 0 });
+  if (mediaWrap) gsap.set(mediaWrap, { x: 80, opacity: 0 });
+  if (vid) vid.play().catch(() => {});
+
   const onScroll = () => {
-    const wrapTop = wrapper.offsetTop;
-    const total   = wrapper.offsetHeight - vh;
-    const p = total > 0 ? Math.max(0, Math.min(1, (detail.scrollTop - wrapTop) / total)) : 0;
-    applyFormation(els, formations, p);
-    gsap.set(midText, { opacity: textOpacity(p) });
+    if (!ch1) return;
+    const vh      = window.innerHeight;
+    const rect    = ch1.getBoundingClientRect();
+    const total   = ch1.offsetHeight - vh;
+    const scrolled = -rect.top;
+    const p       = total > 0 ? Math.max(0, Math.min(1, scrolled / total)) : 0;
+
+    if (blocks[0]) gsap.set(blocks[0], { opacity: blockOpacity(p, 0.00, 0.14, 0.28, 0.38) });
+    if (blocks[1]) gsap.set(blocks[1], { opacity: blockOpacity(p, 0.28, 0.42, 0.56, 0.66) });
+    if (blocks[2]) gsap.set(blocks[2], { opacity: blockOpacity(p, 0.58, 0.72, 2.0, 2.0) });
+
+    if (mediaWrap) {
+      const mt     = Math.max(0, Math.min(1, (p - 0.30) / 0.22));
+      const mEased = eio(mt);
+      gsap.set(mediaWrap, { x: lerp(80, 0, mEased), opacity: mEased });
+    }
   };
+
   detail.addEventListener('scroll', onScroll, { passive: true });
-  formationsScrollOff = () => detail.removeEventListener('scroll', onScroll);
+  storyCleanup.push(() => detail.removeEventListener('scroll', onScroll));
+}
+
+function initStoryReveals(detailEl) {
+  const reveals = detailEl.querySelectorAll('.story__reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => e.target.classList.toggle('is-visible', e.isIntersecting));
+  }, { root: detailEl, rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
+  reveals.forEach(el => obs.observe(el));
+  storyCleanup.push(() => obs.disconnect());
 }
 
 function initSectionReveals(detailEl) {
@@ -447,98 +507,70 @@ function initDetailProgress(detailEl) {
 function buildSections(item) {
   if (item.type === 'about') {
     return `
-      <section class="detail__section">
-        <p class="detail__lede">${item.description}</p>
-      </section>
-      <section class="detail__section detail__split">
-        <div>
-          <span class="detail__label">THE PROBLEM WITH MOST HIRES</span>
-          <p class="detail__text">${item.challenge}</p>
+      <div class="detail__content-wrap">
+        <div class="detail__content">
+          <section class="detail__section">
+            <p class="detail__lede">${item.description}</p>
+          </section>
+          <section class="detail__section detail__split">
+            <div>
+              <span class="detail__label">THE PROBLEM WITH MOST HIRES</span>
+              <p class="detail__text">${item.challenge}</p>
+            </div>
+            <div>
+              <span class="detail__label">HOW I WORK</span>
+              <p class="detail__text">${item.solution}</p>
+            </div>
+          </section>
+          <section class="detail__section detail__case-footer">
+            <div class="detail__tags">${item.tech.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+            <a class="detail__link" href="${item.link}">Get in touch →</a>
+          </section>
         </div>
-        <div>
-          <span class="detail__label">HOW I WORK</span>
-          <p class="detail__text">${item.solution}</p>
-        </div>
-      </section>
-      <section class="detail__section detail__case-footer">
-        <div class="detail__tags">${item.tech.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-        <a class="detail__link" href="${item.link}">Get in touch →</a>
-      </section>
+      </div>
     `;
   }
 
   if (item.type === 'service') {
     return `
-      <section class="detail__section">
-        <div class="detail__heading">Foundation</div>
-        <div class="detail__price">€2,500–3,500</div>
-        <div class="detail__time">3–4 weeks</div>
-        <p class="detail__text">Website or landing page. SEO optimized. Mobile-first. You own the code. 30 days of support.</p>
-      </section>
-      <section class="detail__section">
-        <div class="detail__heading">System</div>
-        <div class="detail__price">€5,500–8,500</div>
-        <div class="detail__time">8–12 weeks</div>
-        <p class="detail__text">Full web app or SaaS. Admin dashboard. 1 custom AI feature. Advanced SEO + analytics.</p>
-      </section>
-      <section class="detail__section">
-        <div class="detail__heading">Authority</div>
-        <div class="detail__price">€12,000–18,000</div>
-        <div class="detail__time">12–16 weeks</div>
-        <p class="detail__text">Market-leading product. Advanced AI integration. Full ecosystem thinking. Launch support included.</p>
-      </section>
-      <section class="detail__section">
-        <div class="detail__heading">Retainer</div>
-        <div class="detail__price">€3,500–6,500/mo</div>
-        <div class="detail__time">6+ months</div>
-        <p class="detail__text">Strategic direction + execution. Embedded with your team. Weekly strategy sessions.</p>
-      </section>
-      <section class="detail__section">
-        <div class="detail__meta-list">
-          ${['Response within 24h', 'Ships in weeks, not quarters', '30 days support included', 'You own all the code'].map(r => `<div class="detail__meta-row">${r}</div>`).join('')}
+      <div class="detail__content-wrap">
+        <div class="detail__content">
+          <section class="detail__section">
+            <div class="detail__heading">Foundation</div>
+            <div class="detail__price">€2,500–3,500</div>
+            <div class="detail__time">3–4 weeks</div>
+            <p class="detail__text">Website or landing page. SEO optimized. Mobile-first. You own the code. 30 days of support.</p>
+          </section>
+          <section class="detail__section">
+            <div class="detail__heading">System</div>
+            <div class="detail__price">€5,500–8,500</div>
+            <div class="detail__time">8–12 weeks</div>
+            <p class="detail__text">Full web app or SaaS. Admin dashboard. 1 custom AI feature. Advanced SEO + analytics.</p>
+          </section>
+          <section class="detail__section">
+            <div class="detail__heading">Authority</div>
+            <div class="detail__price">€12,000–18,000</div>
+            <div class="detail__time">12–16 weeks</div>
+            <p class="detail__text">Market-leading product. Advanced AI integration. Full ecosystem thinking. Launch support included.</p>
+          </section>
+          <section class="detail__section">
+            <div class="detail__heading">Retainer</div>
+            <div class="detail__price">€3,500–6,500/mo</div>
+            <div class="detail__time">6+ months</div>
+            <p class="detail__text">Strategic direction + execution. Embedded with your team. Weekly strategy sessions.</p>
+          </section>
+          <section class="detail__section">
+            <div class="detail__meta-list">
+              ${['Response within 24h', 'Ships in weeks, not quarters', '30 days support included', 'You own all the code'].map(r => `<div class="detail__meta-row">${r}</div>`).join('')}
+            </div>
+            <a class="detail__link" href="${item.link}">Start the conversation →</a>
+          </section>
         </div>
-        <a class="detail__link" href="${item.link}">Start the conversation →</a>
-      </section>
+      </div>
     `;
   }
 
-  const isExternal = item.link && !item.link.startsWith('mailto');
-  const stat       = item.results?.[0] || '';
-  const outcomes   = (item.results || []).slice(1);
-  return `
-    ${item.description ? `
-    <section class="detail__section">
-      <p class="detail__lede">${item.description}</p>
-    </section>` : ''}
-
-    ${stat ? `
-    <section class="detail__section">
-      <span class="detail__label">IMPACT</span>
-      <p class="detail__impact-stat">${stat}</p>
-    </section>` : ''}
-
-    <section class="detail__section detail__split">
-      <div>
-        <span class="detail__label">THE CHALLENGE</span>
-        <p class="detail__text">${item.challenge}</p>
-      </div>
-      <div>
-        <span class="detail__label">THE APPROACH</span>
-        <p class="detail__text">${item.solution}</p>
-      </div>
-    </section>
-
-    ${outcomes.length ? `
-    <section class="detail__section">
-      <span class="detail__label">OUTCOMES</span>
-      <ul class="detail__outcomes">${outcomes.map(r => `<li>${r}</li>`).join('')}</ul>
-    </section>` : ''}
-
-    <section class="detail__section detail__case-footer">
-      <div class="detail__tags">${(item.tech || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-      <a class="detail__link" href="${item.link}"${isExternal ? ' target="_blank" rel="noopener"' : ''}>${isExternal ? 'View project →' : 'Get in touch →'}</a>
-    </section>
-  `;
+  return '';
 }
 
 function openDetail(item, label, originTile) {
@@ -558,29 +590,45 @@ function openDetail(item, label, originTile) {
   eyebrow.textContent = label;
   title.textContent   = item.title;
   sub.textContent     = item.subtitle;
-  main.innerHTML      = buildSections(item);
 
-  // Hero: prefer first video in media array; fall back to still image
-  const firstVideo = (item.media || []).find(s => s.endsWith('.mp4') || s.endsWith('.webm'));
-  if (firstVideo) {
-    heroVideo.src          = firstVideo;
-    heroVideo.poster       = item.image || '';
-    heroVideo.style.display = 'block';
-    heroImg.style.display   = 'none';
-    heroVideo.play().catch(() => {
-      heroVideo.style.display = 'none';
-      heroImg.src = item.image || '';
-      heroImg.style.display = 'block';
-    });
+  // Build body content
+  if (item.type === 'project') {
+    main.innerHTML = buildStory(item);
+    initStoryAnimations(detail);
+  } else if (item.type === 'about') {
+    main.innerHTML = buildAboutStory(item);
+    initStoryAnimations(detail);
   } else {
-    heroImg.src            = item.image || '';
-    heroImg.alt            = item.title;
-    heroImg.style.display  = 'block';
-    heroVideo.style.display = 'none';
-    heroVideo.src          = '';
+    main.innerHTML = buildSections(item);
   }
 
-  populateFormations(item);
+  // Hero: projects show still thumbnail; service/about try video first
+  if (item.type === 'project') {
+    heroImg.src             = item.image || '';
+    heroImg.alt             = item.title;
+    heroImg.style.display   = 'block';
+    heroVideo.style.display = 'none';
+    heroVideo.src           = '';
+  } else {
+    const firstVideo = (item.media || []).find(s => s.endsWith('.mp4') || s.endsWith('.webm'));
+    if (firstVideo) {
+      heroVideo.src           = firstVideo;
+      heroVideo.poster        = item.image || '';
+      heroVideo.style.display = 'block';
+      heroImg.style.display   = 'none';
+      heroVideo.play().catch(() => {
+        heroVideo.style.display = 'none';
+        heroImg.src             = item.image || '';
+        heroImg.style.display   = 'block';
+      });
+    } else {
+      heroImg.src             = item.image || '';
+      heroImg.alt             = item.title;
+      heroImg.style.display   = 'block';
+      heroVideo.style.display = 'none';
+      heroVideo.src           = '';
+    }
+  }
 
   // Hide header — will stagger in after panel opens
   gsap.set([eyebrow, title, sub], { opacity: 0, y: 16 });
@@ -609,11 +657,20 @@ function openDetail(item, label, originTile) {
 
   const afterOpen = () => {
     gsap.set(detail, { clearProps: 'clipPath' });
+    // Hero image settles (Ken Burns entrance)
+    const heroEl = document.getElementById('detailHeroImg');
+    const heroVid = document.getElementById('detailHeroVideo');
+    const visibleHero = heroVid && heroVid.style.display !== 'none' ? heroVid : heroEl;
+    gsap.fromTo(visibleHero, { scale: 1.04 }, { scale: 1, duration: 1.1, ease: 'power3.out' });
     gsap.to([eyebrow, title, sub], {
       opacity: 1, y: 0,
       duration: 0.4, ease: 'power2.out', stagger: 0.08,
     });
-    initSectionReveals(detail);
+    if (item.type === 'project' || item.type === 'about') {
+      initStoryReveals(detail);
+    } else {
+      initSectionReveals(detail);
+    }
     initDetailProgress(detail);
   };
 
@@ -635,22 +692,26 @@ function closeDetail() {
 
   if (detailObserver)    { detailObserver.disconnect(); detailObserver = null; }
   if (detailProgressOff) { detailProgressOff(); detailProgressOff = null; }
-  if (formationsScrollOff) { formationsScrollOff(); formationsScrollOff = null; }
-  if (formationVideoObs)   { formationVideoObs.disconnect(); formationVideoObs = null; }
 
-  // Stop hero video
+  storyCleanup.forEach(fn => fn());
+  storyCleanup = [];
+
+  const storyVid = document.querySelector('.story__video');
+  if (storyVid) { storyVid.pause(); storyVid.src = ''; }
+
   const heroVideo = document.getElementById('detailHeroVideo');
   if (heroVideo) { heroVideo.pause(); heroVideo.src = ''; }
 
   gsap.to(detail, {
     opacity: 0,
-    y: 16,
-    duration: 0.35,
-    ease: 'power2.in',
+    y: 48,
+    scale: 0.97,
+    duration: 0.75,
+    ease: 'cubic-bezier(0.76, 0, 0.24, 1)',
     onComplete: () => {
       detail.classList.remove('is-open');
       detail.setAttribute('aria-hidden', 'true');
-      gsap.set(detail, { clearProps: 'opacity,y' });
+      gsap.set(detail, { clearProps: 'opacity,y,scale' });
       initLenis();
       if (!isMobile) {
         const akumali = document.getElementById('akumaliFixed');
@@ -661,6 +722,8 @@ function closeDetail() {
 }
 
 function initDetail() {
+  const detail = document.getElementById('detail');
+
   document.getElementById('detailClose').addEventListener('click', closeDetail);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
 
@@ -677,6 +740,36 @@ function initDetail() {
   document.getElementById('workBtn')?.addEventListener('click', e => {
     openDetail(PORTFOLIO_ITEMS[7], 'ABOUT', e.currentTarget);
   });
+
+  // Scroll past bottom → close detail and return to home
+  // Requires 2 distinct deliberate scroll gestures at the very end
+  let overGestures = 0;
+  let overDebounce = null;
+  detail.addEventListener('wheel', (e) => {
+    if (!detail.classList.contains('is-open')) { overGestures = 0; return; }
+    const atBottom = detail.scrollTop >= detail.scrollHeight - detail.clientHeight - 6;
+    if (atBottom && e.deltaY > 0) {
+      clearTimeout(overDebounce);
+      overDebounce = setTimeout(() => {
+        overGestures++;
+        if (overGestures >= 2) { overGestures = 0; closeDetail(); }
+      }, 280);
+    } else {
+      clearTimeout(overDebounce);
+      overGestures = 0;
+    }
+  }, { passive: true });
+
+  let touchStartY = 0;
+  detail.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  detail.addEventListener('touchend', (e) => {
+    if (!detail.classList.contains('is-open')) return;
+    const atBottom = detail.scrollTop >= detail.scrollHeight - detail.clientHeight - 8;
+    const swipedUp = touchStartY - e.changedTouches[0].clientY > 48;
+    if (atBottom && swipedUp) closeDetail();
+  }, { passive: true });
 }
 
 /* ─── Custom cursor ─── */
@@ -753,16 +846,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   gsap.ticker.lagSmoothing(0);
 
+  // Centre akumali before entrance so it doesn't flash from the wrong position
+  const akumali = document.getElementById('akumaliFixed');
+  if (akumali) gsap.set(akumali, { xPercent: -50, yPercent: -50 });
+
   playEntrance(() => {
     initLenis();
     new StickyGrid();
 
     // Persistent akumali — scales down into the middle content area
-    const akumali = document.getElementById('akumaliFixed');
     if (akumali) {
-      gsap.set(akumali, { xPercent: -50, yPercent: -50 });
       gsap.to(akumali, {
-        top: '35%',
+        top: '50%',
         scale: 0.32,
         ease: 'none',
         scrollTrigger: {
