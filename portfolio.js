@@ -272,6 +272,25 @@ class StickyGrid {
         duration: 0.4,
         ease: 'power1.out',
       }, '<');
+
+    if (isVisible) {
+      // Ambient idle float on F2 tiles
+      this.idleTweens = this.idleTweens || [];
+      const tiles = document.querySelectorAll('.gallery__item');
+      tiles.forEach(tile => {
+        this.idleTweens.push(gsap.to(tile, {
+          y: gsap.utils.random(-4, 4),
+          duration: gsap.utils.random(3, 5),
+          ease: 'sine.inOut',
+          repeat: -1, yoyo: true,
+          delay: gsap.utils.random(0, 2),
+        }));
+      });
+    } else {
+      (this.idleTweens || []).forEach(t => t.kill());
+      this.idleTweens = [];
+      gsap.set(document.querySelectorAll('.gallery__item'), { y: 0 });
+    }
   }
 }
 
@@ -284,6 +303,7 @@ function initLenis() {
   lenis = new Lenis({ lerp: 0.08, wheelMultiplier: 1.4 });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(lenisRaf);
+  ScrollTrigger.refresh();
 }
 function destroyLenis() {
   if (!lenis) return;
@@ -387,41 +407,30 @@ function buildStory(item) {
 
 function buildAboutStory(item) {
   const tags = (item.tech || []).map(t => `<span class="tag">${t}</span>`).join('');
-
   return `
-    <div class="story__ch1" id="storyCh1">
-      <div class="story__ch1-inner story__ch1-inner--full">
-        <div class="story__left">
-          <div class="story__text-block" data-block="0">
-            <span class="detail__label">WHO I AM</span>
-            <p class="story__body">${item.description || ''}</p>
-          </div>
-          <div class="story__text-block" data-block="1">
-            <span class="detail__label">THE MISALIGNMENT</span>
-            <p class="story__body">${item.challenge || ''}</p>
-          </div>
-          <div class="story__text-block" data-block="2">
-            <span class="detail__label">HOW I WORK</span>
-            <p class="story__pullquote">${item.solution || ''}</p>
-          </div>
-        </div>
+    <div class="about__content">
+      <div class="story__reveal">
+        <span class="detail__label">WHO I AM</span>
+        <p class="story__body">${item.description || ''}</p>
       </div>
-    </div>
-
-    <div class="story__ch2">
-      <div class="story__center-wrap story__reveal">
+      <div class="story__reveal">
+        <span class="detail__label">THE MISALIGNMENT</span>
+        <p class="story__body">${item.challenge || ''}</p>
+      </div>
+      <div class="story__reveal">
+        <span class="detail__label">HOW I WORK</span>
+        <p class="story__pullquote">${item.solution || ''}</p>
+      </div>
+      <div class="story__reveal">
         <span class="detail__label">THE FACTS</span>
         <ul class="detail__outcomes">
           ${(item.results || []).map(r => `<li>${r}</li>`).join('')}
         </ul>
       </div>
-    </div>
-
-    <div class="story__ch4">
-      <div class="story__closing-text-wrap story__reveal">
+      <div class="story__reveal">
         <p class="story__closing-line">${item.subtitle || ''}</p>
         <div class="detail__tags">${tags}</div>
-        <a class="detail__link" href="${item.link}">Get in touch →</a>
+        <a class="detail__link" href="${item.link || '#'}">Get in touch →</a>
       </div>
     </div>
   `;
@@ -597,19 +606,26 @@ function openDetail(item, label, originTile) {
     initStoryAnimations(detail);
   } else if (item.type === 'about') {
     main.innerHTML = buildAboutStory(item);
-    initStoryAnimations(detail);
   } else {
     main.innerHTML = buildSections(item);
   }
 
-  // Hero: projects show still thumbnail; service/about try video first
-  if (item.type === 'project') {
+  // Hero: about has no hero; projects show thumbnail
+  const detailHero = document.getElementById('detailHero');
+  if (item.type === 'about') {
+    if (detailHero) detailHero.style.display = 'none';
+    heroImg.style.display   = 'none';
+    heroVideo.style.display = 'none';
+    heroVideo.src           = '';
+  } else if (item.type === 'project') {
+    if (detailHero) detailHero.style.display = '';
     heroImg.src             = item.image || '';
     heroImg.alt             = item.title;
     heroImg.style.display   = 'block';
     heroVideo.style.display = 'none';
     heroVideo.src           = '';
   } else {
+    if (detailHero) detailHero.style.display = '';
     const firstVideo = (item.media || []).find(s => s.endsWith('.mp4') || s.endsWith('.webm'));
     if (firstVideo) {
       heroVideo.src           = firstVideo;
@@ -657,14 +673,16 @@ function openDetail(item, label, originTile) {
 
   const afterOpen = () => {
     gsap.set(detail, { clearProps: 'clipPath' });
-    // Hero image settles (Ken Burns entrance)
-    const heroEl = document.getElementById('detailHeroImg');
-    const heroVid = document.getElementById('detailHeroVideo');
-    const visibleHero = heroVid && heroVid.style.display !== 'none' ? heroVid : heroEl;
-    gsap.fromTo(visibleHero, { scale: 1.04 }, { scale: 1, duration: 1.1, ease: 'power3.out' });
+    // Ken Burns on hero image (projects only)
+    if (item.type !== 'about') {
+      const heroEl  = document.getElementById('detailHeroImg');
+      const heroVid = document.getElementById('detailHeroVideo');
+      const visibleHero = heroVid && heroVid.style.display !== 'none' ? heroVid : heroEl;
+      gsap.fromTo(visibleHero, { scale: 1.04 }, { scale: 1, duration: 1.1, ease: 'power3.out' });
+    }
     gsap.to([eyebrow, title, sub], {
       opacity: 1, y: 0,
-      duration: 0.4, ease: 'power2.out', stagger: 0.08,
+      duration: 0.75, ease: 'cubic-bezier(0.76, 0, 0.24, 1)', stagger: 0.1,
     });
     if (item.type === 'project' || item.type === 'about') {
       initStoryReveals(detail);
@@ -701,6 +719,8 @@ function closeDetail() {
 
   const heroVideo = document.getElementById('detailHeroVideo');
   if (heroVideo) { heroVideo.pause(); heroVideo.src = ''; }
+  const detailHero = document.getElementById('detailHero');
+  if (detailHero) detailHero.style.display = '';
 
   gsap.to(detail, {
     opacity: 0,
@@ -736,9 +756,9 @@ function initDetail() {
     openDetail(item, `PROJECT · ${String(projectIdx + 1).padStart(2, '0')}`, tile);
   });
 
-  // "See my work" button opens About
-  document.getElementById('workBtn')?.addEventListener('click', e => {
-    openDetail(PORTFOLIO_ITEMS[7], 'ABOUT', e.currentTarget);
+  // "About me" button — no tile origin, no hero
+  document.getElementById('workBtn')?.addEventListener('click', () => {
+    openDetail(PORTFOLIO_ITEMS[7], 'ABOUT', null);
   });
 
   // Scroll past bottom → close detail and return to home
@@ -801,19 +821,18 @@ function initCursor() {
 
 /* ─── Entrance sequence ─── */
 function playEntrance(onComplete) {
-  const letters = document.querySelectorAll('.akumali-fixed__letter');
+  const letters = [...document.querySelectorAll('.akumali-fixed__letter')];
   const nav     = document.querySelector('.nav');
-  gsap.set(letters, { opacity: 0, y: 24 });
+  gsap.set(letters, { opacity: 0, y: -30, rotateX: 20 });
   gsap.set(nav, { opacity: 0 });
   gsap.timeline({ onComplete })
     .to(letters, {
-      opacity: 1, y: 0,
-      duration: 0.7,
-      ease: 'power3.out',
-      stagger: 0.06,
-      delay: 0.15,
+      opacity: 1, y: 0, rotateX: 0,
+      duration: 1.4, ease: 'expo.out',
+      stagger: { each: 0.07, from: 'start' },
+      delay: 0.3,
     })
-    .to(nav, { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.3');
+    .to(nav, { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.4');
 }
 
 /* ─── Boot ─── */
@@ -854,10 +873,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initLenis();
     new StickyGrid();
 
-    // Persistent akumali — scales down into the middle content area
+    // Persistent akumali — shrinks to 35% as hero scrolls out, grows back on scroll-up
     if (akumali) {
       gsap.to(akumali, {
-        top: '50%',
+        top: '35%',
         scale: 0.32,
         ease: 'none',
         scrollTrigger: {
@@ -867,6 +886,20 @@ document.addEventListener('DOMContentLoaded', () => {
           scrub: true,
         },
       });
+      // Ambient float — starts after entrance completes
+      gsap.to(akumali, {
+        y: -8, duration: 6, ease: 'sine.inOut', repeat: -1, yoyo: true,
+      });
+    }
+    // Datum line + hero content text-in after entrance
+    document.querySelector('.hero')?.classList.add('is-ready');
+    const heroContent = document.querySelector('.hero__content');
+    if (heroContent) {
+      const targets = heroContent.querySelectorAll('.hero__eyebrow, .hero__title, .hero__sub');
+      gsap.fromTo(targets,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'cubic-bezier(0.76, 0, 0.24, 1)', stagger: 0.1, delay: 0.2 }
+      );
     }
   });
 });
