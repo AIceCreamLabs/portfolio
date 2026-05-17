@@ -216,6 +216,8 @@ class StickyGrid {
   }
 
   initContent() {
+    // Make grid visible now that StickyGrid has positioned tiles off-screen
+    gsap.set(this.grid, { opacity: 1 });
     gsap.set([this.subheading, this.description, this.btn], { opacity: 0, pointerEvents: 'none' });
   }
 
@@ -273,24 +275,6 @@ class StickyGrid {
         ease: 'power1.out',
       }, '<');
 
-    if (isVisible) {
-      // Ambient idle float on F2 tiles
-      this.idleTweens = this.idleTweens || [];
-      const tiles = document.querySelectorAll('.gallery__item');
-      tiles.forEach(tile => {
-        this.idleTweens.push(gsap.to(tile, {
-          y: gsap.utils.random(-4, 4),
-          duration: gsap.utils.random(3, 5),
-          ease: 'sine.inOut',
-          repeat: -1, yoyo: true,
-          delay: gsap.utils.random(0, 2),
-        }));
-      });
-    } else {
-      (this.idleTweens || []).forEach(t => t.kill());
-      this.idleTweens = [];
-      gsap.set(document.querySelectorAll('.gallery__item'), { y: 0 });
-    }
   }
 }
 
@@ -700,8 +684,11 @@ function openDetail(item, label, originTile) {
       onComplete: afterOpen,
     });
   } else {
-    // Mobile or no tile: skip clip-path, just reveal header
-    afterOpen();
+    // No tile origin: slide up from below
+    gsap.fromTo(detail,
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 0.7, ease: 'cubic-bezier(0.76, 0, 0.24, 1)', onComplete: afterOpen }
+    );
   }
 }
 
@@ -823,14 +810,14 @@ function initCursor() {
 function playEntrance(onComplete) {
   const letters = [...document.querySelectorAll('.akumali-fixed__letter')];
   const nav     = document.querySelector('.nav');
-  gsap.set(letters, { opacity: 0, y: -30, rotateX: 20 });
+  gsap.set(letters, { opacity: 0, y: 20 });
   gsap.set(nav, { opacity: 0 });
   gsap.timeline({ onComplete })
     .to(letters, {
-      opacity: 1, y: 0, rotateX: 0,
-      duration: 1.4, ease: 'expo.out',
+      opacity: 1, y: 0,
+      duration: 1.0, ease: 'expo.out',
       stagger: { each: 0.07, from: 'start' },
-      delay: 0.3,
+      delay: 0.15,
     })
     .to(nav, { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.4');
 }
@@ -873,10 +860,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initLenis();
     new StickyGrid();
 
-    // Persistent akumali — shrinks to 35% as hero scrolls out, grows back on scroll-up
+    // Persistent akumali — shrinks in place as hero scrolls out, grows back on scroll-up
     if (akumali) {
       gsap.to(akumali, {
-        top: '35%',
         scale: 0.32,
         ease: 'none',
         scrollTrigger: {
@@ -885,10 +871,6 @@ document.addEventListener('DOMContentLoaded', () => {
           end: 'bottom top',
           scrub: true,
         },
-      });
-      // Ambient float — starts after entrance completes
-      gsap.to(akumali, {
-        y: -8, duration: 6, ease: 'sine.inOut', repeat: -1, yoyo: true,
       });
     }
     // Datum line + hero content text-in after entrance

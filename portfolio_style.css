@@ -107,7 +107,10 @@ button { font-family: inherit; cursor: pointer; }
 .hero__eyebrow {
   font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
   color: var(--brass); font-family: 'IBM Plex Mono', monospace;
+  opacity: 0;
 }
+.hero__title { opacity: 0; }
+.hero__sub { opacity: 0; }
 .hero__title {
   font-family: 'JetBrains Mono', monospace;
   font-size: clamp(36rem, 5vw, 72rem);
@@ -129,8 +132,6 @@ button { font-family: inherit; cursor: pointer; }
   gap: 4rem;
   z-index: 3;
   pointer-events: none;
-  perspective: 800px;
-  transform-style: preserve-3d;
 }
 .akumali-fixed__letter {
   font-family: 'JetBrains Mono', monospace;
@@ -166,6 +167,7 @@ button { font-family: inherit; cursor: pointer; }
   pointer-events: none;
 }
 .content__subheading {
+  opacity: 0;
   width: 500rem;
   margin-top: 12rem;
   font-family: 'JetBrains Mono', monospace;
@@ -218,6 +220,7 @@ button { font-family: inherit; cursor: pointer; }
   z-index: 1;
 }
 .gallery__grid {
+  opacity: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20rem;
@@ -443,20 +446,14 @@ button { font-family: inherit; cursor: pointer; }
 /* ─── Footer ─── */
 .footer {
   padding: 52px 48px;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 16px;
+  display: flex; justify-content: space-between; align-items: center;
   border-top: 1px solid var(--border);
+  font-size: 10px; letter-spacing: .12em; color: var(--ink-2);
 }
 .footer__sig {
   font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(28rem, 4vw, 56rem);
-  font-weight: 800; letter-spacing: -0.02em;
-  color: var(--brass); opacity: 0.15;
-  transition: opacity 1.2s var(--ease);
-}
-.footer:hover .footer__sig { opacity: 0.45; }
-.footer__meta {
-  display: flex; justify-content: space-between; width: 100%;
-  font-size: 10px; letter-spacing: .12em; color: var(--ink-2);
+  font-size: 10px; letter-spacing: 0.14em;
+  font-weight: 500; color: var(--brass); opacity: 0.5;
 }
 .footer a { color: var(--brass); transition: opacity .2s; }
 .footer a:hover { opacity: .7; }
