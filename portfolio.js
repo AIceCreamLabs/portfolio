@@ -337,6 +337,8 @@ function getShowcaseFormations(vw, vh, n) {
 }
 
 function applyFormation(els, formations, progress) {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
   const numSegs = formations.length - 1;
   const segLen  = 1 / numSegs;
   els.forEach((el, i) => {
@@ -346,8 +348,10 @@ function applyFormation(els, formations, progress) {
     const b  = formations[fi + 1][i];
     if (!a || !b) return;
     gsap.set(el, {
-      x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t),
-      width: lerp(a.w, b.w, t), height: lerp(a.h, b.h, t),
+      x:      lerp(a.x, b.x, t),
+      y:      lerp(a.y, b.y, t),
+      scaleX: lerp(a.w, b.w, t) / vw,
+      scaleY: lerp(a.h, b.h, t) / vh,
     });
   });
 }
@@ -563,7 +567,11 @@ function openDetail(item, label, originTile) {
     heroVideo.poster       = item.image || '';
     heroVideo.style.display = 'block';
     heroImg.style.display   = 'none';
-    heroVideo.play().catch(() => {});
+    heroVideo.play().catch(() => {
+      heroVideo.style.display = 'none';
+      heroImg.src = item.image || '';
+      heroImg.style.display = 'block';
+    });
   } else {
     heroImg.src            = item.image || '';
     heroImg.alt            = item.title;
@@ -671,19 +679,66 @@ function initDetail() {
   });
 }
 
+/* ─── Custom cursor ─── */
+function initCursor() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  const cursor = document.getElementById('cursor');
+  if (!cursor) return;
+
+  let mx = 0, my = 0, cx = 0, cy = 0, running = true;
+  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  (function loop() {
+    if (!running) return;
+    cx = lerp(cx, mx, 0.12);
+    cy = lerp(cy, my, 0.12);
+    gsap.set(cursor, { x: cx, y: cy });
+    requestAnimationFrame(loop);
+  })();
+
+  const TARGETS = 'a, button, .gallery__item, .detail__link, .content__btn';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(TARGETS)) cursor.classList.add('is-hovering');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(TARGETS)) cursor.classList.remove('is-hovering');
+  });
+  document.addEventListener('mouseleave', () => gsap.set(cursor, { opacity: 0 }));
+  document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
+}
+
+/* ─── Entrance sequence ─── */
+function playEntrance(onComplete) {
+  const letters = document.querySelectorAll('.akumali-fixed__letter');
+  const nav     = document.querySelector('.nav');
+  gsap.set(letters, { opacity: 0, y: 24 });
+  gsap.set(nav, { opacity: 0 });
+  gsap.timeline({ onComplete })
+    .to(letters, {
+      opacity: 1, y: 0,
+      duration: 0.7,
+      ease: 'power3.out',
+      stagger: 0.06,
+      delay: 0.15,
+    })
+    .to(nav, { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.3');
+}
+
 /* ─── Boot ─── */
 document.addEventListener('DOMContentLoaded', () => {
   gsap.registerPlugin(ScrollTrigger);
 
-  isMobile = window.innerWidth <= 768;
+  isMobile = window.innerWidth <= 768 || window.innerHeight <= 500;
 
   initTheme();
+  initCursor();
   renderGrid();
   initDetail();
 
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => window.location.reload(), 300);
+  });
+
   if (isMobile) {
-    // On mobile: static layout, no scroll animations. Content already visible via CSS.
-    // GSAP initContent() sets opacity 0 — override it back.
     const block = document.getElementById('gridBlock');
     if (block) {
       gsap.set(
@@ -696,25 +751,27 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  initLenis();
   gsap.ticker.lagSmoothing(0);
 
-  new StickyGrid();
+  playEntrance(() => {
+    initLenis();
+    new StickyGrid();
 
-  // Persistent akumali — scales down into the middle content area
-  const akumali = document.getElementById('akumaliFixed');
-  if (akumali) {
-    gsap.set(akumali, { xPercent: -50, yPercent: -50 });
-    gsap.to(akumali, {
-      top: '35%',
-      scale: 0.32,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: '.hero',
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true,
-      },
-    });
-  }
+    // Persistent akumali — scales down into the middle content area
+    const akumali = document.getElementById('akumaliFixed');
+    if (akumali) {
+      gsap.set(akumali, { xPercent: -50, yPercent: -50 });
+      gsap.to(akumali, {
+        top: '35%',
+        scale: 0.32,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        },
+      });
+    }
+  });
 });
