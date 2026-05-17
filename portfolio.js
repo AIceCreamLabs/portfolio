@@ -873,15 +873,5 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
     }
-    // Datum line + hero content text-in after entrance
-    document.querySelector('.hero')?.classList.add('is-ready');
-    const heroContent = document.querySelector('.hero__content');
-    if (heroContent) {
-      const targets = heroContent.querySelectorAll('.hero__eyebrow, .hero__title, .hero__sub');
-      gsap.fromTo(targets,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'cubic-bezier(0.76, 0, 0.24, 1)', stagger: 0.1, delay: 0.2 }
-      );
-    }
   });
 });
