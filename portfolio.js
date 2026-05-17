@@ -860,9 +860,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initLenis();
     new StickyGrid();
 
-    // Persistent akumali — shrinks in place as hero scrolls out, grows back on scroll-up
+    // AKUMALI shrinks and moves toward grid content as hero scrolls out; scrub reverses on scroll-up
     if (akumali) {
       gsap.to(akumali, {
+        top: '35%',
         scale: 0.32,
         ease: 'none',
         scrollTrigger: {
