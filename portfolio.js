@@ -240,6 +240,7 @@ class StickyGrid {
     zoomTl.to(this.grid, { scale: 1.55 });
     zoomTl.to(this.columns[0], { xPercent: -72 }, '<');
     zoomTl.to(this.columns[2], { xPercent: 72 }, '<');
+    zoomTl.to(this.columns[1], { opacity: 0, duration: 0.4, ease: 'power2.in' }, '<');
     zoomTl.to(this.columns[1], {
       yPercent: (i) => (i < Math.floor(this.columns[1].length / 2) ? -1 : 1) * 72,
       duration: 0.5,
