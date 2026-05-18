@@ -17,13 +17,13 @@ const PORTFOLIO_ITEMS = [
     media: ['ntoma4.mp4', 'ntoma3.png', 'ntoma2.png', 'ntoma1.png', 'ntoma.png'],
     type: 'project',
     description: 'A designer found a photo of the perfect dress. Her local tailor quoted €200 and 6 weeks.',
-    challenge: 'Fashion designers and home sewers spend hours or hundreds of euros getting patterns made from reference photos. There was no affordable, fast alternative.',
-    solution: 'Built a full AI pipeline: computer vision garment analysis, technical flat drawing generation, mathematically correct pattern pieces, virtual fit on body silhouette, and multi-size grading — all from a single photo.',
+    challenge: 'Patterns have always been the bottleneck between idea and garment. Not the fabric. Not the sewing. The math.',
+    solution: 'One photo. Two minutes. Correct pattern pieces, size-graded XS to XL, exported for factory production. The tailor became optional.',
     results: [
-      'Photo → pattern in under 2 minutes',
-      'XS–XL grading automatic',
+      'The bottleneck was never the fabric.',
+      'Photo to pattern in under 2 minutes',
+      'XS–XL grading, automatic',
       'DXF export for factory production',
-      'Assembly guide included',
       'Early access waitlist live',
     ],
     tech: ['React', 'FastAPI', 'Python', 'OpenAI Vision', 'Vercel'],
@@ -38,9 +38,15 @@ const PORTFOLIO_ITEMS = [
     media: ['can-demo.mp4', 'can.png'],
     type: 'project',
     description: 'Architects build incredible spaces. Yet their digital presence is often an afterthought.',
-    challenge: 'Architects have incredible work, but clients don\'t see it. Building a portfolio site takes months and costs €5k–15k. Most architects never build one.',
-    solution: 'Full web app: custom backend they control completely, add/edit/delete projects with no code, filtering by type and scale, fully SEO optimized. 3 weeks from brief to live.',
-    results: ['3 weeks from brief to live', '€2,500 investment', 'Now getting inbound inquiries', 'Zero maintenance required on client end'],
+    challenge: 'The best portfolio site an architect could get cost €15k and took three months — if they ever got around to it.',
+    solution: 'A custom web app in three weeks. Admin they control completely, no code needed, inbound-optimized. The work starts speaking before the architect says a word.',
+    results: [
+      'The work was always there. Now clients can find it.',
+      '3 weeks from brief to live',
+      '€2,500 investment',
+      'Inbound inquiries within 60 days',
+      'Zero maintenance on client end',
+    ],
     tech: ['React', 'Next.js', 'Node.js', 'Firebase', 'Firestore', 'Vercel'],
     link: 'https://can-yinka-muu8xna3i-aicecreamlabs-6519s-projects.vercel.app/'
   },
@@ -53,9 +59,15 @@ const PORTFOLIO_ITEMS = [
     media: ['psych-demo.mp4', 'psych7.png', 'psych6.png', 'psych5.png', 'psych4.png', 'psych3.png', 'psych2.png', 'psych1.png', 'psych.png'],
     type: 'project',
     description: 'Therapy is built on trust. The digital experience must feel that way from the first click.',
-    challenge: 'The client needed a website that felt warm and trustworthy — not clinical. Had to work perfectly in Lithuanian and English.',
-    solution: 'Built a bilingual, mobile-first website with calm design language, clear service descriptions, and an integrated booking flow.',
-    results: ['Live and fully responsive', 'Bilingual LT/EN', 'Optimised for local SEO', 'Mobile-first design'],
+    challenge: 'Clinical coldness kills conversion before the first session. But too much warmth reads as unprofessional.',
+    solution: 'Warm, precise, bilingual. Local SEO built in. Booking integrated. The site does the reassuring before she picks up the phone.',
+    results: [
+      'Warmth and credibility are not opposites.',
+      'Live and fully responsive',
+      'Bilingual LT/EN',
+      'Local SEO optimised',
+      'Mobile-first design',
+    ],
     tech: ['HTML', 'CSS', 'JavaScript', 'Vercel'],
     link: 'https://sigitaasvydiene.lt/'
   },
@@ -70,9 +82,15 @@ const PORTFOLIO_ITEMS = [
     media: ['aicelegal.mp4', 'aicelegal3.png', 'aicelegal2.png', 'aicelegal1.png', 'aice_logo.png', 'aice.png'],
     type: 'project',
     description: 'Legal teams spend hours reviewing contracts. They should spend that time on strategy.',
-    challenge: 'Legal teams spend hours reviewing contracts for risks, missing clauses, and non-standard terms. It\'s repetitive work. It\'s error-prone.',
-    solution: 'Upload a contract (PDF or text). Claude analyzes it in real-time — flags risks, missing clauses, non-standard terms — provides legal context and recommendations, exports a summary report.',
-    results: ['60% reduction in contract review time', 'No more missed risks', '6 weeks MVP to production', 'Processing 100+ documents/week'],
+    challenge: 'One missed clause in a 40-page contract can cost more than the entire project. Every review is a liability.',
+    solution: 'Upload the contract. Claude reads it in real time — flags risks, missing clauses, non-standard terms. The review that used to take a day takes twelve minutes.',
+    results: [
+      'The risk was always in the document. Now it\'s visible.',
+      '60% reduction in review time',
+      'Zero missed risks',
+      '6 weeks MVP to production',
+      'Processing 100+ documents/week',
+    ],
     tech: ['React', 'Node.js', 'Claude (Anthropic API)', 'pdfjs', 'Vercel'],
     link: 'mailto:gyamfuwaa@protonmail.com'
   },
@@ -85,9 +103,15 @@ const PORTFOLIO_ITEMS = [
     media: ['gigzo.mp4', 'gigzo5.png', 'gigzo3.png', 'gigzo2.png', 'gigzo1.png', 'gigzo.png'],
     type: 'project',
     description: 'Expats in Thailand need a cleaner. They don\'t need a language barrier to book one.',
-    challenge: 'Expats in Thailand had no reliable, English-language platform to find and book domestic services. Providers had no digital booking system.',
-    solution: 'Built a full-stack marketplace with provider onboarding, booking system, payment integration, and AI-powered customer support agents using CrewAI and LangChain.',
-    results: ['Full marketplace MVP built', 'Booking + payment integration', 'AI customer onboarding agents', 'Provider management system'],
+    challenge: 'Trust doesn\'t exist in a vacuum. Without reviews, without easy booking, without English — good providers stayed invisible.',
+    solution: 'Full-stack marketplace: provider onboarding, booking, payment, AI customer support. The gap between a good provider and a paying client closed.',
+    results: [
+      'The services existed. The infrastructure didn\'t.',
+      'Full marketplace MVP built',
+      'Booking + payment integrated',
+      'AI customer onboarding agents',
+      'Provider management system',
+    ],
     tech: ['React', 'Node.js', 'Firebase', 'CrewAI', 'LangChain', 'Stripe'],
     link: 'mailto:gyamfuwaa@protonmail.com'
   },
@@ -100,28 +124,20 @@ const PORTFOLIO_ITEMS = [
     media: ['studio.mp4', 'studio5.png', 'studio4.png', 'studio3.png', 'studio2.png', 'studio1.png'],
     type: 'project',
     description: 'Strategy, design, and code from one brain instead of three invited to misalign.',
-    challenge: 'When you hire separately: designer makes something beautiful, developer says it won\'t scale, strategist makes a plan, and nobody\'s reading the same document.',
-    solution: 'One person, one vision, one brain. Strategy informs design informs code. I take 1–2 projects at a time. Not a limitation — a feature.',
-    results: ['Solo-led — you get the maker directly', 'Strategy + design + code as one vision', 'Selected clients only', 'Ships in weeks, not quarters'],
+    challenge: 'When you hire separately: the designer makes something beautiful, the developer says it won\'t scale, the strategist writes a plan — and nobody\'s reading the same document.',
+    solution: 'One person. One vision. The full stack of thinking — from positioning to deployed code — moving as one. I take 1–2 projects at a time. Not a limitation. A feature.',
+    results: [
+      'One engagement. No handoffs. No translation loss.',
+      'Solo-led — you work with the maker directly',
+      'Strategy + design + code as one vision',
+      'Selected clients only',
+      'Ships in weeks, not quarters',
+    ],
     tech: ['Strategy', 'Design', 'Engineering'],
     link: 'mailto:gyamfuwaa@protonmail.com'
   },
 
-  /* CENTER BUTTON PANELS — index 6 (Hire Me), index 7 (About) */
-  {
-    id: 6,
-    title: 'Hire Me',
-    subtitle: 'Services & Pricing',
-    category: 'Studio',
-    image: 'hire-me.png',
-    type: 'service',
-    description: 'I build digital products. From landing pages to full SaaS platforms. Strategy first, code second.',
-    challenge: 'Most studios sell hours. I sell systems that make money. You don\'t pay for effort. You pay for results.',
-    solution: 'Strategy-first engagements. Every project begins with your business problem — then architecture, then code. One vision from start to finish.',
-    results: ['Foundation — €2,500–3,500 / 3–4 weeks', 'System — €5,500–8,500 / 8–12 weeks', 'Authority — €12,000–18,000 / 12–16 weeks', 'Retainer — €3,500–6,500/month'],
-    tech: ['Strategy', 'Architecture', 'Engineering'],
-    link: 'mailto:gyamfuwaa@protonmail.com?subject=Project Inquiry'
-  },
+  /* ABOUT — index 6 */
   {
     id: 7,
     title: 'Theresa Gyamfuwaa',
@@ -129,10 +145,15 @@ const PORTFOLIO_ITEMS = [
     category: 'Studio',
     image: 'about-me.webp',
     type: 'about',
-    description: 'My work exists at the intersection of cinematic storytelling, spatial interaction, and immersive digital design.',
-    challenge: 'I\'m drawn to systems where motion has meaning, interfaces behave like environments, and interaction creates emotional memory. Inspired by architecture, editorial design, experimental motion systems, and digital materiality, I build experiences that prioritize atmosphere, rhythm, and perception as much as usability.',
-    solution: 'Every project is approached as a living spatial system — where typography becomes structure, scroll becomes choreography, and transitions become narrative continuity.',
-    results: ['Based in Thailand', 'Available worldwide', 'Response within 24h', 'Selected clients only — 1–2 projects at a time'],
+    description: 'I build things that don\'t exist yet. Not components — systems. Not features — leverage.',
+    challenge: 'Most developers translate briefs. They solve the problem as stated. I solve the problem behind the problem — the one your users feel but can\'t articulate.',
+    solution: 'One engagement. One brain. Strategy, design, and code moving as one. No handoffs. No translation loss. No committee.',
+    results: ['5 years building production systems in Thailand + remote', 'Fluent in React, Node.js, Python, FastAPI, Firebase, Claude, GPT-4', 'Available for select projects — starting from €2,500', 'Response within 24 hours'],
+    pricing: [
+      { name: 'Foundation', price: '€2,500', duration: '3–4 weeks', desc: 'Website or landing page. SEO optimised. Mobile-first. You own the code.' },
+      { name: 'Product', price: '€5,000–7,500', duration: '8–12 weeks', desc: 'Full web app or SaaS. Built to scale.' },
+      { name: 'Retainer', price: 'from €2,500/mo', duration: '6+ months', desc: 'Strategic direction and execution. Shipped every week.' },
+    ],
     tech: ['React', 'Next.js', 'Python', 'FastAPI', 'Firebase', 'GPT-4', 'Claude'],
     link: 'mailto:gyamfuwaa@protonmail.com'
   }
@@ -236,16 +257,17 @@ class StickyGrid {
       }, 'grid-reveal');
     });
 
+    const akumali = document.getElementById('akumaliFixed');
     const zoomTl = gsap.timeline({ defaults: { duration: 1, ease: 'power3.inOut' } });
     zoomTl.to(this.grid, { scale: 1.55 });
     zoomTl.to(this.columns[0], { xPercent: -72 }, '<');
     zoomTl.to(this.columns[2], { xPercent: 72 }, '<');
-    zoomTl.to(this.columns[1], { opacity: 0, duration: 0.4, ease: 'power2.in' }, '<');
     zoomTl.to(this.columns[1], {
-      yPercent: (i) => (i < Math.floor(this.columns[1].length / 2) ? -1 : 1) * 72,
-      duration: 0.5,
-      ease: 'power1.inOut',
-    }, '-=0.5');
+      yPercent: (i) => (i === 0 ? -1 : 1) * 110,
+      duration: 1,
+      ease: 'power3.inOut',
+    }, '<');
+    if (akumali) zoomTl.to(akumali, { opacity: 0, duration: 0.4, ease: 'power2.in' }, '<0.3');
 
     const mainTl = gsap.timeline({
       scrollTrigger: {
@@ -263,42 +285,31 @@ class StickyGrid {
 
   toggleContent(isVisible) {
     if (!this.subheading || !this.description || !this.btn) return;
-    const akumali = document.getElementById('akumaliFixed');
 
     if (isVisible) {
-      this.idleTweens = [];
-      this.items.forEach(item => {
-        const r = (Math.random() - 0.5) * 2;
-        const y = (Math.random() - 0.5) * 8;
-        this.idleTweens.push(
-          gsap.to(item, {
-            rotation: r,
-            y: y,
-            duration: 3 + Math.random() * 2,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut',
-          })
-        );
-      });
+      // Single container float — all tiles share one breath, creating spatial coherence
+      this.idleTweens = [
+        gsap.to(this.grid, {
+          y: -6,
+          duration: 5,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+        }),
+      ];
     } else if (this.idleTweens) {
       this.idleTweens.forEach(t => t.kill());
-      this.idleTweens.forEach((_, i) => gsap.set(this.items[i], { rotation: 0, y: 0 }));
+      gsap.set(this.grid, { y: 0 });
       this.idleTweens = null;
     }
 
-    gsap.timeline({ defaults: { overwrite: true } })
-      .to([this.subheading, this.description, this.btn], {
-        opacity: isVisible ? 1 : 0,
-        duration: 0.4,
-        ease: `power1.${isVisible ? 'inOut' : 'out'}`,
-        pointerEvents: isVisible ? 'all' : 'none',
-      })
-      .to(akumali, {
-        opacity: isVisible ? 0 : 1,
-        duration: 0.4,
-        ease: 'power1.out',
-      }, '<');
+    gsap.to([this.subheading, this.description, this.btn], {
+      opacity: isVisible ? 1 : 0,
+      duration: 0.4,
+      ease: `power1.${isVisible ? 'inOut' : 'out'}`,
+      pointerEvents: isVisible ? 'all' : 'none',
+      overwrite: true,
+    });
   }
 }
 
@@ -371,7 +382,8 @@ function buildStory(item) {
         <div class="story__right">
           <div class="story__media-wrap" id="storyMediaWrap">
             ${ch1IsVideo
-              ? `<video class="story__video" src="${ch1MediaSrc}" muted loop playsinline></video>`
+              ? `<video class="story__video" src="${ch1MediaSrc}" muted loop playsinline></video>
+                 <div class="story__video-hint">EXPAND</div>`
               : (ch1MediaSrc ? `<img src="${ch1MediaSrc}" alt="${item.title}" />` : '')}
           </div>
         </div>
@@ -435,6 +447,21 @@ function buildAboutStory(item) {
           ${(item.results || []).map(r => `<li>${r}</li>`).join('')}
         </ul>
       </div>
+      ${(item.pricing || []).length ? `
+      <div class="story__reveal">
+        <span class="detail__label">WHAT IT COSTS</span>
+        <div class="about__pricing">
+          ${(item.pricing).map(tier => `
+            <div class="about__tier">
+              <div class="about__tier-top">
+                <span class="about__tier-name">${tier.name}</span>
+                <span class="about__tier-price">${tier.price}</span>
+              </div>
+              <span class="about__tier-duration">${tier.duration}</span>
+              <p class="about__tier-desc">${tier.desc}</p>
+            </div>`).join('')}
+        </div>
+      </div>` : ''}
       <div class="story__reveal">
         <p class="story__closing-line">${item.subtitle || ''}</p>
         <div class="detail__tags">${tags}</div>
@@ -618,6 +645,7 @@ function openDetail(item, label, originTile) {
   if (item.type === 'project') {
     main.innerHTML = buildStory(item);
     initStoryAnimations(detail);
+    initVideoFullscreen(detail);
   } else if (item.type === 'about') {
     main.innerHTML = buildAboutStory(item);
   } else {
@@ -704,6 +732,23 @@ function openDetail(item, label, originTile) {
       initSectionReveals(detail);
     }
     initDetailProgress(detail);
+
+    // Hero scroll indicator — show for projects, fade on first scroll
+    if (item.type === 'project') {
+      const heroScroll = document.getElementById('detailHeroScroll');
+      if (heroScroll) {
+        heroScroll.classList.remove('is-active');
+        void heroScroll.offsetWidth; // restart CSS animation
+        heroScroll.classList.add('is-active');
+        detail.addEventListener('scroll', () => {
+          gsap.to(heroScroll, { opacity: 0, duration: 0.4, ease: 'power2.out' });
+        }, { passive: true, once: true });
+        storyCleanup.push(() => {
+          heroScroll.classList.remove('is-active');
+          gsap.set(heroScroll, { clearProps: 'opacity' });
+        });
+      }
+    }
   };
 
   if (originTile && !isMobile) {
@@ -749,12 +794,91 @@ function closeDetail() {
       detail.classList.remove('is-open');
       detail.setAttribute('aria-hidden', 'true');
       gsap.set(detail, { clearProps: 'opacity,y,scale' });
-      initLenis();
-      if (!isMobile) {
-        const akumali = document.getElementById('akumaliFixed');
-        if (akumali) gsap.to(akumali, { opacity: 1, duration: 0.3, ease: 'power2.out' });
-      }
+      initLenis(); // ScrollTrigger.refresh() inside restores correct AKUMALI opacity for current scroll
     },
+  });
+}
+
+function initVideoFullscreen(detailEl) {
+  const vid = detailEl.querySelector('.story__video');
+  if (!vid) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'video-fs';
+  const fsVid = document.createElement('video');
+  fsVid.className = 'video-fs__vid';
+  fsVid.muted = true;
+  fsVid.loop = true;
+  fsVid.setAttribute('playsinline', '');
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'video-fs__close';
+  closeBtn.textContent = '← BACK';
+  overlay.appendChild(fsVid);
+  overlay.appendChild(closeBtn);
+  document.body.appendChild(overlay);
+
+  let isOpen = false;
+
+  function getRect() {
+    const wrap = document.getElementById('storyMediaWrap');
+    return (wrap || vid).getBoundingClientRect();
+  }
+
+  function open() {
+    if (isOpen) return;
+    isOpen = true;
+    const r = getRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    // Set display directly — GSAP display handling can conflict with CSS display:none
+    overlay.style.display = 'flex';
+    gsap.set(overlay, { clipPath: `inset(${r.top}px ${vw - r.right}px ${vh - r.bottom}px ${r.left}px)` });
+    fsVid.src = vid.src;
+    fsVid.currentTime = vid.currentTime || 0;
+    fsVid.play().catch(() => {});
+    gsap.to(overlay, { clipPath: 'inset(0px 0px 0px 0px)', duration: 0.65, ease: 'power2.inOut' });
+  }
+
+  function close() {
+    if (!isOpen) return;
+    isOpen = false;
+    const r = getRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    gsap.to(overlay, {
+      clipPath: `inset(${r.top}px ${vw - r.right}px ${vh - r.bottom}px ${r.left}px)`,
+      duration: 0.55,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        overlay.style.display = 'none';
+        fsVid.pause();
+        fsVid.src = '';
+      },
+    });
+  }
+
+  const wrap = document.getElementById('storyMediaWrap');
+  if (wrap) {
+    wrap.style.cursor = 'pointer';
+    wrap.addEventListener('click', open);
+  }
+  closeBtn.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+
+  overlay.addEventListener('wheel', (e) => {
+    if (!isOpen || e.deltaY <= 0) return;
+    close();
+  }, { passive: true });
+
+  let touchY = 0;
+  overlay.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+  overlay.addEventListener('touchend', (e) => {
+    if (!isOpen) return;
+    if (touchY - e.changedTouches[0].clientY > 40) close();
+  }, { passive: true });
+
+  storyCleanup.push(() => {
+    overlay.remove();
+    if (wrap) { wrap.removeEventListener('click', open); wrap.style.cursor = ''; }
   });
 }
 
@@ -775,7 +899,7 @@ function initDetail() {
 
   // "About me" button — no tile origin, no hero
   document.getElementById('workBtn')?.addEventListener('click', () => {
-    openDetail(PORTFOLIO_ITEMS[7], 'ABOUT', null);
+    openDetail(PORTFOLIO_ITEMS[6], 'ABOUT', null);
   });
 
   // Scroll past bottom → close detail and return to home
@@ -888,9 +1012,20 @@ function playEntrance(onComplete) {
     }
   }, lastLetterEnd + 1.1);
 
-  // Nav and datum line after typing finishes
+  // Nav, datum, and hero content after typing finishes
+  const heroContent = document.getElementById('heroContent');
+  if (heroContent) gsap.set([...heroContent.children], { opacity: 0, y: 20 });
+
   tl.to(nav, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, lastLetterEnd + 0.1)
     .to(datum, { scaleX: 1, duration: 1.0, ease: 'power3.out' }, lastLetterEnd + 0.2);
+
+  if (heroContent) {
+    tl.to([...heroContent.children], {
+      opacity: 1, y: 0,
+      duration: 0.8, ease: 'cubic-bezier(0.76, 0, 0.24, 1)',
+      stagger: 0.1,
+    }, lastLetterEnd + 0.4);
+  }
 }
 
 /* ─── Boot ─── */
@@ -932,6 +1067,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (akumali) gsap.set(akumali, { xPercent: -50, yPercent: -50 });
 
   playEntrance(() => {
+    // Ambient float on AKUMALI while at rest in the hero
+    if (akumali) {
+      gsap.to(akumali, {
+        y: -8, duration: 6, ease: 'sine.inOut', repeat: -1, yoyo: true,
+      });
+    }
+
     // Create all ScrollTriggers first, then refresh via initLenis
     new StickyGrid();
 
