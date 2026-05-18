@@ -254,24 +254,19 @@ button { font-family: inherit; cursor: pointer; }
 .gallery__grid {
   opacity: 0;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 14rem;
-  width: 560rem;
+  width: 480rem;
   transform-origin: center center;
   will-change: transform;
 }
 .gallery__item {
-  grid-column: span 2;
+  width: 100%;
   aspect-ratio: 300 / 190;
   overflow: hidden;
   position: relative;
   cursor: pointer;
   will-change: transform;
-}
-.gallery__item--featured {
-  grid-column: span 3;
-  aspect-ratio: 16 / 7;
-  cursor: pointer;
 }
 .gallery__image {
   width: 100%;
@@ -912,6 +907,9 @@ button { font-family: inherit; cursor: pointer; }
   /* Content: static, padded */
   .content {
     position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
     height: auto;
     padding: 16px 20px 32px;
     pointer-events: all;

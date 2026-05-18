@@ -152,16 +152,14 @@ function initTheme() {
   });
 }
 
-/* ─── Grid images — 6 project tiles + 2 featured tiles ─── */
+/* ─── Grid images — 6 project tiles ─── */
 const GRID_IMAGES = [
-  { src: 'ntoma.png',     projectIdx: 0 },
-  { src: 'can.png',       projectIdx: 1 },
-  { src: 'psych.png',     projectIdx: 2 },
-  { src: 'aice.png',      projectIdx: 3 },
-  { src: 'gigzo.png',     projectIdx: 4 },
-  { src: 'studio.jpeg',   projectIdx: 5 },
-  { src: 'hire-me.png',   projectIdx: 6, featured: true },
-  { src: 'about-me.webp', projectIdx: 7, featured: true },
+  { src: 'ntoma.png',   projectIdx: 0 },
+  { src: 'can.png',     projectIdx: 1 },
+  { src: 'psych.png',   projectIdx: 2 },
+  { src: 'aice.png',    projectIdx: 3 },
+  { src: 'gigzo.png',   projectIdx: 4 },
+  { src: 'studio.jpeg', projectIdx: 5 },
 ];
 
 /* ─── Grid render — 6-item 3-column grid like tutorial ─── */
@@ -180,7 +178,7 @@ function renderGrid() {
   GRID_IMAGES.forEach((img, i) => {
     const item = PORTFOLIO_ITEMS[img.projectIdx];
     const li = document.createElement('li');
-    li.className = img.featured ? 'gallery__item gallery__item--featured' : 'gallery__item';
+    li.className = 'gallery__item';
     li.dataset.index = i;
     li.dataset.project = img.projectIdx;
     li.innerHTML = `
