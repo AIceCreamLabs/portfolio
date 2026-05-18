@@ -894,6 +894,10 @@ function playEntrance(onComplete) {
 
 /* ─── Boot ─── */
 document.addEventListener('DOMContentLoaded', () => {
+  // Prevent browser from restoring previous scroll position on refresh
+  if (history.scrollRestoration) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+
   gsap.registerPlugin(ScrollTrigger);
 
   isMobile = window.innerWidth <= 768 || window.innerHeight <= 500;
