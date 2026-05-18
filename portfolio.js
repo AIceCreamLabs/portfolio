@@ -129,9 +129,9 @@ const PORTFOLIO_ITEMS = [
     category: 'Studio',
     image: 'about-me.webp',
     type: 'about',
-    description: 'I\'m Dutch-Ghanaian, based in Thailand, raising a daughter as a solo parent. My background is fashion and design — which means I know that aesthetics matter, but only when they serve the business.',
-    challenge: 'Most digital work fails not because it looks wrong — but because it\'s built without strategic clarity. Most founders hire a designer and a developer separately. They misalign.',
-    solution: 'I think like a strategist, design like someone from fashion, and code like someone who ships. I own the full stack: React, Next.js, Node.js, Python, FastAPI, Firebase. I integrate GPT-4 and Claude into products as features, not afterthoughts.',
+    description: 'My work exists at the intersection of cinematic storytelling, spatial interaction, and immersive digital design.',
+    challenge: 'I\'m drawn to systems where motion has meaning, interfaces behave like environments, and interaction creates emotional memory. Inspired by architecture, editorial design, experimental motion systems, and digital materiality, I build experiences that prioritize atmosphere, rhythm, and perception as much as usability.',
+    solution: 'Every project is approached as a living spatial system — where typography becomes structure, scroll becomes choreography, and transitions become narrative continuity.',
     results: ['Based in Thailand', 'Available worldwide', 'Response within 24h', 'Selected clients only — 1–2 projects at a time'],
     tech: ['React', 'Next.js', 'Python', 'FastAPI', 'Firebase', 'GPT-4', 'Claude'],
     link: 'mailto:gyamfuwaa@protonmail.com'
@@ -418,15 +418,15 @@ function buildAboutStory(item) {
   return `
     <div class="about__content">
       <div class="story__reveal">
-        <span class="detail__label">WHO I AM</span>
+        <span class="detail__label">THE WORK</span>
         <p class="story__body">${item.description || ''}</p>
       </div>
       <div class="story__reveal">
-        <span class="detail__label">THE MISALIGNMENT</span>
+        <span class="detail__label">WHAT DRIVES IT</span>
         <p class="story__body">${item.challenge || ''}</p>
       </div>
       <div class="story__reveal">
-        <span class="detail__label">HOW I WORK</span>
+        <span class="detail__label">THE APPROACH</span>
         <p class="story__pullquote">${item.solution || ''}</p>
       </div>
       <div class="story__reveal">

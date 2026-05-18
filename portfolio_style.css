@@ -197,13 +197,10 @@ button { font-family: inherit; cursor: pointer; }
   text-align: center;
   z-index: 5;
   pointer-events: none;
-  padding: 28rem 32rem;
-  background: var(--bg);
-  mix-blend-mode: normal;
 }
 .content__subheading {
   opacity: 0;
-  width: 380rem;
+  width: 460rem;
   font-family: 'JetBrains Mono', monospace;
   font-size: clamp(18rem, 1.8vw, 28rem);
   font-weight: 700;
