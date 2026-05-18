@@ -120,20 +120,37 @@ button { font-family: inherit; cursor: pointer; }
 /* ─── Hero scroll indicator ─── */
 .hero__scroll-indicator {
   position: absolute;
-  bottom: 28px;
-  left: 48px;
-  z-index: 2;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 5;
   font-size: 9px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   color: var(--ink-2);
+  white-space: nowrap;
   pointer-events: none;
-  animation: scrollPulse 2.5s ease-in-out 2.2s infinite backwards;
+  opacity: 0;
+  animation: scrollReveal 0.5s ease-out 2.6s forwards;
 }
-@keyframes scrollPulse {
-  0% { opacity: 0; }
-  20% { opacity: 0.6; }
-  80% { opacity: 0.6; }
-  100% { opacity: 0; }
+.hero__scroll-indicator::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 30px;
+  background: var(--brass);
+  transform-origin: top center;
+  animation: scrollBarPulse 1.8s ease-in-out 3.2s infinite;
+}
+@keyframes scrollReveal {
+  to { opacity: 1; }
+}
+@keyframes scrollBarPulse {
+  0%, 100% { transform: scaleY(0.08); opacity: 0.3; }
+  50% { transform: scaleY(1); opacity: 1; }
 }
 
 /* ─── Persistent akumali (fixed overlay) ─── */
@@ -237,19 +254,24 @@ button { font-family: inherit; cursor: pointer; }
 .gallery__grid {
   opacity: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20rem;
-  width: 600rem;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14rem;
+  width: 560rem;
   transform-origin: center center;
   will-change: transform;
 }
 .gallery__item {
-  width: 100%;
+  grid-column: span 2;
   aspect-ratio: 300 / 190;
   overflow: hidden;
   position: relative;
   cursor: pointer;
   will-change: transform;
+}
+.gallery__item--featured {
+  grid-column: span 3;
+  aspect-ratio: 16 / 7;
+  cursor: pointer;
 }
 .gallery__image {
   width: 100%;
