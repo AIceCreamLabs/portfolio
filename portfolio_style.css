@@ -143,14 +143,16 @@ button { font-family: inherit; cursor: pointer; }
   height: 30px;
   background: var(--brass);
   transform-origin: top center;
-  animation: scrollBarPulse 1.8s ease-in-out 3.2s infinite;
+  transform: scaleY(0);
+  opacity: 0;
+  animation: scrollBarPulse 1.8s ease-in-out 3.2s infinite both;
 }
 @keyframes scrollReveal {
   to { opacity: 1; }
 }
 @keyframes scrollBarPulse {
-  0%, 100% { transform: scaleY(0.08); opacity: 0.3; }
-  50% { transform: scaleY(1); opacity: 1; }
+  0%, 100% { transform: scaleY(0); opacity: 0; }
+  30%, 70% { transform: scaleY(1); opacity: 1; }
 }
 
 /* ─── Persistent akumali (fixed overlay) ─── */

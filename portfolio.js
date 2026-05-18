@@ -249,7 +249,7 @@ class StickyGrid {
     const mainTl = gsap.timeline({
       scrollTrigger: {
         trigger: this.block,
-        start: 'top 25%',
+        start: 'top top',
         end: 'bottom bottom',
         scrub: true,
       },
@@ -927,10 +927,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (akumali) gsap.set(akumali, { xPercent: -50, yPercent: -50 });
 
   playEntrance(() => {
-    initLenis();
+    // Create all ScrollTriggers first, then refresh via initLenis
     new StickyGrid();
 
-    // AKUMALI shrinks and moves toward grid content as hero scrolls out; scrub reverses on scroll-up
     if (akumali) {
       gsap.to(akumali, {
         top: '35%',
@@ -945,5 +944,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    initLenis(); // refresh happens after all triggers are registered
   });
 });
