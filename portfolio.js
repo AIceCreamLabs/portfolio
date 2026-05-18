@@ -16,7 +16,7 @@ const PORTFOLIO_ITEMS = [
     image: 'ntoma.png',
     media: ['ntoma4.mp4', 'ntoma3.png', 'ntoma2.png', 'ntoma1.png', 'ntoma.png'],
     type: 'project',
-    description: 'AI-powered garment pattern generation. Upload any photo, get a production-ready sewing pattern with flat drawings, virtual fit preview, and DXF factory export.',
+    description: 'A designer found a photo of the perfect dress. Her local tailor quoted €200 and 6 weeks.',
     challenge: 'Fashion designers and home sewers spend hours or hundreds of euros getting patterns made from reference photos. There was no affordable, fast alternative.',
     solution: 'Built a full AI pipeline: computer vision garment analysis, technical flat drawing generation, mathematically correct pattern pieces, virtual fit on body silhouette, and multi-size grading — all from a single photo.',
     results: [
@@ -37,7 +37,7 @@ const PORTFOLIO_ITEMS = [
     image: 'can.png',
     media: ['can-demo.mp4', 'can.png'],
     type: 'project',
-    description: 'A full web app for a French architecture studio — custom backend, project management without code, client-facing portfolio with filtering by type, scale, location, and year.',
+    description: 'Architects build incredible spaces. Yet their digital presence is often an afterthought.',
     challenge: 'Architects have incredible work, but clients don\'t see it. Building a portfolio site takes months and costs €5k–15k. Most architects never build one.',
     solution: 'Full web app: custom backend they control completely, add/edit/delete projects with no code, filtering by type and scale, fully SEO optimized. 3 weeks from brief to live.',
     results: ['3 weeks from brief to live', '€2,500 investment', 'Now getting inbound inquiries', 'Zero maintenance required on client end'],
@@ -52,7 +52,7 @@ const PORTFOLIO_ITEMS = [
     image: 'psych.png',
     media: ['psych-demo.mp4', 'psych7.png', 'psych6.png', 'psych5.png', 'psych4.png', 'psych3.png', 'psych2.png', 'psych1.png', 'psych.png'],
     type: 'project',
-    description: 'Clean, professional website for a psychotherapy practice in Lithuania. Designed for trust, accessibility, and client conversion.',
+    description: 'Therapy is built on trust. The digital experience must feel that way from the first click.',
     challenge: 'The client needed a website that felt warm and trustworthy — not clinical. Had to work perfectly in Lithuanian and English.',
     solution: 'Built a bilingual, mobile-first website with calm design language, clear service descriptions, and an integrated booking flow.',
     results: ['Live and fully responsive', 'Bilingual LT/EN', 'Optimised for local SEO', 'Mobile-first design'],
@@ -69,7 +69,7 @@ const PORTFOLIO_ITEMS = [
     image: 'aice.png',
     media: ['aicelegal.mp4', 'aicelegal3.png', 'aicelegal2.png', 'aicelegal1.png', 'aice_logo.png', 'aice.png'],
     type: 'project',
-    description: 'Intelligent contract analysis system: upload a contract, Claude analyzes it in real-time, flags risks and non-standard terms, provides legal context, exports a summary report.',
+    description: 'Legal teams spend hours reviewing contracts. They should spend that time on strategy.',
     challenge: 'Legal teams spend hours reviewing contracts for risks, missing clauses, and non-standard terms. It\'s repetitive work. It\'s error-prone.',
     solution: 'Upload a contract (PDF or text). Claude analyzes it in real-time — flags risks, missing clauses, non-standard terms — provides legal context and recommendations, exports a summary report.',
     results: ['60% reduction in contract review time', 'No more missed risks', '6 weeks MVP to production', 'Processing 100+ documents/week'],
@@ -84,7 +84,7 @@ const PORTFOLIO_ITEMS = [
     image: 'gigzo.png',
     media: ['gigzo.mp4', 'gigzo5.png', 'gigzo3.png', 'gigzo2.png', 'gigzo1.png', 'gigzo.png'],
     type: 'project',
-    description: 'Domestic services marketplace for expats in Thailand. Connects customers with verified cleaning, laundry, and household service providers.',
+    description: 'Expats in Thailand need a cleaner. They don\'t need a language barrier to book one.',
     challenge: 'Expats in Thailand had no reliable, English-language platform to find and book domestic services. Providers had no digital booking system.',
     solution: 'Built a full-stack marketplace with provider onboarding, booking system, payment integration, and AI-powered customer support agents using CrewAI and LangChain.',
     results: ['Full marketplace MVP built', 'Booking + payment integration', 'AI customer onboarding agents', 'Provider management system'],
@@ -99,7 +99,7 @@ const PORTFOLIO_ITEMS = [
     image: 'studio.jpeg',
     media: ['studio.mp4', 'studio5.png', 'studio4.png', 'studio3.png', 'studio2.png', 'studio1.png'],
     type: 'project',
-    description: 'A focused practice — one set of hands across strategy, design, and engineering. End-to-end ownership of every project. No hand-offs. No translation loss.',
+    description: 'Strategy, design, and code from one brain instead of three invited to misalign.',
     challenge: 'When you hire separately: designer makes something beautiful, developer says it won\'t scale, strategist makes a plan, and nobody\'s reading the same document.',
     solution: 'One person, one vision, one brain. Strategy informs design informs code. I take 1–2 projects at a time. Not a limitation — a feature.',
     results: ['Solo-led — you get the maker directly', 'Strategy + design + code as one vision', 'Selected clients only', 'Ships in weeks, not quarters'],
@@ -205,6 +205,7 @@ class StickyGrid {
     this.grid        = document.getElementById('galleryGrid');
     this.items       = this.grid.querySelectorAll('.gallery__item');
     this.groupItemsByColumn();
+    this.idleTweens = null;
     this.initContent();
     this.animate();
   }
@@ -262,6 +263,29 @@ class StickyGrid {
   toggleContent(isVisible) {
     if (!this.subheading || !this.description || !this.btn) return;
     const akumali = document.getElementById('akumaliFixed');
+
+    if (isVisible) {
+      this.idleTweens = [];
+      this.items.forEach(item => {
+        const r = (Math.random() - 0.5) * 2;
+        const y = (Math.random() - 0.5) * 8;
+        this.idleTweens.push(
+          gsap.to(item, {
+            rotation: r,
+            y: y,
+            duration: 3 + Math.random() * 2,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+          })
+        );
+      });
+    } else if (this.idleTweens) {
+      this.idleTweens.forEach(t => t.kill());
+      this.idleTweens.forEach((_, i) => gsap.set(this.items[i], { rotation: 0, y: 0 }));
+      this.idleTweens = null;
+    }
+
     gsap.timeline({ defaults: { overwrite: true } })
       .to([this.subheading, this.description, this.btn], {
         opacity: isVisible ? 1 : 0,
@@ -274,7 +298,6 @@ class StickyGrid {
         duration: 0.4,
         ease: 'power1.out',
       }, '<');
-
   }
 }
 
@@ -792,12 +815,31 @@ function initCursor() {
   if (!cursor) return;
 
   let mx = 0, my = 0, cx = 0, cy = 0, running = true;
-  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  window.addEventListener('mousemove', e => {
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    const galleryItem = target?.closest('.gallery__item');
+    if (galleryItem) {
+      const r = galleryItem.getBoundingClientRect();
+      const cx2 = r.left + r.width / 2;
+      const cy2 = r.top + r.height / 2;
+      const dx = cx2 - e.clientX;
+      const dy = cy2 - e.clientY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const pull = Math.max(0, 1 - dist / 180) * 0.3;
+      mx = e.clientX + dx * pull;
+      my = e.clientY + dy * pull;
+    } else {
+      mx = e.clientX;
+      my = e.clientY;
+    }
+  });
+
   (function loop() {
     if (!running) return;
     cx = lerp(cx, mx, 0.12);
     cy = lerp(cy, my, 0.12);
-    gsap.set(cursor, { x: cx, y: cy });
+    gsap.set(cursor, { x: cx - 3, y: cy - 3 });
     requestAnimationFrame(loop);
   })();
 
@@ -816,16 +858,19 @@ function initCursor() {
 function playEntrance(onComplete) {
   const letters = [...document.querySelectorAll('.akumali-fixed__letter')];
   const nav     = document.querySelector('.nav');
-  gsap.set(letters, { opacity: 0, y: 20 });
-  gsap.set(nav, { opacity: 0 });
+  const datum   = document.querySelector('.hero__datum');
+  gsap.set(letters, { opacity: 0, y: -40 });
+  gsap.set(nav, { opacity: 0, y: -4 });
+  gsap.set(datum, { scaleX: 0 });
+
   gsap.timeline({ onComplete })
     .to(letters, {
       opacity: 1, y: 0,
-      duration: 1.0, ease: 'expo.out',
-      stagger: { each: 0.07, from: 'start' },
-      delay: 0.15,
+      duration: 1.4, ease: 'expo.out',
+      delay: 0.4,
     })
-    .to(nav, { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.4');
+    .to(nav, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.7)
+    .to(datum, { scaleX: 1, duration: 1.2, ease: 'power3.out' }, 2.0);
 }
 
 /* ─── Boot ─── */

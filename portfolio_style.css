@@ -83,6 +83,41 @@ button { font-family: inherit; cursor: pointer; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
 }
+
+/* ─── Hero datum line ─── */
+.hero__datum {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40%;
+  height: 1px;
+  background: var(--brass);
+  transform: translate(-50%, -50%) scaleX(0);
+  transform-origin: center;
+  z-index: 2;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ─── Hero scroll indicator ─── */
+.hero__scroll-indicator {
+  position: absolute;
+  bottom: 28px;
+  left: 48px;
+  z-index: 2;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--ink-2);
+  pointer-events: none;
+  animation: scrollPulse 2.5s ease-in-out 2.2s infinite backwards;
+}
+@keyframes scrollPulse {
+  0% { opacity: 0; }
+  20% { opacity: 0.6; }
+  80% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
 /* ─── Persistent akumali (fixed overlay) ─── */
 .akumali-fixed {
   position: fixed;
@@ -418,6 +453,8 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ─── Footer ─── */
 .footer {
+  position: relative;
+  overflow: hidden;
   padding: 52px 48px;
   display: flex; justify-content: space-between; align-items: center;
   border-top: 1px solid var(--border);
@@ -425,6 +462,28 @@ button { font-family: inherit; cursor: pointer; }
 }
 .footer a { color: var(--brass); transition: opacity .2s; }
 .footer a:hover { opacity: .7; }
+
+/* ─── Footer watermark ─── */
+.footer__watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(60px, 8vw, 140px);
+  font-weight: 800;
+  color: var(--brass);
+  opacity: 0.08;
+  pointer-events: none;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  line-height: 1;
+  transition: opacity 0.6s cubic-bezier(.76,0,.24,1);
+  z-index: 0;
+}
+.footer:hover .footer__watermark {
+  opacity: 0.22;
+}
 
 /* ─── Detail overlay ─── */
 .detail {
@@ -759,7 +818,8 @@ button { font-family: inherit; cursor: pointer; }
     position: fixed;
     top: 0; left: 0;
     width: 6px; height: 6px;
-    background: var(--brass);
+    background: #fff;
+    mix-blend-mode: difference;
     border-radius: 50%;
     pointer-events: none;
     z-index: 99999;
@@ -767,14 +827,10 @@ button { font-family: inherit; cursor: pointer; }
     transition:
       width  0.22s cubic-bezier(.76,0,.24,1),
       height 0.22s cubic-bezier(.76,0,.24,1),
-      background 0.22s,
-      border 0.22s,
       opacity 0.2s;
   }
   .cursor.is-hovering {
-    width: 28px; height: 28px;
-    background: transparent;
-    border: 1px solid var(--brass);
+    width: 3px; height: 3px;
   }
 }
 
