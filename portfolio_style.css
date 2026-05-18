@@ -99,6 +99,36 @@ button { font-family: inherit; cursor: pointer; }
   pointer-events: none;
 }
 
+/* ─── Hero tagline typewriter ─── */
+.hero__tagline {
+  position: absolute;
+  bottom: 18vh;
+  left: 48px;
+  right: 48px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(28px, 3.2vw, 50px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--ink);
+  z-index: 5;
+  pointer-events: none;
+}
+.hero__tagline em { font-style: italic; color: var(--brass); }
+.hero__tagline__cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.85em;
+  background: var(--brass);
+  margin-left: 3px;
+  vertical-align: text-bottom;
+  animation: cursorBlink 0.75s step-end infinite;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 /* ─── Hero scroll indicator ─── */
 .hero__scroll-indicator {
   position: absolute;
