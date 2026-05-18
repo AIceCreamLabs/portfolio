@@ -99,32 +99,20 @@ button { font-family: inherit; cursor: pointer; }
   pointer-events: none;
 }
 
-/* ─── Hero tagline typewriter ─── */
-.hero__tagline {
-  position: absolute;
-  bottom: 18vh;
-  left: 48px;
-  right: 48px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(28px, 3.2vw, 50px);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.1;
-  color: var(--ink);
-  z-index: 5;
-  pointer-events: none;
-}
-.hero__tagline em { font-style: italic; color: var(--brass); }
-.hero__tagline__cursor {
+/* ─── AKUMALI typing cursor ─── */
+.akumali-fixed__cursor {
   display: inline-block;
-  width: 3px;
+  width: 0.08em;
   height: 0.85em;
   background: var(--brass);
-  margin-left: 3px;
+  margin-left: 0.02em;
   vertical-align: text-bottom;
-  animation: cursorBlink 0.75s step-end infinite;
+  opacity: 0;
 }
-@keyframes cursorBlink {
+.akumali-fixed__cursor.is-blinking {
+  animation: akuCursorBlink 0.65s step-end infinite;
+}
+@keyframes akuCursorBlink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }

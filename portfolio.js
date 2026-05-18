@@ -854,80 +854,42 @@ function initCursor() {
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
-/* ─── Typewriter ─── */
-function typeWriter(el, segments, charDelay, onComplete) {
-  // segments: [{ text, italic }] — \n becomes <br>
-  const queue = [];
-  segments.forEach(seg => {
-    for (const ch of seg.text) queue.push({ ch, italic: !!seg.italic });
-  });
-
-  const cursor = document.createElement('span');
-  cursor.className = 'hero__tagline__cursor';
-  el.appendChild(cursor);
-
-  let plainEl = document.createElement('span');
-  el.insertBefore(plainEl, cursor);
-  let italicEl = null;
-
-  let i = 0;
-  function tick() {
-    if (i >= queue.length) {
-      setTimeout(() => { cursor.remove(); if (onComplete) onComplete(); }, 900);
-      return;
-    }
-    const { ch, italic } = queue[i++];
-    if (ch === '\n') {
-      el.insertBefore(document.createElement('br'), cursor);
-      italicEl = null;
-      plainEl = document.createElement('span');
-      el.insertBefore(plainEl, cursor);
-    } else if (italic) {
-      if (!italicEl) {
-        italicEl = document.createElement('em');
-        el.insertBefore(italicEl, cursor);
-        plainEl = null;
-      }
-      italicEl.textContent += ch;
-    } else {
-      italicEl = null;
-      if (!plainEl) {
-        plainEl = document.createElement('span');
-        el.insertBefore(plainEl, cursor);
-      }
-      plainEl.textContent += ch;
-    }
-    setTimeout(tick, charDelay);
-  }
-  tick();
-}
-
 /* ─── Entrance sequence ─── */
 function playEntrance(onComplete) {
   const letters = [...document.querySelectorAll('.akumali-fixed__letter')];
+  const cursor  = document.getElementById('akumaliCursor');
   const nav     = document.querySelector('.nav');
   const datum   = document.querySelector('.hero__datum');
-  const tagline = document.getElementById('heroTagline');
-  gsap.set(letters, { opacity: 0, y: -40 });
+
+  // Hide everything: letters invisible, cursor off
+  gsap.set(letters, { opacity: 0 });
+  if (cursor) cursor.classList.remove('is-blinking');
   gsap.set(nav, { opacity: 0, y: -4 });
   gsap.set(datum, { scaleX: 0 });
 
-  gsap.timeline({ onComplete })
-    .to(letters, {
-      opacity: 1, y: 0,
-      duration: 1.4, ease: 'expo.out',
-      delay: 0.4,
-    })
-    .to(nav, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.7)
-    .to(datum, { scaleX: 1, duration: 1.2, ease: 'power3.out' }, 2.0)
-    .add(() => {
-      if (tagline) {
-        typeWriter(tagline, [
-          { text: 'Digital systems\nthat ' },
-          { text: 'make money.', italic: true },
-        ], 38, null);
-      }
-    }, 3.0);
+  const tl = gsap.timeline({ onComplete });
+  let delay = 0.5;
+
+  // Type each letter one by one
+  letters.forEach((letter, i) => {
+    tl.to(letter, { opacity: 1, duration: 0.05, ease: 'none' }, delay + i * 0.1);
+  });
+
+  // After last letter: show blinking cursor for ~1.2s then remove
+  const lastLetterEnd = delay + (letters.length - 1) * 0.1 + 0.05;
+  tl.add(() => {
+    if (cursor) cursor.classList.add('is-blinking');
+  }, lastLetterEnd);
+  tl.add(() => {
+    if (cursor) {
+      cursor.classList.remove('is-blinking');
+      gsap.to(cursor, { opacity: 0, duration: 0.25 });
+    }
+  }, lastLetterEnd + 1.1);
+
+  // Nav and datum line after typing finishes
+  tl.to(nav, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, lastLetterEnd + 0.1)
+    .to(datum, { scaleX: 1, duration: 1.0, ease: 'power3.out' }, lastLetterEnd + 0.2);
 }
 
 /* ─── Boot ─── */
@@ -983,20 +945,5 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Tagline fades out as hero exits
-    const tagline = document.getElementById('heroTagline');
-    if (tagline) {
-      gsap.to(tagline, {
-        opacity: 0,
-        y: -20,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '.hero',
-          start: '40% top',
-          end: 'bottom top',
-          scrub: true,
-        },
-      });
-    }
   });
 });
