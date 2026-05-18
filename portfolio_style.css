@@ -190,32 +190,34 @@ button { font-family: inherit; cursor: pointer; }
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -56%);
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   z-index: 5;
   pointer-events: none;
+  padding: 28rem 32rem;
+  background: var(--bg);
+  mix-blend-mode: normal;
 }
 .content__subheading {
   opacity: 0;
-  width: 500rem;
-  margin-top: 12rem;
+  width: 380rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(26rem, 3.2vw, 48rem);
-  font-weight: 500;
-  line-height: 1.2;
+  font-size: clamp(18rem, 1.8vw, 28rem);
+  font-weight: 700;
+  line-height: 1.25;
   letter-spacing: -0.01em;
   pointer-events: auto;
 }
 .content__description {
   opacity: 0;
-  width: 480rem;
-  margin-top: 14rem;
-  font-size: 15px;
-  line-height: 1.5;
-  letter-spacing: .06em;
+  width: 340rem;
+  margin-top: 12rem;
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: .05em;
   color: var(--ink-2);
   pointer-events: auto;
 }

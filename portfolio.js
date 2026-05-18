@@ -237,11 +237,11 @@ class StickyGrid {
     });
 
     const zoomTl = gsap.timeline({ defaults: { duration: 1, ease: 'power3.inOut' } });
-    zoomTl.to(this.grid, { scale: 2.05 });
-    zoomTl.to(this.columns[0], { xPercent: -40 }, '<');
-    zoomTl.to(this.columns[2], { xPercent: 40 }, '<');
+    zoomTl.to(this.grid, { scale: 1.55 });
+    zoomTl.to(this.columns[0], { xPercent: -72 }, '<');
+    zoomTl.to(this.columns[2], { xPercent: 72 }, '<');
     zoomTl.to(this.columns[1], {
-      yPercent: (i) => (i < Math.floor(this.columns[1].length / 2) ? -1 : 1) * 40,
+      yPercent: (i) => (i < Math.floor(this.columns[1].length / 2) ? -1 : 1) * 72,
       duration: 0.5,
       ease: 'power1.inOut',
     }, '-=0.5');
