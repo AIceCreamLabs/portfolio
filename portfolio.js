@@ -1059,6 +1059,172 @@ function initCursor() {
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
+/* ─── WebGL bulge distortion on tile hover ─── */
+class BulgeTile {
+  constructor(tile) {
+    this.tile     = tile;
+    this.img      = tile.querySelector('.gallery__image');
+    this.strength = 0;
+    this.mouse    = [0.5, 0.5];
+    this.aspect   = 1;
+    this.raf      = null;
+    this.texture  = null;
+
+    if (!this.img) return;
+
+    this.canvas = document.createElement('canvas');
+    Object.assign(this.canvas.style, {
+      position: 'absolute', inset: '0',
+      width: '100%', height: '100%',
+      pointerEvents: 'none', zIndex: '1', opacity: '0',
+    });
+    tile.appendChild(this.canvas);
+
+    this.gl = this.canvas.getContext('webgl', { alpha: false, antialias: false });
+    if (!this.gl) return;
+
+    this._setup();
+    this._loadTexture();
+    this._bindEvents();
+  }
+
+  _compile(type, src) {
+    const { gl } = this;
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+
+  _setup() {
+    const { gl } = this;
+
+    // Minimal vertex: full-screen quad, flip Y for WebGL convention
+    const vs = `
+      attribute vec2 a;
+      varying vec2 v;
+      void main() {
+        v = vec2(a.x * .5 + .5, 1. - (a.y * .5 + .5));
+        gl_Position = vec4(a, 0., 1.);
+      }`;
+
+    // Fragment: radial bulge — samples from closer to cursor, spreading image outward
+    // Tuned restrained: tight radius, low max displacement (tensioned glass, not liquid)
+    const fs = `
+      precision highp float;
+      varying vec2 v;
+      uniform sampler2D tex;
+      uniform vec2 mouse;
+      uniform float str;
+      uniform float asp; // width / height
+      void main() {
+        vec2 uv = v;
+        vec2 d  = uv - mouse;
+        d.x    *= asp;                          // correct for aspect ratio → circular bulge
+        float dist    = length(d);
+        float falloff = smoothstep(.34, .0, dist);
+        vec2 nd = normalize(d);
+        uv -= vec2(nd.x / asp, nd.y) * falloff * str * .09;
+        gl_FragColor = texture2D(tex, clamp(uv, .0, 1.));
+      }`;
+
+    const prog = gl.createProgram();
+    gl.attachShader(prog, this._compile(gl.VERTEX_SHADER, vs));
+    gl.attachShader(prog, this._compile(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    const a = gl.getAttribLocation(prog, 'a');
+    gl.enableVertexAttribArray(a);
+    gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+
+    this.u = {
+      tex:   gl.getUniformLocation(prog, 'tex'),
+      mouse: gl.getUniformLocation(prog, 'mouse'),
+      str:   gl.getUniformLocation(prog, 'str'),
+      asp:   gl.getUniformLocation(prog, 'asp'),
+    };
+  }
+
+  _loadTexture() {
+    const { gl } = this;
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(p => gl.texParameteri(gl.TEXTURE_2D, p, gl.CLAMP_TO_EDGE));
+    [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER].forEach(p => gl.texParameteri(gl.TEXTURE_2D, p, gl.LINEAR));
+
+    const upload = () => {
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.img);
+      this.texture = tex;
+    };
+
+    this.img.complete && this.img.naturalWidth
+      ? upload()
+      : this.img.addEventListener('load', upload, { once: true });
+  }
+
+  _resize() {
+    const r   = this.tile.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio, 2);
+    this.canvas.width  = r.width  * dpr;
+    this.canvas.height = r.height * dpr;
+    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    this.aspect = r.width / r.height;
+  }
+
+  _draw() {
+    if (!this.texture) return;
+    const { gl, u } = this;
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.uniform1i(u.tex, 0);
+    gl.uniform2f(u.mouse, this.mouse[0], this.mouse[1]);
+    gl.uniform1f(u.str, this.strength);
+    gl.uniform1f(u.asp, this.aspect);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+
+  _loop() {
+    this._draw();
+    this.raf = requestAnimationFrame(() => this._loop());
+  }
+
+  _bindEvents() {
+    this.tile.addEventListener('mouseenter', () => {
+      this._resize();
+      if (!this.raf) this._loop();
+      gsap.to(this.canvas, { opacity: 1, duration: 0.2, ease: 'none' });
+      gsap.to(this, { strength: 1, duration: 0.8, ease: 'power2.out', overwrite: true });
+    });
+
+    this.tile.addEventListener('mousemove', e => {
+      const r = this.tile.getBoundingClientRect();
+      this.mouse[0] =       (e.clientX - r.left) / r.width;
+      this.mouse[1] = 1.0 - (e.clientY - r.top)  / r.height; // flip Y for WebGL
+    });
+
+    this.tile.addEventListener('mouseleave', () => {
+      gsap.to(this, {
+        strength: 0, duration: 0.55, ease: 'power2.inOut', overwrite: true,
+        onComplete: () => {
+          gsap.to(this.canvas, { opacity: 0, duration: 0.15, ease: 'none' });
+          cancelAnimationFrame(this.raf);
+          this.raf = null;
+        },
+      });
+    });
+  }
+}
+
+function initBulgeEffects() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  document.querySelectorAll('.gallery__item').forEach(tile => new BulgeTile(tile));
+}
+
 /* ─── Hero: three depth planes responding to cursor ─── */
 function initHeroParallax() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
@@ -1164,6 +1330,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   renderGrid();
   initDetail();
+  initBulgeEffects();
 
   window.addEventListener('orientationchange', () => {
     setTimeout(() => window.location.reload(), 300);
