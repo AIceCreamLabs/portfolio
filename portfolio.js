@@ -1111,10 +1111,12 @@ function initCursor() {
 function initTileTilt() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
   document.querySelectorAll('.gallery__item').forEach(tile => {
+    const img = tile.querySelector('.gallery__image');
     const setRX = gsap.quickTo(tile, 'rotateX', { duration: 0.45, ease: 'power3.out' });
     const setRY = gsap.quickTo(tile, 'rotateY', { duration: 0.45, ease: 'power3.out' });
     tile.addEventListener('mouseenter', () => {
-      gsap.to(tile, { scale: 1.05, duration: 0.75, ease: 'elastic.out(1, 0.4)' });
+      // scale image inside — tile overflow:hidden contains it, grid stays intact
+      if (img) gsap.to(img, { scale: 1.06, duration: 0.75, ease: 'elastic.out(1, 0.4)' });
     });
     tile.addEventListener('mousemove', e => {
       const r = tile.getBoundingClientRect();
@@ -1124,7 +1126,8 @@ function initTileTilt() {
       setRY((nx - 0.5) * 18);
     });
     tile.addEventListener('mouseleave', () => {
-      gsap.to(tile, { scale: 1, rotateX: 0, rotateY: 0, duration: 0.65, ease: 'elastic.out(1, 0.45)' });
+      if (img) gsap.to(img, { scale: 1, duration: 0.65, ease: 'elastic.out(1, 0.45)' });
+      gsap.to(tile, { rotateX: 0, rotateY: 0, duration: 0.65, ease: 'elastic.out(1, 0.45)' });
     });
   });
 }
