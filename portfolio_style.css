@@ -237,20 +237,21 @@ button { font-family: inherit; cursor: pointer; }
 }
 .content__subheading {
   opacity: 0;
-  width: 480rem;
+  width: 360rem;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: clamp(13px, 1vw, 16px);
+  font-size: 11px;
   font-weight: 300;
-  line-height: 1.6;
-  letter-spacing: 0.02em;
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--ink-2);
   pointer-events: auto;
 }
 /* Manifesto lines — the payoff, not the setup */
 .content__description {
   opacity: 0;
-  width: 460rem;
-  margin-top: 20rem;
+  width: 480rem;
+  margin-top: 16rem;
   font-family: 'JetBrains Mono', monospace;
   font-size: clamp(22rem, 2.4vw, 36rem);
   font-weight: 700;
@@ -262,28 +263,22 @@ button { font-family: inherit; cursor: pointer; }
 .content__btn {
   opacity: 0;
   position: relative;
-  margin-top: 28rem;
-  padding: 0 0 5px;
-  border: none;
+  margin-top: 52rem;
+  padding: 14px 32px 13px;
+  border: 1px solid var(--brass);
   background: none;
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 10px;
-  letter-spacing: .14em;
+  color: var(--brass);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .22em;
   cursor: pointer;
   pointer-events: auto;
+  transition: background .3s var(--ease), color .3s var(--ease);
 }
+.content__btn:hover { background: var(--brass); color: var(--bg); }
 .btn-text { display: block; }
-.btn-line {
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 100%; height: 1px;
-  background: var(--brass);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .4s cubic-bezier(.76,0,.24,1);
-}
-.content__btn:hover .btn-line { transform: scaleX(1); }
+.btn-line { display: none; }
 
 /* ─── Gallery — centered behind content ─── */
 .gallery {
