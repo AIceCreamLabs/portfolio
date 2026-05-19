@@ -288,6 +288,7 @@ button { font-family: inherit; cursor: pointer; }
   left: 50%;
   transform: translate3d(-50%, -50%, 0);
   z-index: 1;
+  perspective: 1200px;
 }
 .gallery__grid {
   opacity: 0;
@@ -297,8 +298,6 @@ button { font-family: inherit; cursor: pointer; }
   width: 480rem;
   transform-origin: center center;
   will-change: transform;
-  perspective: 1200px;
-  transform-style: preserve-3d;
 }
 .gallery__item {
   width: 100%;
