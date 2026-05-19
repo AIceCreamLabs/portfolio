@@ -312,14 +312,25 @@ class StickyGrid {
     if (!this.subheading || !this.description || !this.btn) return;
 
     if (isVisible) {
+      const tiles = [...this.grid.querySelectorAll('.gallery__item')];
       this.idleTweens = [
         gsap.to(this.grid, { y: -6, duration: 5, ease: 'sine.inOut', repeat: -1, yoyo: true }),
+        ...tiles.map(tile => gsap.to(tile, {
+          y: `random(-4, 4)`,
+          duration: `random(3, 5)`,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+          delay: `random(0, 2)`,
+        })),
       ];
       this.startDepthParallax();
     } else {
       if (this.idleTweens) {
         this.idleTweens.forEach(t => t.kill());
         gsap.set(this.grid, { y: 0 });
+        const tiles = [...this.grid.querySelectorAll('.gallery__item')];
+        gsap.set(tiles, { y: 0 });
         this.idleTweens = null;
       }
       this.stopDepthParallax();
@@ -1174,7 +1185,7 @@ function initBulgeEffects() {
       state.tex = tex;
       if (!state.raf) loop();
       gsap.killTweensOf(state); gsap.killTweensOf(canvas);
-      gsap.set(canvas, { opacity: 1 });
+      gsap.to(canvas, { opacity: 1, duration: 0.35, ease: 'power2.in' });
       gsap.to(state, { progress: 1, duration: 1, ease: 'expo.inOut' });
     });
 
