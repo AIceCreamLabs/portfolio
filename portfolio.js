@@ -1111,17 +1111,20 @@ function initCursor() {
 function initTileTilt() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
   document.querySelectorAll('.gallery__item').forEach(tile => {
-    const setRX = gsap.quickTo(tile, 'rotateX', { duration: 0.55, ease: 'power3.out' });
-    const setRY = gsap.quickTo(tile, 'rotateY', { duration: 0.55, ease: 'power3.out' });
+    const setRX = gsap.quickTo(tile, 'rotateX', { duration: 0.45, ease: 'power3.out' });
+    const setRY = gsap.quickTo(tile, 'rotateY', { duration: 0.45, ease: 'power3.out' });
+    tile.addEventListener('mouseenter', () => {
+      gsap.to(tile, { scale: 1.05, duration: 0.75, ease: 'elastic.out(1, 0.4)' });
+    });
     tile.addEventListener('mousemove', e => {
       const r = tile.getBoundingClientRect();
-      const nx = (e.clientX - r.left)  / r.width;   // 0→1
-      const ny = (e.clientY - r.top)   / r.height;  // 0→1
-      setRX((0.5 - ny) * 18);   // top edge: +9°, bottom: -9°
-      setRY((nx - 0.5) * 18);   // left edge: -9°, right: +9°
+      const nx = (e.clientX - r.left)  / r.width;
+      const ny = (e.clientY - r.top)   / r.height;
+      setRX((0.5 - ny) * 18);
+      setRY((nx - 0.5) * 18);
     });
     tile.addEventListener('mouseleave', () => {
-      gsap.to(tile, { rotateX: 0, rotateY: 0, duration: 0.9, ease: 'power3.out' });
+      gsap.to(tile, { scale: 1, rotateX: 0, rotateY: 0, duration: 0.65, ease: 'elastic.out(1, 0.45)' });
     });
   });
 }
