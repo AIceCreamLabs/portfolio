@@ -1155,7 +1155,7 @@ function initElasticScroll() {
 
     tiles.forEach((tile, i) => {
       const row = Math.min(Math.floor(i / 3), rows - 1);
-      gsap.set(tile, { y: springs[row].pos });
+      gsap.set(tile, { y: Math.round(springs[row].pos) });
     });
 
     requestAnimationFrame(loop);
