@@ -1175,16 +1175,21 @@ function initBulgeEffects() {
     const img = tile.querySelector('.gallery__image');
     if (!img) return;
 
-    // Pre-cache when image is ready
-    if (img.complete && img.naturalWidth) {
-      getTex(img);
-    } else {
-      img.addEventListener('load', function() { getTex(img); }, { once: true });
+    // Pre-cache — wrapped so a texImage2D error can't abort the whole forEach
+    function tryCache() {
+      try { getTex(img); } catch(e) { console.warn('Bulge pre-cache failed:', e); }
     }
+    if (img.complete && img.naturalWidth) { tryCache(); }
+    else { img.addEventListener('load', tryCache, { once: true }); }
 
     tile.addEventListener('mouseenter', function() {
-      const tex = getTex(img); // returns null only if img genuinely not loaded
+      // Always zoom the image — visible even if WebGL isn't ready
+      gsap.to(img, { scale: 1.06, duration: 0.55, ease: 'power2.out' });
+
+      let tex = null;
+      try { tex = getTex(img); } catch(e) {}
       if (!tex) return;
+
       const r = tile.getBoundingClientRect();
       canvas.style.left   = r.left   + 'px';
       canvas.style.top    = r.top    + 'px';
@@ -1206,6 +1211,7 @@ function initBulgeEffects() {
     });
 
     tile.addEventListener('mouseleave', function() {
+      gsap.to(img, { scale: 1, duration: 0.5, ease: 'power2.inOut' });
       gsap.killTweensOf(state);
       gsap.to(state, {
         s: 0, duration: 0.7, ease: 'power3.inOut',
