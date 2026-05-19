@@ -611,6 +611,7 @@ button { font-family: inherit; cursor: pointer; }
   background: var(--bg);
   color: var(--ink);
   pointer-events: none;
+  overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   opacity: 0;
@@ -960,7 +961,7 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--ink-2);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .detail__close {
     left: 16px; top: 16px;
     padding: 16px 0;
@@ -1039,13 +1040,14 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 /* ─── Mobile ─── */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   /* Reset fluid rem — use normal px on mobile */
   html { font-size: 16px; }
 
   /* Nav */
   .nav { padding: 16px 20px; }
   .nav__loc { display: none; }
+  .nav__theme { padding: 8px 14px; }
 
   /* Hero: collapse — layout starts with AKUMALI */
   .hero { height: 0; }
@@ -1062,7 +1064,7 @@ button { font-family: inherit; cursor: pointer; }
     padding: 80px 20px 16px;
   }
   .akumali-fixed__letter {
-    font-size: clamp(36px, 12vw, 72px);
+    font-size: clamp(48px, 10vw, 90px);
   }
 
   /* Sticky block: disable sticky, flow normally */
@@ -1097,7 +1099,9 @@ button { font-family: inherit; cursor: pointer; }
   .content__btn {
     pointer-events: all;
     opacity: 1 !important;
+    padding: 12px 0 8px;
   }
+  .btn-line { transform: scaleX(1); }
 
   /* Gallery: static 2-column grid below content */
   .gallery {
@@ -1127,21 +1131,36 @@ button { font-family: inherit; cursor: pointer; }
   .detail__close { left: 16px; top: 16px; }
   .detail__scroll { padding: 64px 16px 80px; }
   .detail__header { margin-bottom: 40px; }
+  .detail__progress { position: fixed; top: 0; left: 0; right: 0; z-index: 1001; }
+
+  /* About */
+  .about__content { padding: 48px 20px 100px; gap: 64px; }
+  .about__tier-top { flex-wrap: wrap; gap: 4px 12px; }
 
 }
 
 @media (max-width: 480px) {
   .gallery__grid { grid-template-columns: 1fr; }
-  .akumali-fixed__letter { font-size: clamp(28px, 14vw, 56px); }
+  .akumali-fixed__letter { font-size: clamp(32px, 14vw, 56px); }
 }
 
 /* iPhone notch / Dynamic Island / home indicator */
 @supports (padding: env(safe-area-inset-top)) {
   .nav { padding-top: max(22px, env(safe-area-inset-top)); }
   .footer { padding-bottom: max(52px, env(safe-area-inset-bottom)); }
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     .nav { padding-top: max(16px, env(safe-area-inset-top)); }
     .footer { padding-bottom: max(32px, env(safe-area-inset-bottom)); }
     .akumali-fixed { padding-top: max(80px, calc(env(safe-area-inset-top) + 60px)); }
+    .detail__scroll {
+      padding-top: max(env(safe-area-inset-top), 52px);
+      padding-left: max(env(safe-area-inset-left), 16px);
+      padding-right: max(env(safe-area-inset-right), 16px);
+      padding-bottom: 80px;
+    }
+    .detail__close {
+      top: max(env(safe-area-inset-top), 16px);
+      left: max(env(safe-area-inset-left), 16px);
+    }
   }
 }

@@ -1036,7 +1036,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   gsap.registerPlugin(ScrollTrigger);
 
-  isMobile = window.innerWidth <= 768 || window.innerHeight <= 500;
+  isMobile = window.innerWidth <= 900 || window.innerHeight <= 500;
 
   initTheme();
   initCursor();
