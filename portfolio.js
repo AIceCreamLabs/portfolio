@@ -390,11 +390,16 @@ class StickyGrid {
 
 /* ─── Lenis ─── */
 let lenis;
-let scrollVel = 0; // updated by Lenis, read by WebGL shader
+let scrollVel = 0;  // absolute velocity 0–6
+let scrollDir = 0;  // +1 down / -1 up
 function lenisRaf(time) { if (lenis) lenis.raf(time * 1000); }
 function initLenis() {
   lenis = new Lenis({ lerp: 0.08, wheelMultiplier: 1.4 });
-  lenis.on('scroll', (e) => { ScrollTrigger.update(); scrollVel = Math.min(Math.abs(e.velocity), 6); });
+  lenis.on('scroll', (e) => {
+    ScrollTrigger.update();
+    scrollVel = Math.min(Math.abs(e.velocity), 6);
+    if (e.velocity !== 0) scrollDir = Math.sign(e.velocity);
+  });
   gsap.ticker.add(lenisRaf);
   ScrollTrigger.refresh();
 }
@@ -1097,6 +1102,109 @@ function initCursor() {
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
+/* ─── WebGL scroll bend — UV sine warp on all gallery tiles ─── */
+function initScrollBend() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  // Vertex: full-screen quad, UV 0→1
+  const VS = 'attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}';
+  // Fragment: sine curve across Y — zero at top/bottom edges, max at center
+  // Creates the physical card-bend look from the Codrops shader-on-scroll tutorial
+  const FS = [
+    'precision mediump float;',
+    'varying vec2 v;',
+    'uniform sampler2D uTex;',
+    'uniform float uB;', // signed bend -1→1 (scrollDir * scrollVel/6)
+    'void main(){',
+    '  float t=sin(v.y*3.14159)*uB;',
+    // horizontal UV shift gives the curve; slight scale simulates depth
+    '  float dx=t*0.09;',
+    '  float scale=1.0+abs(t)*0.04;',
+    '  vec2 uv=(v-0.5)*scale+0.5;',
+    '  uv.x+=dx;',
+    '  gl_FragColor=texture2D(uTex,clamp(uv,0.,1.));',
+    '}',
+  ].join('');
+
+  function mkRenderer(tile) {
+    const img = tile.querySelector('.gallery__image');
+    if (!img) return null;
+
+    const cv = document.createElement('canvas');
+    cv.width = 600; cv.height = 400; // fixed internal res, CSS scales to tile
+    cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:0;';
+    tile.appendChild(cv);
+
+    const gl = cv.getContext('webgl');
+    if (!gl) { cv.remove(); return null; }
+
+    function mkSh(type, src) {
+      const sh = gl.createShader(type);
+      gl.shaderSource(sh, src); gl.compileShader(sh);
+      return gl.getShaderParameter(sh, gl.COMPILE_STATUS) ? sh : null;
+    }
+    const vs = mkSh(gl.VERTEX_SHADER, VS);
+    const fs = mkSh(gl.FRAGMENT_SHADER, FS);
+    if (!vs || !fs) { cv.remove(); return null; }
+
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { cv.remove(); return null; }
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+    const aP = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(aP); gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0);
+    gl.viewport(0, 0, 600, 400);
+
+    const uTex = gl.getUniformLocation(prog, 'uTex');
+    const uB   = gl.getUniformLocation(prog, 'uB');
+
+    let tex = null;
+    function buildTex() {
+      if (!img.complete || !img.naturalWidth) return;
+      const t = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img); tex = t; }
+      catch(e) {}
+    }
+    if (img.complete && img.naturalWidth) buildTex();
+    else img.addEventListener('load', buildTex, { once: true });
+
+    return {
+      cv,
+      draw(bend) {
+        if (!tex) return;
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.uniform1i(uTex, 0);
+        gl.uniform1f(uB, bend);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      },
+    };
+  }
+
+  const renderers = [...document.querySelectorAll('.gallery__item')]
+    .map(mkRenderer).filter(Boolean);
+  if (!renderers.length) return;
+
+  let bend = 0, opac = 0;
+  (function loop() {
+    const target = scrollDir * scrollVel / 6; // -1→1
+    bend = lerp(bend, target, 0.1);
+    opac = lerp(opac, Math.min(Math.abs(bend) * 11, 1), 0.12);
+    const o = opac.toFixed(3);
+    renderers.forEach(r => { r.cv.style.opacity = o; r.draw(bend); });
+    requestAnimationFrame(loop);
+  })();
+}
+
 /* ─── WebGL hover: exponential easing zoom (Curtains.js pen, raw WebGL) ─── */
 function initBulgeEffects() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
@@ -1363,6 +1471,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderGrid();
   initDetail();
   try { initBulgeEffects(); } catch(e) { console.warn('Bulge init failed:', e); }
+  try { initScrollBend(); }  catch(e) { console.warn('ScrollBend init failed:', e); }
 
   window.addEventListener('orientationchange', () => {
     setTimeout(() => window.location.reload(), 300);
