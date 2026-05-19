@@ -336,31 +336,34 @@ class StickyGrid {
 
   startDepthParallax() {
     if (window.matchMedia('(pointer: coarse)').matches) return;
-    if (this.depthCleanup) return; // already active
+    if (this.depthCleanup) return;
 
-    // Per-tile quickTo setters — left col feels further, right col closer
-    const leftSetters = this.columns[0].map(el => ({
-      setX: gsap.quickTo(el, 'x', { duration: 1.2, ease: 'power3.out' }),
-      setY: gsap.quickTo(el, 'y', { duration: 1.4, ease: 'power3.out' }),
-    }));
-    const rightSetters = this.columns[2].map(el => ({
-      setX: gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3.out' }),
-      setY: gsap.quickTo(el, 'y', { duration: 1.0, ease: 'power3.out' }),
-    }));
+    // Tiles are the fixed backdrop — only the text panel floats as a separate layer.
+    // Each text element sits at a different depth so the block has internal 3D structure:
+    // headline (deepest) → body copy (mid) → CTA button (closest/most responsive)
+    const setSubX = gsap.quickTo(this.subheading, 'x', { duration: 1.6, ease: 'power3.out' });
+    const setSubY = gsap.quickTo(this.subheading, 'y', { duration: 1.8, ease: 'power3.out' });
+    const setDescX = gsap.quickTo(this.description, 'x', { duration: 1.3, ease: 'power3.out' });
+    const setDescY = gsap.quickTo(this.description, 'y', { duration: 1.4, ease: 'power3.out' });
+    const setBtnX = gsap.quickTo(this.btn, 'x', { duration: 0.95, ease: 'power3.out' });
+    const setBtnY = gsap.quickTo(this.btn, 'y', { duration: 1.0, ease: 'power3.out' });
 
     const onMove = (e) => {
       const cx = e.clientX / window.innerWidth  - 0.5;
       const cy = e.clientY / window.innerHeight - 0.5;
-      leftSetters.forEach(s  => { s.setX(cx * -12); s.setY(cy * -6); });
-      rightSetters.forEach(s => { s.setX(cx *  18); s.setY(cy *  9); });
+      // All drift opposite to cursor (parallax window — text is the near glass plane)
+      setSubX(cx * -10);  setSubY(cy * -6);   // headline: far within text block
+      setDescX(cx * -16); setDescY(cy * -9);  // body: mid
+      setBtnX(cx * -24);  setBtnY(cy * -13);  // CTA: closest, most movement
     };
 
     window.addEventListener('mousemove', onMove);
 
     this.depthCleanup = () => {
       window.removeEventListener('mousemove', onMove);
-      const allCols = [...this.columns[0], ...this.columns[2]];
-      gsap.to(allCols, { x: 0, y: 0, duration: 0.7, ease: 'power3.out' });
+      gsap.to([this.subheading, this.description, this.btn], {
+        x: 0, y: 0, duration: 0.9, ease: 'power3.out',
+      });
     };
   }
 
@@ -1056,71 +1059,45 @@ function initCursor() {
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
-/* ─── Hero layered depth parallax ─── */
+/* ─── Hero: three depth planes responding to cursor ─── */
 function initHeroParallax() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
 
   const akumali     = document.getElementById('akumaliFixed');
   const heroContent = document.getElementById('heroContent');
+  const datum       = document.querySelector('.hero__datum');
   if (!akumali) return;
 
-  // Far layer: AKUMALI — x only (y is occupied by ambient float)
-  const setAkuX = gsap.quickTo(akumali, 'x', { duration: 1.8, ease: 'power3.out' });
+  // Plane 1 — AKUMALI (deepest, far wall): x only, very slow, barely moves
+  const setAkuX = gsap.quickTo(akumali, 'x', { duration: 2.2, ease: 'power3.out' });
 
-  // Near layer: hero text block — moves more than AKUMALI, creating depth
-  const setHeroX = heroContent ? gsap.quickTo(heroContent, 'x', { duration: 1.2, ease: 'power3.out' }) : null;
-  const setHeroY = heroContent ? gsap.quickTo(heroContent, 'y', { duration: 1.2, ease: 'power3.out' }) : null;
+  // Plane 2 — datum horizon line (mid-depth): x only, faster, wider swing
+  const setDatumX = datum
+    ? gsap.quickTo(datum, 'x', { duration: 1.5, ease: 'power3.out' })
+    : null;
+
+  // Plane 3 — hero text (closest, foreground): x + y, most responsive
+  const setHeroX = heroContent
+    ? gsap.quickTo(heroContent, 'x', { duration: 1.0, ease: 'power3.out' })
+    : null;
+  const setHeroY = heroContent
+    ? gsap.quickTo(heroContent, 'y', { duration: 1.0, ease: 'power3.out' })
+    : null;
 
   window.addEventListener('mousemove', (e) => {
     const cx = e.clientX / window.innerWidth  - 0.5; // –0.5 → +0.5
     const cy = e.clientY / window.innerHeight - 0.5;
-    setAkuX(cx * 10);                        // far:  10px max horizontal
-    if (setHeroX) setHeroX(cx * 26);         // near: 26px max horizontal
-    if (setHeroY) setHeroY(cy * 12);         // near: 12px max vertical
+    setAkuX(cx * 7);                              // far:  7px  — barely moves
+    if (setDatumX) setDatumX(cx * 18);            // mid:  18px — visible shift
+    if (setHeroX)  setHeroX(cx * 32);             // near: 32px — most movement
+    if (setHeroY)  setHeroY(cy * 16);             // near: 16px vertical
   });
 
   window.addEventListener('mouseleave', () => {
     setAkuX(0);
-    if (setHeroX) setHeroX(0);
-    if (setHeroY) setHeroY(0);
-  });
-}
-
-/* ─── Tile 3D tilt on hover (pointer: fine only) ─── */
-function initTileHover() {
-  if (window.matchMedia('(pointer: coarse)').matches) return;
-  const grid = document.getElementById('galleryGrid');
-  if (!grid) return;
-
-  let activeTile = null;
-
-  grid.addEventListener('mousemove', (e) => {
-    const tile = e.target.closest('.gallery__item');
-    if (!tile) return;
-    const r = tile.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    gsap.to(tile, {
-      rotateY: x * 12,
-      rotateX: -y * 8,
-      transformPerspective: 900,
-      ease: 'power2.out',
-      duration: 0.4,
-      overwrite: true,
-    });
-    activeTile = tile;
-  });
-
-  grid.addEventListener('mouseleave', () => {
-    if (activeTile) {
-      gsap.to(activeTile, {
-        rotateY: 0, rotateX: 0,
-        duration: 1.0,
-        ease: 'elastic.out(1, 0.35)',
-        overwrite: true,
-      });
-      activeTile = null;
-    }
+    if (setDatumX) setDatumX(0);
+    if (setHeroX)  setHeroX(0);
+    if (setHeroY)  setHeroY(0);
   });
 }
 
@@ -1187,7 +1164,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   renderGrid();
   initDetail();
-  initTileHover();
 
   window.addEventListener('orientationchange', () => {
     setTimeout(() => window.location.reload(), 300);
