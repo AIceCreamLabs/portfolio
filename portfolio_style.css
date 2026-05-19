@@ -297,6 +297,8 @@ button { font-family: inherit; cursor: pointer; }
   width: 480rem;
   transform-origin: center center;
   will-change: transform;
+  perspective: 1200px;
+  transform-style: preserve-3d;
 }
 .gallery__item {
   width: 100%;

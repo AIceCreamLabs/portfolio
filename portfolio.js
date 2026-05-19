@@ -250,7 +250,8 @@ class StickyGrid {
     this.grid        = document.getElementById('galleryGrid');
     this.items       = this.grid.querySelectorAll('.gallery__item');
     this.groupItemsByColumn();
-    this.idleTweens = null;
+    this.idleTweens  = null;
+    this.depthCleanup = null;
     this.initContent();
     this.animate();
   }
@@ -311,20 +312,17 @@ class StickyGrid {
     if (!this.subheading || !this.description || !this.btn) return;
 
     if (isVisible) {
-      // Single container float — all tiles share one breath, creating spatial coherence
       this.idleTweens = [
-        gsap.to(this.grid, {
-          y: -6,
-          duration: 5,
-          ease: 'sine.inOut',
-          repeat: -1,
-          yoyo: true,
-        }),
+        gsap.to(this.grid, { y: -6, duration: 5, ease: 'sine.inOut', repeat: -1, yoyo: true }),
       ];
-    } else if (this.idleTweens) {
-      this.idleTweens.forEach(t => t.kill());
-      gsap.set(this.grid, { y: 0 });
-      this.idleTweens = null;
+      this.startDepthParallax();
+    } else {
+      if (this.idleTweens) {
+        this.idleTweens.forEach(t => t.kill());
+        gsap.set(this.grid, { y: 0 });
+        this.idleTweens = null;
+      }
+      this.stopDepthParallax();
     }
 
     gsap.to([this.subheading, this.description, this.btn], {
@@ -335,6 +333,43 @@ class StickyGrid {
       overwrite: true,
     });
   }
+
+  startDepthParallax() {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    if (this.depthCleanup) return; // already active
+
+    // Per-tile quickTo setters — left col feels further, right col closer
+    const leftSetters = this.columns[0].map(el => ({
+      setX: gsap.quickTo(el, 'x', { duration: 1.2, ease: 'power3.out' }),
+      setY: gsap.quickTo(el, 'y', { duration: 1.4, ease: 'power3.out' }),
+    }));
+    const rightSetters = this.columns[2].map(el => ({
+      setX: gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3.out' }),
+      setY: gsap.quickTo(el, 'y', { duration: 1.0, ease: 'power3.out' }),
+    }));
+
+    const onMove = (e) => {
+      const cx = e.clientX / window.innerWidth  - 0.5;
+      const cy = e.clientY / window.innerHeight - 0.5;
+      leftSetters.forEach(s  => { s.setX(cx * -12); s.setY(cy * -6); });
+      rightSetters.forEach(s => { s.setX(cx *  18); s.setY(cy *  9); });
+    };
+
+    window.addEventListener('mousemove', onMove);
+
+    this.depthCleanup = () => {
+      window.removeEventListener('mousemove', onMove);
+      const allCols = [...this.columns[0], ...this.columns[2]];
+      gsap.to(allCols, { x: 0, y: 0, duration: 0.7, ease: 'power3.out' });
+    };
+  }
+
+  stopDepthParallax() {
+    if (this.depthCleanup) {
+      this.depthCleanup();
+      this.depthCleanup = null;
+    }
+  }
 }
 
 
@@ -344,17 +379,7 @@ let lenis;
 function lenisRaf(time) { if (lenis) lenis.raf(time * 1000); }
 function initLenis() {
   lenis = new Lenis({ lerp: 0.08, wheelMultiplier: 1.4 });
-
-  const galleryGrid = document.getElementById('galleryGrid');
-  const skewSet = galleryGrid
-    ? gsap.quickTo(galleryGrid, 'skewY', { duration: 0.9, ease: 'power3.out' })
-    : null;
-
-  lenis.on('scroll', ({ velocity }) => {
-    ScrollTrigger.update();
-    if (skewSet) skewSet(velocity * 0.4);
-  });
-
+  lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(lenisRaf);
   ScrollTrigger.refresh();
 }
@@ -1031,6 +1056,36 @@ function initCursor() {
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
+/* ─── Hero layered depth parallax ─── */
+function initHeroParallax() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  const akumali     = document.getElementById('akumaliFixed');
+  const heroContent = document.getElementById('heroContent');
+  if (!akumali) return;
+
+  // Far layer: AKUMALI — x only (y is occupied by ambient float)
+  const setAkuX = gsap.quickTo(akumali, 'x', { duration: 1.8, ease: 'power3.out' });
+
+  // Near layer: hero text block — moves more than AKUMALI, creating depth
+  const setHeroX = heroContent ? gsap.quickTo(heroContent, 'x', { duration: 1.2, ease: 'power3.out' }) : null;
+  const setHeroY = heroContent ? gsap.quickTo(heroContent, 'y', { duration: 1.2, ease: 'power3.out' }) : null;
+
+  window.addEventListener('mousemove', (e) => {
+    const cx = e.clientX / window.innerWidth  - 0.5; // –0.5 → +0.5
+    const cy = e.clientY / window.innerHeight - 0.5;
+    setAkuX(cx * 10);                        // far:  10px max horizontal
+    if (setHeroX) setHeroX(cx * 26);         // near: 26px max horizontal
+    if (setHeroY) setHeroY(cy * 12);         // near: 12px max vertical
+  });
+
+  window.addEventListener('mouseleave', () => {
+    setAkuX(0);
+    if (setHeroX) setHeroX(0);
+    if (setHeroY) setHeroY(0);
+  });
+}
+
 /* ─── Tile 3D tilt on hover (pointer: fine only) ─── */
 function initTileHover() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
@@ -1164,6 +1219,8 @@ document.addEventListener('DOMContentLoaded', () => {
         y: -8, duration: 6, ease: 'sine.inOut', repeat: -1, yoyo: true,
       });
     }
+
+    initHeroParallax();
 
     // Create all ScrollTriggers first, then refresh via initLenis
     new StickyGrid();
