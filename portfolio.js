@@ -379,10 +379,11 @@ class StickyGrid {
 
 /* ─── Lenis ─── */
 let lenis;
+let scrollVel = 0; // updated by Lenis, read by WebGL shader
 function lenisRaf(time) { if (lenis) lenis.raf(time * 1000); }
 function initLenis() {
   lenis = new Lenis({ lerp: 0.08, wheelMultiplier: 1.4 });
-  lenis.on('scroll', ScrollTrigger.update);
+  lenis.on('scroll', (e) => { ScrollTrigger.update(); scrollVel = Math.min(Math.abs(e.velocity), 6); });
   gsap.ticker.add(lenisRaf);
   ScrollTrigger.refresh();
 }
@@ -1059,7 +1060,7 @@ function initCursor() {
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
-/* ─── WebGL bulge distortion on tile hover ─── */
+/* ─── WebGL hover: chromatic aberration + scroll wave ─── */
 function initBulgeEffects() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
 
@@ -1072,20 +1073,22 @@ function initBulgeEffects() {
   const gl = canvas.getContext('webgl');
   if (!gl) { canvas.remove(); return; }
 
-  // Float texture needed for displacement grid — bail if unavailable
-  if (!gl.getExtension('OES_texture_float')) { canvas.remove(); return; }
-
   const VS = 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,1.-(p.y*.5+.5));gl_Position=vec4(p,0.,1.);}';
-  // Shader samples image displaced by the DataTexture ripple
   const FS = [
     'precision highp float;',
     'varying vec2 v;',
     'uniform sampler2D uImg;',
-    'uniform sampler2D uDisp;',
+    'uniform float uChroma;',
+    'uniform float uWave;',
     'uniform float uStr;',
     'void main(){',
-    '  vec2 d=texture2D(uDisp,v).rg;',
-    '  gl_FragColor=texture2D(uImg,clamp(v+uStr*d,0.,1.));',
+    '  vec2 uv=v;',
+    '  uv.x+=sin(v.y*3.14159*4.0)*uWave*0.012*uStr;',
+    '  float c=uChroma*0.007*uStr;',
+    '  float r=texture2D(uImg,clamp(uv+vec2(c,0.),0.,1.)).r;',
+    '  float g=texture2D(uImg,clamp(uv,0.,1.)).g;',
+    '  float b=texture2D(uImg,clamp(uv-vec2(c,0.),0.,1.)).b;',
+    '  gl_FragColor=vec4(r,g,b,1.0);',
     '}',
   ].join('');
 
@@ -1116,47 +1119,11 @@ function initBulgeEffects() {
   gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0);
   gl.viewport(0, 0, W, H);
 
-  const uImg  = gl.getUniformLocation(prog, 'uImg');
-  const uDisp = gl.getUniformLocation(prog, 'uDisp');
-  const uStr  = gl.getUniformLocation(prog, 'uStr');
+  const uImg    = gl.getUniformLocation(prog, 'uImg');
+  const uChroma = gl.getUniformLocation(prog, 'uChroma');
+  const uWave   = gl.getUniformLocation(prog, 'uWave');
+  const uStr    = gl.getUniformLocation(prog, 'uStr');
 
-  // ── DataTexture displacement grid ──────────────────────────────────────
-  const GRID = 32;
-  const dispData = new Float32Array(GRID * GRID * 4); // RGBA float
-  const dispTex  = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, dispTex);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, GRID, GRID, 0, gl.RGBA, gl.FLOAT, dispData);
-
-  let prevMx = 0.5, prevMy = 0.5;
-
-  function addForce(mx, my, vx, vy) {
-    const speed = Math.sqrt(vx * vx + vy * vy);
-    if (speed < 0.0005) return;
-    const gx = mx * GRID, gy = my * GRID;
-    for (let y = 0; y < GRID; y++) {
-      for (let x = 0; x < GRID; x++) {
-        const dist = Math.sqrt((x - gx) * (x - gx) + (y - gy) * (y - gy));
-        const f = Math.max(0, 1 - dist / 6) * speed * 10;
-        const i = (y * GRID + x) * 4;
-        dispData[i]   = Math.max(-1, Math.min(1, dispData[i]   + vx * f));
-        dispData[i+1] = Math.max(-1, Math.min(1, dispData[i+1] + vy * f));
-      }
-    }
-  }
-
-  function decayAndUpload() {
-    for (let i = 0; i < dispData.length; i += 4) {
-      dispData[i] *= 0.93; dispData[i+1] *= 0.93;
-    }
-    gl.bindTexture(gl.TEXTURE_2D, dispTex);
-    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, GRID, GRID, gl.RGBA, gl.FLOAT, dispData);
-  }
-
-  // ── Image texture cache ────────────────────────────────────────────────
   const texCache = new Map();
   function getTex(img) {
     if (texCache.has(img.src)) return texCache.get(img.src);
@@ -1172,24 +1139,22 @@ function initBulgeEffects() {
     return tex;
   }
 
-  const state = { str: 0, raf: null, tex: null };
+  const state = { str: 0, chroma: 0, raf: null, tex: null };
 
   function draw() {
-    decayAndUpload();
+    state.chroma *= 0.84;
     if (!state.tex) return;
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, state.tex);
     gl.uniform1i(uImg, 0);
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, dispTex);
-    gl.uniform1i(uDisp, 1);
-    gl.uniform1f(uStr, state.str * 0.06);
+    gl.uniform1f(uChroma, state.chroma);
+    gl.uniform1f(uWave,   scrollVel);
+    gl.uniform1f(uStr,    state.str);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
   function loop() { draw(); state.raf = requestAnimationFrame(loop); }
 
-  // ── Per-tile events ────────────────────────────────────────────────────
   document.querySelectorAll('.gallery__item').forEach(function(tile) {
     const img = tile.querySelector('.gallery__image');
     if (!img) return;
@@ -1198,42 +1163,45 @@ function initBulgeEffects() {
     if (img.complete && img.naturalWidth) tryCache();
     else img.addEventListener('load', tryCache, { once: true });
 
-    tile.addEventListener('mouseenter', function() {
+    let prevMx = 0, prevMy = 0;
+
+    tile.addEventListener('mouseenter', function(e) {
       let tex; try { tex = getTex(img); } catch(e) {}
       if (!tex) return;
-
       const r = tile.getBoundingClientRect();
       canvas.style.left = r.left + 'px'; canvas.style.top  = r.top  + 'px';
       canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
       state.tex = tex;
-      prevMx = 0.5; prevMy = 0.5;
-      dispData.fill(0); // clear ripples from previous tile
+      prevMx = (e.clientX - r.left) / r.width;
+      prevMy = (e.clientY - r.top)  / r.height;
       if (!state.raf) loop();
       gsap.killTweensOf(state); gsap.killTweensOf(canvas);
       gsap.to(canvas, { opacity: 1, duration: 0.1 });
-      gsap.to(state,  { str: 1, duration: 0.5, ease: 'power2.out' });
+      gsap.to(state,  { str: 1, duration: 0.35, ease: 'power2.out' });
     });
 
     tile.addEventListener('mousemove', function(e) {
       const r = tile.getBoundingClientRect();
-      const mx =       (e.clientX - r.left) / r.width;
-      const my = 1.0 - (e.clientY - r.top)  / r.height;
-      addForce(mx, my, mx - prevMx, my - prevMy);
+      const mx = (e.clientX - r.left) / r.width;
+      const my = (e.clientY - r.top)  / r.height;
+      const vel = Math.sqrt((mx - prevMx) ** 2 + (my - prevMy) ** 2);
+      state.chroma = Math.min(4, state.chroma + vel * 40);
       prevMx = mx; prevMy = my;
     });
 
     tile.addEventListener('mouseleave', function() {
       gsap.killTweensOf(state);
       gsap.to(state, {
-        str: 0, duration: 0.8, ease: 'power3.inOut',
+        str: 0, duration: 0.55, ease: 'power3.inOut',
         onComplete: function() {
-          gsap.to(canvas, { opacity: 0, duration: 0.2 });
+          gsap.to(canvas, { opacity: 0, duration: 0.15 });
           cancelAnimationFrame(state.raf); state.raf = null; state.tex = null;
         },
       });
     });
   });
 }
+
 
 /* ─── Hero: three depth planes responding to cursor ─── */
 function initHeroParallax() {
