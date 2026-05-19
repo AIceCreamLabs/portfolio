@@ -1086,9 +1086,9 @@ function initBulgeEffects() {
     '  vec2 d = uv - uMouse;',
     '  d.x *= uAsp;',
     '  float dist = length(d);',
-    '  float falloff = smoothstep(0.45, 0.0, dist);',
+    '  float falloff = smoothstep(0.6, 0.0, dist);',
     '  vec2 nd = d / (dist + 0.0001);',
-    '  uv -= vec2(nd.x / uAsp, nd.y) * falloff * uStr * 0.22;',
+    '  uv -= vec2(nd.x / uAsp, nd.y) * falloff * uStr * 0.55;',
     '  gl_FragColor = texture2D(uTex, clamp(uv, 0.0, 1.0));',
     '}',
   ].join('\n');
@@ -1188,8 +1188,8 @@ function initBulgeEffects() {
     tile.addEventListener('mouseenter', function() {
       resize();
       if (!state.raf) loop();
-      gsap.to(canvas, { opacity: 1, duration: 0.2 });
-      gsap.to(state, { strength: 1, duration: 0.8, ease: 'power2.out', overwrite: true });
+      gsap.to(canvas, { opacity: 1, duration: 0.05 });
+      gsap.to(state, { strength: 1, duration: 0.6, ease: 'power2.out', overwrite: true });
     });
 
     tile.addEventListener('mousemove', function(e) {
