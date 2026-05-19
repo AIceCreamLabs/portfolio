@@ -1086,9 +1086,9 @@ function initBulgeEffects() {
     '  vec2 d = uv - uMouse;',
     '  d.x *= uAsp;',
     '  float dist = length(d);',
-    '  float falloff = smoothstep(0.34, 0.0, dist);',
+    '  float falloff = smoothstep(0.45, 0.0, dist);',
     '  vec2 nd = d / (dist + 0.0001);',
-    '  uv -= vec2(nd.x / uAsp, nd.y) * falloff * uStr * 0.09;',
+    '  uv -= vec2(nd.x / uAsp, nd.y) * falloff * uStr * 0.22;',
     '  gl_FragColor = texture2D(uTex, clamp(uv, 0.0, 1.0));',
     '}',
   ].join('\n');
