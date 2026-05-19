@@ -1141,34 +1141,28 @@ function initBulgeEffects() {
   const uM = gl.getUniformLocation(prog, 'm');
   const uS = gl.getUniformLocation(prog, 's');
 
-  // Texture cache — use new Image() with crossOrigin so texImage2D never throws
+  // Same-origin images: use DOM img directly — no crossOrigin needed, no security error
   const texCache = new Map();
-  function loadTex(src) {
-    if (texCache.has(src)) return texCache.get(src);
-    const entry = { tex: gl.createTexture(), ready: false };
-    texCache.set(src, entry);
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = function() {
-      gl.bindTexture(gl.TEXTURE_2D, entry.tex);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-      entry.ready = true;
-    };
-    img.onerror = function() { console.warn('Bulge: failed to load', src); };
-    img.src = src;
-    return entry;
+  function getTex(img) {
+    if (texCache.has(img.src)) return texCache.get(img.src);
+    if (!img.complete || !img.naturalWidth) return null;
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    texCache.set(img.src, tex);
+    return tex;
   }
 
-  const state = { s: 0, mx: 0.5, my: 0.5, raf: null, entry: null };
+  const state = { s: 0, mx: 0.5, my: 0.5, raf: null, tex: null };
 
   function draw() {
-    if (!state.entry || !state.entry.ready) return;
+    if (!state.tex) return;
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, state.entry.tex);
+    gl.bindTexture(gl.TEXTURE_2D, state.tex);
     gl.uniform1i(uT, 0);
     gl.uniform2f(uM, state.mx, state.my);
     gl.uniform1f(uS, state.s);
@@ -1178,18 +1172,25 @@ function initBulgeEffects() {
   function loop() { draw(); state.raf = requestAnimationFrame(loop); }
 
   document.querySelectorAll('.gallery__item').forEach(function(tile) {
-    const domImg = tile.querySelector('.gallery__image');
-    if (!domImg || !domImg.src) return;
-    const src = domImg.src;
-    loadTex(src); // pre-cache immediately
+    const img = tile.querySelector('.gallery__image');
+    if (!img) return;
+
+    // Pre-cache when image is ready
+    if (img.complete && img.naturalWidth) {
+      getTex(img);
+    } else {
+      img.addEventListener('load', function() { getTex(img); }, { once: true });
+    }
 
     tile.addEventListener('mouseenter', function() {
+      const tex = getTex(img);
+      if (!tex) return; // image not loaded yet — skip rather than show black
       const r = tile.getBoundingClientRect();
       canvas.style.left   = r.left   + 'px';
       canvas.style.top    = r.top    + 'px';
       canvas.style.width  = r.width  + 'px';
       canvas.style.height = r.height + 'px';
-      state.entry = loadTex(src);
+      state.tex = tex;
       state.mx = 0.5; state.my = 0.5;
       if (!state.raf) loop();
       gsap.killTweensOf(state);
