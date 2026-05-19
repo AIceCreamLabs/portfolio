@@ -2,6 +2,30 @@
  * AKUMALI · STUDIO — Sticky Grid Portfolio
  * ============================================================ */
 
+/* ─── Copywriting formula ───────────────────────────────────────────────────
+   Use this structure for every new case study. The goal is not to describe
+   the website — it's to make the reader feel the business problem, then feel
+   the consequence of solving it.
+
+   description  → The situation before you arrived. One sentence. Human, not
+                  technical. What was being lost or left on the table?
+
+   challenge    → The structural reason that gap existed. Not "they needed a
+                  website" — the invisible constraint underneath. One sentence.
+
+   solution     → What you built and WHY it worked differently from the obvious
+                  answer. Two to three sentences. No tech stack yet.
+
+   results[0]   → The editorial verdict. Declarative, no period. Not a metric —
+                  a truth about what the work changed.
+
+   results[1–4] → Hard numbers or irreversible outcomes. Each one specific
+                  enough that a competitor could not copy it as a generic claim.
+                  (e.g. "Inbound inquiries within 60 days" beats "Improved SEO")
+
+   CAN Architecture below is the reference implementation.
+   ─────────────────────────────────────────────────────────────────────────── */
+
 /* ─── Data ───
    Grid tiles: indices 0–5 (left col: 0,1,2 / right col: 3,4,5)
    Center panel buttons access: index 6 (Hire Me), index 7 (About)
@@ -32,20 +56,20 @@ const PORTFOLIO_ITEMS = [
   {
     id: 3,
     title: 'CAN Architecture',
-    subtitle: 'Where architects post. Where clients discover.',
+    subtitle: 'Portfolio platform for an award-winning architecture firm',
     category: 'Editorial Platform',
     image: 'can.png',
     media: ['can-demo.mp4', 'can.png'],
     type: 'project',
-    description: 'Architects build incredible spaces. Yet their digital presence is often an afterthought.',
-    challenge: 'The best portfolio site an architect could get cost €15k and took three months — if they ever got around to it.',
-    solution: 'A custom web app in three weeks. Admin they control completely, no code needed, inbound-optimized. The work starts speaking before the architect says a word.',
+    description: 'The firm was winning commissions in the room. They were losing them before the meeting ever happened.',
+    challenge: 'Architecture is a trust business. Clients form their impression from a portfolio — and the best work in the city was buried in a PDF nobody opened.',
+    solution: 'A platform engineered to make the work do the selling. Immersive project pages. Filterable by typology. An admin panel she controls without code, so the portfolio stays current without a developer on retainer.',
     results: [
-      'The work was always there. Now clients can find it.',
-      '3 weeks from brief to live',
-      '€2,500 investment',
-      'Inbound inquiries within 60 days',
-      'Zero maintenance on client end',
+      'Good work deserves a stage that matches it',
+      'Live 3 weeks from brief',
+      'Inbound client inquiries within 60 days of launch',
+      'Zero developer dependency — fully self-managed',
+      '€2,500 total investment',
     ],
     tech: ['React', 'Next.js', 'Node.js', 'Firebase', 'Firestore', 'Vercel'],
     link: 'https://can-yinka-muu8xna3i-aicecreamlabs-6519s-projects.vercel.app/'
