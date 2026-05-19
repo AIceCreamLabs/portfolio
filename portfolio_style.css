@@ -244,6 +244,7 @@ button { font-family: inherit; cursor: pointer; }
   line-height: 1.55;
   letter-spacing: 0.01em;
   color: var(--ink-2);
+  text-align: center;
   pointer-events: auto;
 }
 .content__description {
@@ -308,7 +309,6 @@ button { font-family: inherit; cursor: pointer; }
   width: 480rem;
   transform-origin: center center;
   transform-style: preserve-3d;
-  will-change: transform;
 }
 .gallery__item {
   width: 100%;
