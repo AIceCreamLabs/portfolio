@@ -1142,9 +1142,9 @@ function initScrollBend() {
     'void main(){',
     '  float t=sin(v.y*3.14159)*uB;',
     // horizontal bend — zero at top/bottom edges, max at centre
-    '  float dx=t*0.13;',
-    // Y-stretch: image compresses/expands vertically with scroll (rubbery InfiniteScroll feel)
-    '  float sy=1.0+abs(uB)*0.06;',
+    '  float dx=t*0.04;',
+    // Y-stretch: subtle vertical compression with scroll
+    '  float sy=1.0+abs(uB)*0.02;',
     '  vec2 uv=vec2(v.x+dx,(v.y-0.5)*sy+0.5);',
     '  gl_FragColor=texture2D(uTex,clamp(uv,0.,1.));',
     '}',
