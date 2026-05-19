@@ -296,6 +296,7 @@ button { font-family: inherit; cursor: pointer; }
   gap: 14rem;
   width: 480rem;
   transform-origin: center center;
+  transform-style: preserve-3d;
   will-change: transform;
 }
 .gallery__item {
@@ -304,6 +305,7 @@ button { font-family: inherit; cursor: pointer; }
   overflow: hidden;
   position: relative;
   cursor: pointer;
+  transform-style: preserve-3d;
   will-change: transform;
 }
 .gallery__image {

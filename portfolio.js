@@ -349,32 +349,37 @@ class StickyGrid {
     if (window.matchMedia('(pointer: coarse)').matches) return;
     if (this.depthCleanup) return;
 
-    // Tiles are the fixed backdrop — only the text panel floats as a separate layer.
-    // Each text element sits at a different depth so the block has internal 3D structure:
-    // headline (deepest) → body copy (mid) → CTA button (closest/most responsive)
-    const setSubX = gsap.quickTo(this.subheading, 'x', { duration: 1.6, ease: 'power3.out' });
-    const setSubY = gsap.quickTo(this.subheading, 'y', { duration: 1.8, ease: 'power3.out' });
-    const setDescX = gsap.quickTo(this.description, 'x', { duration: 1.3, ease: 'power3.out' });
-    const setDescY = gsap.quickTo(this.description, 'y', { duration: 1.4, ease: 'power3.out' });
-    const setBtnX = gsap.quickTo(this.btn, 'x', { duration: 0.95, ease: 'power3.out' });
-    const setBtnY = gsap.quickTo(this.btn, 'y', { duration: 1.0, ease: 'power3.out' });
+    const galleryEl = this.grid.closest('.gallery');
+
+    // Text layers drift in X/Y (parallax window effect)
+    const setSubX  = gsap.quickTo(this.subheading,  'x',       { duration: 1.6,  ease: 'power3.out' });
+    const setSubY  = gsap.quickTo(this.subheading,  'y',       { duration: 1.8,  ease: 'power3.out' });
+    const setDescX = gsap.quickTo(this.description, 'x',       { duration: 1.3,  ease: 'power3.out' });
+    const setDescY = gsap.quickTo(this.description, 'y',       { duration: 1.4,  ease: 'power3.out' });
+    const setBtnX  = gsap.quickTo(this.btn,         'x',       { duration: 0.95, ease: 'power3.out' });
+    const setBtnY  = gsap.quickTo(this.btn,         'y',       { duration: 1.0,  ease: 'power3.out' });
+
+    // Gallery grid tilts as one surface — slow, weighted, cinematic
+    const setGridRX = galleryEl ? gsap.quickTo(galleryEl, 'rotateX', { duration: 1.8, ease: 'power3.out' }) : null;
+    const setGridRY = galleryEl ? gsap.quickTo(galleryEl, 'rotateY', { duration: 1.8, ease: 'power3.out' }) : null;
 
     const onMove = (e) => {
-      const cx = e.clientX / window.innerWidth  - 0.5;
+      const cx = e.clientX / window.innerWidth  - 0.5; // -0.5 → 0.5
       const cy = e.clientY / window.innerHeight - 0.5;
-      // All drift opposite to cursor (parallax window — text is the near glass plane)
-      setSubX(cx * -10);  setSubY(cy * -6);   // headline: far within text block
-      setDescX(cx * -16); setDescY(cy * -9);  // body: mid
-      setBtnX(cx * -24);  setBtnY(cy * -13);  // CTA: closest, most movement
+      setSubX(cx * -10);  setSubY(cy * -6);
+      setDescX(cx * -16); setDescY(cy * -9);
+      setBtnX(cx * -24);  setBtnY(cy * -13);
+      // Grid tilts toward cursor — opposite direction for depth illusion
+      if (setGridRX) setGridRX(cy * -6);
+      if (setGridRY) setGridRY(cx * 10);
     };
 
     window.addEventListener('mousemove', onMove);
 
     this.depthCleanup = () => {
       window.removeEventListener('mousemove', onMove);
-      gsap.to([this.subheading, this.description, this.btn], {
-        x: 0, y: 0, duration: 0.9, ease: 'power3.out',
-      });
+      gsap.to([this.subheading, this.description, this.btn], { x: 0, y: 0, duration: 0.9, ease: 'power3.out' });
+      if (galleryEl) gsap.to(galleryEl, { rotateX: 0, rotateY: 0, duration: 1.2, ease: 'power3.out' });
     };
   }
 
@@ -1102,6 +1107,25 @@ function initCursor() {
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
+/* ─── Per-tile 3D tilt — cursor position within tile drives rotateX/Y ─── */
+function initTileTilt() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  document.querySelectorAll('.gallery__item').forEach(tile => {
+    const setRX = gsap.quickTo(tile, 'rotateX', { duration: 0.55, ease: 'power3.out' });
+    const setRY = gsap.quickTo(tile, 'rotateY', { duration: 0.55, ease: 'power3.out' });
+    tile.addEventListener('mousemove', e => {
+      const r = tile.getBoundingClientRect();
+      const nx = (e.clientX - r.left)  / r.width;   // 0→1
+      const ny = (e.clientY - r.top)   / r.height;  // 0→1
+      setRX((0.5 - ny) * 18);   // top edge: +9°, bottom: -9°
+      setRY((nx - 0.5) * 18);   // left edge: -9°, right: +9°
+    });
+    tile.addEventListener('mouseleave', () => {
+      gsap.to(tile, { rotateX: 0, rotateY: 0, duration: 0.9, ease: 'power3.out' });
+    });
+  });
+}
+
 /* ─── WebGL scroll bend — UV sine warp on all gallery tiles ─── */
 function initScrollBend() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
@@ -1114,14 +1138,14 @@ function initScrollBend() {
     'precision mediump float;',
     'varying vec2 v;',
     'uniform sampler2D uTex;',
-    'uniform float uB;', // signed bend -1→1 (scrollDir * scrollVel/6)
+    'uniform float uB;', // signed bend -1→1
     'void main(){',
     '  float t=sin(v.y*3.14159)*uB;',
-    // horizontal UV shift gives the curve; slight scale simulates depth
-    '  float dx=t*0.09;',
-    '  float scale=1.0+abs(t)*0.04;',
-    '  vec2 uv=(v-0.5)*scale+0.5;',
-    '  uv.x+=dx;',
+    // horizontal bend — zero at top/bottom edges, max at centre
+    '  float dx=t*0.13;',
+    // Y-stretch: image compresses/expands vertically with scroll (rubbery InfiniteScroll feel)
+    '  float sy=1.0+abs(uB)*0.06;',
+    '  vec2 uv=vec2(v.x+dx,(v.y-0.5)*sy+0.5);',
     '  gl_FragColor=texture2D(uTex,clamp(uv,0.,1.));',
     '}',
   ].join('');
@@ -1472,6 +1496,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDetail();
   try { initBulgeEffects(); } catch(e) { console.warn('Bulge init failed:', e); }
   try { initScrollBend(); }  catch(e) { console.warn('ScrollBend init failed:', e); }
+  try { initTileTilt(); }    catch(e) { console.warn('TileTilt init failed:', e); }
 
   window.addEventListener('orientationchange', () => {
     setTimeout(() => window.location.reload(), 300);
