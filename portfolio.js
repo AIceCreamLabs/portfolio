@@ -1132,24 +1132,7 @@ function initTileTilt() {
   });
 }
 
-/* ─── Elastic scroll — spring physics lag on gallery tiles ─── */
-function initElasticScroll() {
-  if (isMobile) return;
-  // Apply to .gallery wrapper — StickyGrid owns tiles and gallery__grid, never .gallery
-  const gallery = document.querySelector('.gallery');
-  if (!gallery) return;
-
-  let pos = 0, vel = 0;
-
-  (function loop() {
-    const target = scrollDir * Math.min(scrollVel, 6) * 3;
-    const force  = (target - pos) * 0.055;
-    vel = (vel + force) * 0.76;
-    pos += vel;
-    gsap.set(gallery, { y: Math.round(pos) });
-    requestAnimationFrame(loop);
-  })();
-}
+/* elastic scroll removed — spring on .gallery conflicted with StickyGrid CSS translate centering */
 
 /* ─── WebGL hover: exponential easing zoom (Curtains.js pen, raw WebGL) ─── */
 function initBulgeEffects() {
@@ -1417,7 +1400,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderGrid();
   initDetail();
   try { initBulgeEffects(); } catch(e) { console.warn('Bulge init failed:', e); }
-  try { initElasticScroll(); } catch(e) { console.warn('ElasticScroll init failed:', e); }
   try { initTileTilt(); }    catch(e) { console.warn('TileTilt init failed:', e); }
 
   window.addEventListener('orientationchange', () => {
