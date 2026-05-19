@@ -227,7 +227,7 @@ function renderGrid() {
     li.dataset.index = i;
     li.dataset.project = img.projectIdx;
     li.innerHTML = `
-      <img class="gallery__image" src="${img.src}" alt="${item.title}" crossorigin="anonymous" />
+      <img class="gallery__image" src="${img.src}" alt="${item.title}" ${location.protocol !== 'file:' ? 'crossorigin="anonymous"' : ''} />
       <span class="gallery__label"><span class="rolling-text">${makeRollingText(item.title)}</span></span>
     `;
     grid.appendChild(li);
