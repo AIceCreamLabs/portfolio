@@ -1140,7 +1140,7 @@ function initBulgeEffects() {
     for (let y = 0; y < GRID; y++) {
       for (let x = 0; x < GRID; x++) {
         const dist = Math.sqrt((x - gx) * (x - gx) + (y - gy) * (y - gy));
-        const f = Math.max(0, 1 - dist / 5) * speed * 5;
+        const f = Math.max(0, 1 - dist / 6) * speed * 10;
         const i = (y * GRID + x) * 4;
         dispData[i]   = Math.max(-1, Math.min(1, dispData[i]   + vx * f));
         dispData[i+1] = Math.max(-1, Math.min(1, dispData[i+1] + vy * f));
@@ -1150,7 +1150,7 @@ function initBulgeEffects() {
 
   function decayAndUpload() {
     for (let i = 0; i < dispData.length; i += 4) {
-      dispData[i] *= 0.9; dispData[i+1] *= 0.9;
+      dispData[i] *= 0.93; dispData[i+1] *= 0.93;
     }
     gl.bindTexture(gl.TEXTURE_2D, dispTex);
     gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, GRID, GRID, gl.RGBA, gl.FLOAT, dispData);
@@ -1183,7 +1183,7 @@ function initBulgeEffects() {
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, dispTex);
     gl.uniform1i(uDisp, 1);
-    gl.uniform1f(uStr, state.str * 0.018);
+    gl.uniform1f(uStr, state.str * 0.06);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
