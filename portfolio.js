@@ -1093,6 +1093,7 @@ function initBulgeEffects() {
 
   function compileShader(type, src) {
     const sh = gl.createShader(type);
+    if (!sh) return null;
     gl.shaderSource(sh, src);
     gl.compileShader(sh);
     if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
@@ -1325,7 +1326,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   renderGrid();
   initDetail();
-  initBulgeEffects();
+  try { initBulgeEffects(); } catch(e) { console.warn('Bulge init failed:', e); }
 
   window.addEventListener('orientationchange', () => {
     setTimeout(() => window.location.reload(), 300);
