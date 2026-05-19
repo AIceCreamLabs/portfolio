@@ -227,7 +227,7 @@ function renderGrid() {
     li.dataset.index = i;
     li.dataset.project = img.projectIdx;
     li.innerHTML = `
-      <img class="gallery__image" src="${img.src}" alt="${item.title}" loading="lazy" />
+      <img class="gallery__image" src="${img.src}" alt="${item.title}" />
       <span class="gallery__label"><span class="rolling-text">${makeRollingText(item.title)}</span></span>
     `;
     grid.appendChild(li);
@@ -1183,8 +1183,8 @@ function initBulgeEffects() {
     }
 
     tile.addEventListener('mouseenter', function() {
-      const tex = getTex(img);
-      if (!tex) return; // image not loaded yet — skip rather than show black
+      const tex = getTex(img); // returns null only if img genuinely not loaded
+      if (!tex) return;
       const r = tile.getBoundingClientRect();
       canvas.style.left   = r.left   + 'px';
       canvas.style.top    = r.top    + 'px';
