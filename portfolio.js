@@ -1135,29 +1135,18 @@ function initTileTilt() {
 /* ─── Elastic scroll — spring physics lag on gallery tiles ─── */
 function initElasticScroll() {
   if (isMobile) return;
-  const tiles = [...document.querySelectorAll('.gallery__item')];
-  if (!tiles.length) return;
+  // Apply to .gallery wrapper — StickyGrid owns tiles and gallery__grid, never .gallery
+  const gallery = document.querySelector('.gallery');
+  if (!gallery) return;
 
-  // Spring state per row — bottom rows lag more, creating the elastic stretch feel
-  const rows = 2;
-  const springs = Array.from({ length: rows }, () => ({ pos: 0, vel: 0 }));
+  let pos = 0, vel = 0;
 
   (function loop() {
-    const raw = scrollDir * Math.min(scrollVel, 6);
-
-    springs.forEach((s, row) => {
-      // Rows further down lag slightly more
-      const target = raw * (3 + row * 2.5);
-      const force  = (target - s.pos) * 0.055;
-      s.vel = (s.vel + force) * 0.76;
-      s.pos += s.vel;
-    });
-
-    tiles.forEach((tile, i) => {
-      const row = Math.min(Math.floor(i / 3), rows - 1);
-      gsap.set(tile, { y: Math.round(springs[row].pos) });
-    });
-
+    const target = scrollDir * Math.min(scrollVel, 6) * 3;
+    const force  = (target - pos) * 0.055;
+    vel = (vel + force) * 0.76;
+    pos += vel;
+    gsap.set(gallery, { y: Math.round(pos) });
     requestAnimationFrame(loop);
   })();
 }
