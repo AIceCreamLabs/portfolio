@@ -1072,24 +1072,29 @@ function initBulgeEffects() {
     '}',
   ].join('\n');
 
-  // Radial bulge: displaces UV toward cursor sampling point, spreading image outward.
-  // epsilon guard on normalize prevents NaN when cursor is exactly on a pixel center.
+  // Codrops bulge formula: scales UV around cursor using inverse quadratic falloff.
+  // uStr lerps between original UV (no distortion) and full bulge (strength=1.1, radius=0.6)
   const FS = [
     'precision highp float;',
     'varying vec2 vUv;',
     'uniform sampler2D uTex;',
     'uniform vec2 uMouse;',
     'uniform float uStr;',
-    'uniform float uAsp;',
+    'const float RADIUS = 0.6;',
+    'const float STRENGTH = 1.1;',
+    'vec2 bulge(vec2 uv, vec2 center){',
+    '  uv -= center;',
+    '  float dist = length(uv) / RADIUS;',
+    '  float distPow = pow(dist, 2.0);',
+    '  float amt = STRENGTH / (1.0 + distPow);',
+    '  uv *= amt;',
+    '  uv += center;',
+    '  return uv;',
+    '}',
     'void main(){',
-    '  vec2 uv = vUv;',
-    '  vec2 d = uv - uMouse;',
-    '  d.x *= uAsp;',
-    '  float dist = length(d);',
-    '  float falloff = smoothstep(0.6, 0.0, dist);',
-    '  vec2 nd = d / (dist + 0.0001);',
-    '  uv -= vec2(nd.x / uAsp, nd.y) * falloff * uStr * 0.55;',
-    '  gl_FragColor = texture2D(uTex, clamp(uv, 0.0, 1.0));',
+    '  vec2 bulgeUV = bulge(vUv, uMouse);',
+    '  vec2 finalUV = mix(vUv, bulgeUV, uStr);',
+    '  gl_FragColor = texture2D(uTex, finalUV);',
     '}',
   ].join('\n');
 
@@ -1135,7 +1140,6 @@ function initBulgeEffects() {
     const uTex   = gl.getUniformLocation(prog, 'uTex');
     const uMouse = gl.getUniformLocation(prog, 'uMouse');
     const uStr   = gl.getUniformLocation(prog, 'uStr');
-    const uAsp   = gl.getUniformLocation(prog, 'uAsp');
 
     // Load image as texture
     let texture = null;
@@ -1176,7 +1180,6 @@ function initBulgeEffects() {
       gl.uniform1i(uTex, 0);
       gl.uniform2f(uMouse, state.mouseX, state.mouseY);
       gl.uniform1f(uStr, state.strength);
-      gl.uniform1f(uAsp, state.aspect);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
 
