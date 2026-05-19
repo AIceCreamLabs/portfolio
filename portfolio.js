@@ -1060,7 +1060,7 @@ function initCursor() {
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
-/* ─── WebGL hover: chromatic aberration + scroll wave ─── */
+/* ─── WebGL hover: exponential easing zoom (Curtains.js pen, raw WebGL) ─── */
 function initBulgeEffects() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
 
@@ -1074,21 +1074,28 @@ function initBulgeEffects() {
   if (!gl) { canvas.remove(); return; }
 
   const VS = 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,1.-(p.y*.5+.5));gl_Position=vec4(p,0.,1.);}';
+  // Exact shader logic from codepen.io/AlainBarrios/pen/NQrodJ
+  // exponential easing applied per-pixel creates a mathematical zoom from center;
+  // R channel diverges slightly from G/B at mid-progress for a controlled chroma split
   const FS = [
-    'precision highp float;',
+    'precision mediump float;',
     'varying vec2 v;',
     'uniform sampler2D uImg;',
-    'uniform float uChroma;',
-    'uniform float uWave;',
-    'uniform float uStr;',
+    'uniform float uP;', // progress 0→1
+    'float expEase(float x,float a){',
+    '  a=clamp(a,0.00001,0.99999);',
+    '  return a<0.5?pow(x,2.*a):pow(x,1./(1.-2.*(a-.5)));',
+    '}',
     'void main(){',
-    '  vec2 uv=v;',
-    '  uv.x+=sin(v.y*3.14159*4.0)*uWave*0.012*uStr;',
-    '  float c=uChroma*0.007*uStr;',
-    '  float r=texture2D(uImg,clamp(uv+vec2(c,0.),0.,1.)).r;',
-    '  float g=texture2D(uImg,clamp(uv,0.,1.)).g;',
-    '  float b=texture2D(uImg,clamp(uv-vec2(c,0.),0.,1.)).b;',
-    '  gl_FragColor=vec4(r,g,b,1.0);',
+    '  float d=expEase(length(v-.5),uP)-1.+uP*.75;',
+    '  vec2 c=(v-.5)*d;',
+    '  vec2 r=c*(uP*.6+.4)+v;',
+    '  vec2 g=c*(uP*.9+.1)+v;',
+    '  gl_FragColor=vec4(',
+    '    texture2D(uImg,clamp(r,0.,1.)).r,',
+    '    texture2D(uImg,clamp(g,0.,1.)).g,',
+    '    texture2D(uImg,clamp(g,0.,1.)).b,',
+    '  1.);',
     '}',
   ].join('');
 
@@ -1119,10 +1126,8 @@ function initBulgeEffects() {
   gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0);
   gl.viewport(0, 0, W, H);
 
-  const uImg    = gl.getUniformLocation(prog, 'uImg');
-  const uChroma = gl.getUniformLocation(prog, 'uChroma');
-  const uWave   = gl.getUniformLocation(prog, 'uWave');
-  const uStr    = gl.getUniformLocation(prog, 'uStr');
+  const uImg = gl.getUniformLocation(prog, 'uImg');
+  const uP   = gl.getUniformLocation(prog, 'uP');
 
   const texCache = new Map();
   function getTex(img) {
@@ -1139,17 +1144,14 @@ function initBulgeEffects() {
     return tex;
   }
 
-  const state = { str: 0, chroma: 0, raf: null, tex: null };
+  const state = { progress: 0, raf: null, tex: null };
 
   function draw() {
-    state.chroma *= 0.84;
     if (!state.tex) return;
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, state.tex);
     gl.uniform1i(uImg, 0);
-    gl.uniform1f(uChroma, state.chroma);
-    gl.uniform1f(uWave,   scrollVel);
-    gl.uniform1f(uStr,    state.str);
+    gl.uniform1f(uP, state.progress);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
@@ -1163,38 +1165,25 @@ function initBulgeEffects() {
     if (img.complete && img.naturalWidth) tryCache();
     else img.addEventListener('load', tryCache, { once: true });
 
-    let prevMx = 0, prevMy = 0;
-
-    tile.addEventListener('mouseenter', function(e) {
+    tile.addEventListener('mouseenter', function() {
       let tex; try { tex = getTex(img); } catch(e) {}
       if (!tex) return;
       const r = tile.getBoundingClientRect();
       canvas.style.left = r.left + 'px'; canvas.style.top  = r.top  + 'px';
       canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
       state.tex = tex;
-      prevMx = (e.clientX - r.left) / r.width;
-      prevMy = (e.clientY - r.top)  / r.height;
       if (!state.raf) loop();
       gsap.killTweensOf(state); gsap.killTweensOf(canvas);
-      gsap.to(canvas, { opacity: 1, duration: 0.1 });
-      gsap.to(state,  { str: 1, duration: 0.35, ease: 'power2.out' });
-    });
-
-    tile.addEventListener('mousemove', function(e) {
-      const r = tile.getBoundingClientRect();
-      const mx = (e.clientX - r.left) / r.width;
-      const my = (e.clientY - r.top)  / r.height;
-      const vel = Math.sqrt((mx - prevMx) ** 2 + (my - prevMy) ** 2);
-      state.chroma = Math.min(4, state.chroma + vel * 40);
-      prevMx = mx; prevMy = my;
+      gsap.set(canvas, { opacity: 1 });
+      gsap.to(state, { progress: 1, duration: 1, ease: 'expo.inOut' });
     });
 
     tile.addEventListener('mouseleave', function() {
       gsap.killTweensOf(state);
       gsap.to(state, {
-        str: 0, duration: 0.55, ease: 'power3.inOut',
+        progress: 0, duration: 1, ease: 'expo.inOut',
         onComplete: function() {
-          gsap.to(canvas, { opacity: 0, duration: 0.15 });
+          gsap.set(canvas, { opacity: 0 });
           cancelAnimationFrame(state.raf); state.raf = null; state.tex = null;
         },
       });
