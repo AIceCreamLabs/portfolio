@@ -237,22 +237,26 @@ button { font-family: inherit; cursor: pointer; }
 }
 .content__subheading {
   opacity: 0;
-  width: 460rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(20rem, 2.5vw, 36rem);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
+  width: 480rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(13px, 1vw, 16px);
+  font-weight: 300;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
   pointer-events: auto;
 }
+/* Manifesto lines — the payoff, not the setup */
 .content__description {
   opacity: 0;
-  width: 480rem;
-  margin-top: 16rem;
-  font-size: clamp(17px, 1.4vw, 22px);
-  line-height: 1.85;
-  letter-spacing: .01em;
-  color: var(--ink-2);
+  width: 560rem;
+  margin-top: 20rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(28rem, 3.2vw, 52rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--ink);
   pointer-events: auto;
 }
 .content__btn {
@@ -380,17 +384,17 @@ button { font-family: inherit; cursor: pointer; }
   will-change: opacity;
 }
 .story__body {
-  font-size: 20px;
-  line-height: 1.8;
+  font-size: 22px;
+  line-height: 1.75;
   color: var(--ink);
   margin: 0;
 }
 .story__pullquote {
   font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(26px, 3vw, 42px);
+  font-size: clamp(32px, 3.6vw, 52px);
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   color: var(--ink);
   margin: 0;
 }
@@ -837,10 +841,10 @@ button { font-family: inherit; cursor: pointer; }
   display: flex;
   align-items: baseline;
   gap: 14px;
-  padding: 16px 0;
+  padding: 18px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 17px;
-  line-height: 1.55;
+  font-size: 20px;
+  line-height: 1.5;
   color: var(--ink);
 }
 .detail__outcomes li:first-child { border-top: 1px solid var(--border); }

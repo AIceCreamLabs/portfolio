@@ -394,27 +394,7 @@ let scrollVel = 0; // updated by Lenis, read by WebGL shader
 function lenisRaf(time) { if (lenis) lenis.raf(time * 1000); }
 function initLenis() {
   lenis = new Lenis({ lerp: 0.08, wheelMultiplier: 1.4 });
-
-  const gridItems = () => [...document.querySelectorAll('.gallery__item')];
-
-  lenis.on('scroll', (e) => {
-    ScrollTrigger.update();
-    scrollVel = Math.min(Math.abs(e.velocity), 6);
-
-    // Wave skew through grid rows — each row has a slight delay so the effect
-    // travels down the grid rather than tilting the whole thing at once
-    const skew = Math.sign(e.velocity) * Math.min(Math.abs(e.velocity) * 0.28, 1.8);
-    gridItems().forEach((item, i) => {
-      const row = Math.floor(i / 3);
-      gsap.to(item, {
-        skewY: skew,
-        duration: 0.45 + row * 0.07,
-        ease: 'power3.out',
-        overwrite: 'auto',
-      });
-    });
-  });
-
+  lenis.on('scroll', (e) => { ScrollTrigger.update(); scrollVel = Math.min(Math.abs(e.velocity), 6); });
   gsap.ticker.add(lenisRaf);
   ScrollTrigger.refresh();
 }
