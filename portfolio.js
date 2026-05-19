@@ -1084,7 +1084,7 @@ function initBulgeEffects() {
     '}',
   ].join('');
 
-  // strength=1.8, radius=0.5 — dramatic enough to be clearly visible
+  // strength=1.28, radius=0.65 — soft lens, architectural restraint
   const FS = [
     'precision highp float;',
     'varying vec2 v;',
@@ -1093,8 +1093,8 @@ function initBulgeEffects() {
     'uniform float s;',
     'vec2 bulge(vec2 uv,vec2 c){',
     '  uv-=c;',
-    '  float d=length(uv)/0.5;',
-    '  uv*=1.8/(1.0+d*d);',
+    '  float d=length(uv)/0.65;',
+    '  uv*=1.28/(1.0+d*d);',
     '  uv+=c;',
     '  return clamp(uv,0.0,1.0);',
     '}',
@@ -1194,8 +1194,8 @@ function initBulgeEffects() {
       if (!state.raf) loop();
       gsap.killTweensOf(state);
       gsap.killTweensOf(canvas);
-      gsap.to(canvas, { opacity: 1, duration: 0.08 });
-      gsap.to(state,  { s: 1, duration: 0.55, ease: 'power2.out' });
+      gsap.to(canvas, { opacity: 1, duration: 0.12 });
+      gsap.to(state,  { s: 1, duration: 0.9, ease: 'power3.out' });
     });
 
     tile.addEventListener('mousemove', function(e) {
@@ -1207,9 +1207,9 @@ function initBulgeEffects() {
     tile.addEventListener('mouseleave', function() {
       gsap.killTweensOf(state);
       gsap.to(state, {
-        s: 0, duration: 0.45, ease: 'power2.inOut',
+        s: 0, duration: 0.7, ease: 'power3.inOut',
         onComplete: function() {
-          gsap.to(canvas, { opacity: 0, duration: 0.15 });
+          gsap.to(canvas, { opacity: 0, duration: 0.2 });
           cancelAnimationFrame(state.raf);
           state.raf = null;
         },
