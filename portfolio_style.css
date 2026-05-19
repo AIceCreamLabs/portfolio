@@ -249,13 +249,13 @@ button { font-family: inherit; cursor: pointer; }
 /* Manifesto lines — the payoff, not the setup */
 .content__description {
   opacity: 0;
-  width: 560rem;
+  width: 460rem;
   margin-top: 20rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(28rem, 3.2vw, 52rem);
+  font-size: clamp(22rem, 2.4vw, 36rem);
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--ink);
   pointer-events: auto;
 }

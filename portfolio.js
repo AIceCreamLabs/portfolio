@@ -1106,8 +1106,8 @@ function initCursor() {
 function initScrollBend() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
 
-  // Vertex: full-screen quad, UV 0→1
-  const VS = 'attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}';
+  // Vertex: full-screen quad, UV 0→1 (Y flipped: WebGL origin is bottom-left)
+  const VS = 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,1.-(p.y*.5+.5));gl_Position=vec4(p,0.,1.);}';
   // Fragment: sine curve across Y — zero at top/bottom edges, max at center
   // Creates the physical card-bend look from the Codrops shader-on-scroll tutorial
   const FS = [
