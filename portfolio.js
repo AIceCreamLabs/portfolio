@@ -1031,17 +1031,26 @@ function initCursor() {
   const cursor = document.getElementById('cursor');
   if (!cursor) return;
 
-  let mx = 0, my = 0, cx = 0, cy = 0, running = true;
+  // Ring — brass circle that expands on tile hover
+  const ring = document.createElement('div');
+  ring.className = 'cursor__ring';
+  document.body.appendChild(ring);
+
+  // Label — "VIEW →" that follows cursor on tile hover
+  const label = document.createElement('div');
+  label.className = 'cursor__label';
+  label.textContent = 'VIEW →';
+  document.body.appendChild(label);
+
+  let mx = 0, my = 0, cx = 0, cy = 0;
 
   window.addEventListener('mousemove', e => {
     const target = document.elementFromPoint(e.clientX, e.clientY);
     const galleryItem = target?.closest('.gallery__item');
     if (galleryItem) {
       const r = galleryItem.getBoundingClientRect();
-      const cx2 = r.left + r.width / 2;
-      const cy2 = r.top + r.height / 2;
-      const dx = cx2 - e.clientX;
-      const dy = cy2 - e.clientY;
+      const dx = (r.left + r.width / 2) - e.clientX;
+      const dy = (r.top  + r.height / 2) - e.clientY;
       const dist = Math.sqrt(dx * dx + dy * dy);
       const pull = Math.max(0, 1 - dist / 180) * 0.3;
       mx = e.clientX + dx * pull;
@@ -1053,21 +1062,38 @@ function initCursor() {
   });
 
   (function loop() {
-    if (!running) return;
     cx = lerp(cx, mx, 0.12);
     cy = lerp(cy, my, 0.12);
     gsap.set(cursor, { x: cx - 3, y: cy - 3 });
+    gsap.set(ring,   { x: cx - 22, y: cy - 22 });
+    gsap.set(label,  { x: cx + 18, y: cy + 8 });
     requestAnimationFrame(loop);
   })();
 
   const TARGETS = 'a, button, .gallery__item, .detail__link, .content__btn';
   document.addEventListener('mouseover', e => {
-    if (e.target.closest(TARGETS)) cursor.classList.add('is-hovering');
+    if (e.target.closest('.gallery__item')) {
+      cursor.classList.add('is-hovering');
+      ring.classList.add('is-active');
+      gsap.to(label, { opacity: 1, y: 8, duration: 0.3, ease: 'power2.out' });
+    } else if (e.target.closest(TARGETS)) {
+      cursor.classList.add('is-hovering');
+    }
   });
   document.addEventListener('mouseout', e => {
-    if (e.target.closest(TARGETS)) cursor.classList.remove('is-hovering');
+    if (e.target.closest('.gallery__item')) {
+      cursor.classList.remove('is-hovering');
+      ring.classList.remove('is-active');
+      gsap.to(label, { opacity: 0, duration: 0.2 });
+    } else if (e.target.closest(TARGETS)) {
+      cursor.classList.remove('is-hovering');
+    }
   });
-  document.addEventListener('mouseleave', () => gsap.set(cursor, { opacity: 0 }));
+  document.addEventListener('mouseleave', () => {
+    gsap.set(cursor, { opacity: 0 });
+    gsap.set(label, { opacity: 0 });
+    ring.classList.remove('is-active');
+  });
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
@@ -1141,16 +1167,37 @@ function initBulgeEffects() {
   const uP   = gl.getUniformLocation(prog, 'uP');
 
   const texCache = new Map();
-  function getTex(img) {
-    if (texCache.has(img.src)) return texCache.get(img.src);
-    if (!img.complete || !img.naturalWidth) return null;
+  function buildTex(img) {
     const tex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    try {
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    } catch(e) {
+      // SecurityError: image cached without CORS — reload with crossorigin then retry once
+      gl.deleteTexture(tex);
+      return null;
+    }
+    return tex;
+  }
+  function getTex(img) {
+    if (texCache.has(img.src)) return texCache.get(img.src);
+    if (!img.complete || !img.naturalWidth) return null;
+    const tex = buildTex(img);
+    if (!tex) {
+      // Force a CORS-clean reload via new Image
+      const fresh = new Image();
+      fresh.crossOrigin = 'anonymous';
+      fresh.onload = () => {
+        const t = buildTex(fresh);
+        if (t) texCache.set(img.src, t);
+      };
+      fresh.src = img.src + (img.src.includes('?') ? '&' : '?') + '_cors=1';
+      return null;
+    }
     texCache.set(img.src, tex);
     return tex;
   }
@@ -1185,17 +1232,17 @@ function initBulgeEffects() {
       state.tex = tex;
       if (!state.raf) loop();
       gsap.killTweensOf(state); gsap.killTweensOf(canvas);
-      gsap.to(canvas, { opacity: 1, duration: 0.35, ease: 'power2.in' });
-      gsap.to(state, { progress: 1, duration: 1, ease: 'expo.inOut' });
+      state.progress = 0.4; // skip the brief widen at uP < 0.4
+      gsap.to(canvas, { opacity: 1, duration: 0.2, ease: 'power2.out' });
+      gsap.to(state, { progress: 1, duration: 0.7, ease: 'expo.out' });
     });
 
     tile.addEventListener('mouseleave', function() {
-      gsap.killTweensOf(state);
-      gsap.to(state, {
-        progress: 0, duration: 1, ease: 'expo.inOut',
+      gsap.killTweensOf(state); gsap.killTweensOf(canvas);
+      gsap.to(canvas, {
+        opacity: 0, duration: 0.35, ease: 'power2.in',
         onComplete: function() {
-          gsap.set(canvas, { opacity: 0 });
-          cancelAnimationFrame(state.raf); state.raf = null; state.tex = null;
+          cancelAnimationFrame(state.raf); state.raf = null; state.tex = null; state.progress = 0;
         },
       });
     });
