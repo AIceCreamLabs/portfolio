@@ -239,35 +239,31 @@ button { font-family: inherit; cursor: pointer; }
   opacity: 0;
   width: 440rem;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: clamp(14px, 1.1vw, 18px);
-  font-weight: 300;
-  line-height: 1.55;
-  letter-spacing: 0.01em;
-  color: var(--ink-2);
+  font-size: 8px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass);
   pointer-events: auto;
 }
-/* Manifesto lines — the payoff, not the setup */
 .content__description {
   opacity: 0;
-  width: 480rem;
-  margin-top: 16rem;
+  width: 440rem;
+  margin-top: 28rem;
   list-style: none;
-  padding: 0;
+  padding: 0 0 0 16rem;
+  border-left: 1px solid var(--brass);
   display: flex;
   flex-direction: column;
-  gap: 6rem;
+  gap: 10rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(19rem, 2.1vw, 33rem);
+  font-size: clamp(12rem, 1.1vw, 16rem);
   font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
   color: var(--ink);
   pointer-events: auto;
-}
-.content__description li::before {
-  content: '— ';
-  color: var(--brass);
-  margin-right: 4rem;
 }
 .content__btn {
   opacity: 0;
