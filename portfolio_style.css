@@ -305,6 +305,7 @@ button { font-family: inherit; cursor: pointer; }
   position: relative;
   cursor: pointer;
   will-change: transform;
+  transform-style: preserve-3d;
 }
 .gallery__image {
   width: 100%;
@@ -497,23 +498,9 @@ button { font-family: inherit; cursor: pointer; }
 .story__reveal {
   opacity: 0;
   transform: translateY(28px);
-  transition: opacity 0.9s cubic-bezier(.76,0,.24,1), transform 0.9s cubic-bezier(.76,0,.24,1);
+  /* Animation driven by GSAP in initStoryReveals — CSS sets the initial hidden state only */
 }
-.story__reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-/* Label leads, body follows with more cascade */
-.story__reveal .detail__label {
-  display: block;
-  transition-delay: 0s;
-}
-.story__reveal .story__body,
-.story__reveal .story__pullquote,
-.story__reveal .detail__outcomes,
-.story__reveal .story__closing-line {
-  transition-delay: 0.2s;
-}
+.story__reveal .detail__label { display: block; }
 
 .about__content {
   max-width: 600px;

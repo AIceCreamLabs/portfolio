@@ -344,7 +344,17 @@ let lenis;
 function lenisRaf(time) { if (lenis) lenis.raf(time * 1000); }
 function initLenis() {
   lenis = new Lenis({ lerp: 0.08, wheelMultiplier: 1.4 });
-  lenis.on('scroll', ScrollTrigger.update);
+
+  const galleryGrid = document.getElementById('galleryGrid');
+  const skewSet = galleryGrid
+    ? gsap.quickTo(galleryGrid, 'skewY', { duration: 0.9, ease: 'power3.out' })
+    : null;
+
+  lenis.on('scroll', ({ velocity }) => {
+    ScrollTrigger.update();
+    if (skewSet) skewSet(velocity * 0.4);
+  });
+
   gsap.ticker.add(lenisRaf);
   ScrollTrigger.refresh();
 }
@@ -544,15 +554,33 @@ function initStoryAnimations(detail) {
 
 function initStoryReveals(detailEl) {
   const reveals = detailEl.querySelectorAll('.story__reveal');
-  // Delay so opening animation settles before observer fires
+
+  if (isMobile) return; // mobile CSS keeps all reveals visible
+
+  gsap.set(reveals, { opacity: 0, y: 28 });
+
   const tid = setTimeout(() => {
     const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) e.target.classList.add('is-visible');
+      entries.forEach(entry => {
+        if (!entry.isIntersecting || entry.target.dataset.gsapRevealed) return;
+        entry.target.dataset.gsapRevealed = '1';
+        const el = entry.target;
+        const children = [...el.children];
+        gsap.to(el, { opacity: 1, y: 0, duration: 1.1, ease: 'expo.out' });
+        if (children.length > 1) {
+          gsap.fromTo(children,
+            { opacity: 0, y: 14 },
+            { opacity: 1, y: 0, duration: 0.85, ease: 'expo.out', stagger: 0.13, delay: 0.18 }
+          );
+        }
       });
-    }, { root: detailEl, rootMargin: '0px 0px -38% 0px', threshold: 0.12 });
+    }, { root: detailEl, rootMargin: '0px 0px -28% 0px', threshold: 0.08 });
+
     reveals.forEach(el => obs.observe(el));
-    storyCleanup.push(() => obs.disconnect());
+    storyCleanup.push(() => {
+      obs.disconnect();
+      reveals.forEach(el => delete el.dataset.gsapRevealed);
+    });
   }, 500);
   storyCleanup.push(() => clearTimeout(tid));
 }
@@ -1003,6 +1031,44 @@ function initCursor() {
   document.addEventListener('mouseenter', () => gsap.set(cursor, { opacity: 1 }));
 }
 
+/* ─── Tile 3D tilt on hover (pointer: fine only) ─── */
+function initTileHover() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  const grid = document.getElementById('galleryGrid');
+  if (!grid) return;
+
+  let activeTile = null;
+
+  grid.addEventListener('mousemove', (e) => {
+    const tile = e.target.closest('.gallery__item');
+    if (!tile) return;
+    const r = tile.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    gsap.to(tile, {
+      rotateY: x * 12,
+      rotateX: -y * 8,
+      transformPerspective: 900,
+      ease: 'power2.out',
+      duration: 0.4,
+      overwrite: true,
+    });
+    activeTile = tile;
+  });
+
+  grid.addEventListener('mouseleave', () => {
+    if (activeTile) {
+      gsap.to(activeTile, {
+        rotateY: 0, rotateX: 0,
+        duration: 1.0,
+        ease: 'elastic.out(1, 0.35)',
+        overwrite: true,
+      });
+      activeTile = null;
+    }
+  });
+}
+
 /* ─── Entrance sequence ─── */
 function playEntrance(onComplete) {
   const letters = [...document.querySelectorAll('.akumali-fixed__letter')];
@@ -1066,6 +1132,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   renderGrid();
   initDetail();
+  initTileHover();
 
   window.addEventListener('orientationchange', () => {
     setTimeout(() => window.location.reload(), 300);
