@@ -247,11 +247,11 @@ button { font-family: inherit; cursor: pointer; }
 }
 .content__description {
   opacity: 0;
-  width: 340rem;
-  margin-top: 12rem;
-  font-size: 13px;
-  line-height: 1.6;
-  letter-spacing: .05em;
+  width: 480rem;
+  margin-top: 16rem;
+  font-size: clamp(17px, 1.4vw, 22px);
+  line-height: 1.85;
+  letter-spacing: .01em;
   color: var(--ink-2);
   pointer-events: auto;
 }

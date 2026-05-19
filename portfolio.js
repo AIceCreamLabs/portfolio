@@ -394,7 +394,27 @@ let scrollVel = 0; // updated by Lenis, read by WebGL shader
 function lenisRaf(time) { if (lenis) lenis.raf(time * 1000); }
 function initLenis() {
   lenis = new Lenis({ lerp: 0.08, wheelMultiplier: 1.4 });
-  lenis.on('scroll', (e) => { ScrollTrigger.update(); scrollVel = Math.min(Math.abs(e.velocity), 6); });
+
+  const gridItems = () => [...document.querySelectorAll('.gallery__item')];
+
+  lenis.on('scroll', (e) => {
+    ScrollTrigger.update();
+    scrollVel = Math.min(Math.abs(e.velocity), 6);
+
+    // Wave skew through grid rows — each row has a slight delay so the effect
+    // travels down the grid rather than tilting the whole thing at once
+    const skew = Math.sign(e.velocity) * Math.min(Math.abs(e.velocity) * 0.28, 1.8);
+    gridItems().forEach((item, i) => {
+      const row = Math.floor(i / 3);
+      gsap.to(item, {
+        skewY: skew,
+        duration: 0.45 + row * 0.07,
+        ease: 'power3.out',
+        overwrite: 'auto',
+      });
+    });
+  });
+
   gsap.ticker.add(lenisRaf);
   ScrollTrigger.refresh();
 }
@@ -1118,7 +1138,8 @@ function initBulgeEffects() {
     'precision mediump float;',
     'varying vec2 v;',
     'uniform sampler2D uImg;',
-    'uniform float uP;', // progress 0→1
+    'uniform float uP;',  // hover zoom progress 0→1
+    'uniform float uW;',  // scroll wave strength 0→1
     'float expEase(float x,float a){',
     '  a=clamp(a,0.00001,0.99999);',
     '  return a<0.5?pow(x,2.*a):pow(x,1./(1.-2.*(a-.5)));',
@@ -1128,6 +1149,10 @@ function initBulgeEffects() {
     '  vec2 c=(v-.5)*d;',
     '  vec2 r=c*(uP*.6+.4)+v;',
     '  vec2 g=c*(uP*.9+.1)+v;',
+    // scroll wave: sine distortion across Y axis — R/G split for chroma feel
+    '  float wave=sin(v.y*3.14159*5.0)*uW*0.018;',
+    '  r.x+=wave;',
+    '  g.x+=wave*1.15;',
     '  gl_FragColor=vec4(',
     '    texture2D(uImg,clamp(r,0.,1.)).r,',
     '    texture2D(uImg,clamp(g,0.,1.)).g,',
@@ -1165,6 +1190,7 @@ function initBulgeEffects() {
 
   const uImg = gl.getUniformLocation(prog, 'uImg');
   const uP   = gl.getUniformLocation(prog, 'uP');
+  const uW   = gl.getUniformLocation(prog, 'uW');
 
   const texCache = new Map();
   function buildTex(img) {
@@ -1210,6 +1236,7 @@ function initBulgeEffects() {
     gl.bindTexture(gl.TEXTURE_2D, state.tex);
     gl.uniform1i(uImg, 0);
     gl.uniform1f(uP, state.progress);
+    gl.uniform1f(uW, scrollVel / 6);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
