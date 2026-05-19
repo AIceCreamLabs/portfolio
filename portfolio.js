@@ -1063,85 +1063,100 @@ function initCursor() {
 function initBulgeEffects() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
 
-  // Fixed-size canvas — NEVER resized so WebGL context state stays stable.
-  // CSS width/height are updated on mouseenter to cover the hovered tile.
-  const W = 600, H = 380; // matches gallery tile aspect-ratio (300:190) at ~2×
+  const W = 600, H = 380;
   const canvas = document.createElement('canvas');
-  canvas.width  = W;
-  canvas.height = H;
+  canvas.width = W; canvas.height = H;
   canvas.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:500;opacity:0;';
   document.body.appendChild(canvas);
 
-  const gl = canvas.getContext('webgl', { alpha: false, antialias: false });
-  if (!gl) { console.warn('WebGL unavailable'); canvas.remove(); return; }
+  const gl = canvas.getContext('webgl');
+  if (!gl) { canvas.remove(); return; }
 
-  const VS = [
-    'attribute vec2 p;',
-    'varying vec2 v;',
-    'void main(){',
-    '  v=vec2(p.x*0.5+0.5,1.0-(p.y*0.5+0.5));',
-    '  gl_Position=vec4(p,0.0,1.0);',
-    '}',
-  ].join('');
+  // Float texture needed for displacement grid — bail if unavailable
+  if (!gl.getExtension('OES_texture_float')) { canvas.remove(); return; }
 
-  // strength=1.28, radius=0.65 — soft lens, architectural restraint
+  const VS = 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,1.-(p.y*.5+.5));gl_Position=vec4(p,0.,1.);}';
+  // Shader samples image displaced by the DataTexture ripple
   const FS = [
     'precision highp float;',
     'varying vec2 v;',
-    'uniform sampler2D t;',
-    'uniform vec2 m;',
-    'uniform float s;',
-    'vec2 bulge(vec2 uv,vec2 c){',
-    '  uv-=c;',
-    '  float d=length(uv)/0.65;',
-    '  uv*=1.28/(1.0+d*d);',
-    '  uv+=c;',
-    '  return clamp(uv,0.0,1.0);',
-    '}',
+    'uniform sampler2D uImg;',
+    'uniform sampler2D uDisp;',
+    'uniform float uStr;',
     'void main(){',
-    '  gl_FragColor=texture2D(t,mix(v,bulge(v,m),s));',
+    '  vec2 d=texture2D(uDisp,v).rg;',
+    '  gl_FragColor=texture2D(uImg,clamp(v+uStr*d,0.,1.));',
     '}',
   ].join('');
 
-  function makeShader(type, src) {
+  function mkShader(type, src) {
     const sh = gl.createShader(type);
-    if (!sh) { console.error('gl.createShader failed'); return null; }
-    gl.shaderSource(sh, src);
-    gl.compileShader(sh);
+    gl.shaderSource(sh, src); gl.compileShader(sh);
     if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-      console.error('Shader compile error:', gl.getShaderInfoLog(sh));
-      gl.deleteShader(sh); return null;
+      console.error('Shader:', gl.getShaderInfoLog(sh)); return null;
     }
     return sh;
   }
-
-  const vs = makeShader(gl.VERTEX_SHADER, VS);
-  const fs = makeShader(gl.FRAGMENT_SHADER, FS);
+  const vs = mkShader(gl.VERTEX_SHADER, VS);
+  const fs = mkShader(gl.FRAGMENT_SHADER, FS);
   if (!vs || !fs) { canvas.remove(); return; }
 
   const prog = gl.createProgram();
-  gl.attachShader(prog, vs);
-  gl.attachShader(prog, fs);
-  gl.linkProgram(prog);
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-    console.error('Program link error:', gl.getProgramInfoLog(prog));
-    canvas.remove(); return;
+    console.error('Link:', gl.getProgramInfoLog(prog)); canvas.remove(); return;
   }
   gl.useProgram(prog);
 
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
   const aP = gl.getAttribLocation(prog, 'p');
   gl.enableVertexAttribArray(aP);
   gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0);
   gl.viewport(0, 0, W, H);
 
-  const uT = gl.getUniformLocation(prog, 't');
-  const uM = gl.getUniformLocation(prog, 'm');
-  const uS = gl.getUniformLocation(prog, 's');
+  const uImg  = gl.getUniformLocation(prog, 'uImg');
+  const uDisp = gl.getUniformLocation(prog, 'uDisp');
+  const uStr  = gl.getUniformLocation(prog, 'uStr');
 
-  // Same-origin images: use DOM img directly — no crossOrigin needed, no security error
+  // ── DataTexture displacement grid ──────────────────────────────────────
+  const GRID = 32;
+  const dispData = new Float32Array(GRID * GRID * 4); // RGBA float
+  const dispTex  = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, dispTex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, GRID, GRID, 0, gl.RGBA, gl.FLOAT, dispData);
+
+  let prevMx = 0.5, prevMy = 0.5;
+
+  function addForce(mx, my, vx, vy) {
+    const speed = Math.sqrt(vx * vx + vy * vy);
+    if (speed < 0.0005) return;
+    const gx = mx * GRID, gy = my * GRID;
+    for (let y = 0; y < GRID; y++) {
+      for (let x = 0; x < GRID; x++) {
+        const dist = Math.sqrt((x - gx) * (x - gx) + (y - gy) * (y - gy));
+        const f = Math.max(0, 1 - dist / 5) * speed * 5;
+        const i = (y * GRID + x) * 4;
+        dispData[i]   = Math.max(-1, Math.min(1, dispData[i]   + vx * f));
+        dispData[i+1] = Math.max(-1, Math.min(1, dispData[i+1] + vy * f));
+      }
+    }
+  }
+
+  function decayAndUpload() {
+    for (let i = 0; i < dispData.length; i += 4) {
+      dispData[i] *= 0.9; dispData[i+1] *= 0.9;
+    }
+    gl.bindTexture(gl.TEXTURE_2D, dispTex);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, GRID, GRID, gl.RGBA, gl.FLOAT, dispData);
+  }
+
+  // ── Image texture cache ────────────────────────────────────────────────
   const texCache = new Map();
   function getTex(img) {
     if (texCache.has(img.src)) return texCache.get(img.src);
@@ -1157,68 +1172,63 @@ function initBulgeEffects() {
     return tex;
   }
 
-  const state = { s: 0, mx: 0.5, my: 0.5, raf: null, tex: null };
+  const state = { str: 0, raf: null, tex: null };
 
   function draw() {
+    decayAndUpload();
     if (!state.tex) return;
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, state.tex);
-    gl.uniform1i(uT, 0);
-    gl.uniform2f(uM, state.mx, state.my);
-    gl.uniform1f(uS, state.s);
+    gl.uniform1i(uImg, 0);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, dispTex);
+    gl.uniform1i(uDisp, 1);
+    gl.uniform1f(uStr, state.str * 0.018);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
   function loop() { draw(); state.raf = requestAnimationFrame(loop); }
 
+  // ── Per-tile events ────────────────────────────────────────────────────
   document.querySelectorAll('.gallery__item').forEach(function(tile) {
     const img = tile.querySelector('.gallery__image');
     if (!img) return;
 
-    // Pre-cache — wrapped so a texImage2D error can't abort the whole forEach
-    function tryCache() {
-      try { getTex(img); } catch(e) { console.warn('Bulge pre-cache failed:', e); }
-    }
-    if (img.complete && img.naturalWidth) { tryCache(); }
-    else { img.addEventListener('load', tryCache, { once: true }); }
+    function tryCache() { try { getTex(img); } catch(e) {} }
+    if (img.complete && img.naturalWidth) tryCache();
+    else img.addEventListener('load', tryCache, { once: true });
 
     tile.addEventListener('mouseenter', function() {
-      // Always zoom the image — visible even if WebGL isn't ready
-      gsap.to(img, { scale: 1.06, duration: 0.55, ease: 'power2.out' });
-
-      let tex = null;
-      try { tex = getTex(img); } catch(e) {}
+      let tex; try { tex = getTex(img); } catch(e) {}
       if (!tex) return;
 
       const r = tile.getBoundingClientRect();
-      canvas.style.left   = r.left   + 'px';
-      canvas.style.top    = r.top    + 'px';
-      canvas.style.width  = r.width  + 'px';
-      canvas.style.height = r.height + 'px';
+      canvas.style.left = r.left + 'px'; canvas.style.top  = r.top  + 'px';
+      canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
       state.tex = tex;
-      state.mx = 0.5; state.my = 0.5;
+      prevMx = 0.5; prevMy = 0.5;
+      dispData.fill(0); // clear ripples from previous tile
       if (!state.raf) loop();
-      gsap.killTweensOf(state);
-      gsap.killTweensOf(canvas);
-      gsap.to(canvas, { opacity: 1, duration: 0.12 });
-      gsap.to(state,  { s: 1, duration: 0.9, ease: 'power3.out' });
+      gsap.killTweensOf(state); gsap.killTweensOf(canvas);
+      gsap.to(canvas, { opacity: 1, duration: 0.1 });
+      gsap.to(state,  { str: 1, duration: 0.5, ease: 'power2.out' });
     });
 
     tile.addEventListener('mousemove', function(e) {
       const r = tile.getBoundingClientRect();
-      state.mx =       (e.clientX - r.left) / r.width;
-      state.my = 1.0 - (e.clientY - r.top)  / r.height;
+      const mx =       (e.clientX - r.left) / r.width;
+      const my = 1.0 - (e.clientY - r.top)  / r.height;
+      addForce(mx, my, mx - prevMx, my - prevMy);
+      prevMx = mx; prevMy = my;
     });
 
     tile.addEventListener('mouseleave', function() {
-      gsap.to(img, { scale: 1, duration: 0.5, ease: 'power2.inOut' });
       gsap.killTweensOf(state);
       gsap.to(state, {
-        s: 0, duration: 0.7, ease: 'power3.inOut',
+        str: 0, duration: 0.8, ease: 'power3.inOut',
         onComplete: function() {
           gsap.to(canvas, { opacity: 0, duration: 0.2 });
-          cancelAnimationFrame(state.raf);
-          state.raf = null;
+          cancelAnimationFrame(state.raf); state.raf = null; state.tex = null;
         },
       });
     });
