@@ -237,13 +237,12 @@ button { font-family: inherit; cursor: pointer; }
 }
 .content__subheading {
   opacity: 0;
-  width: 360rem;
+  width: 440rem;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
+  font-size: clamp(14px, 1.1vw, 18px);
   font-weight: 300;
-  line-height: 1.5;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
   color: var(--ink-2);
   pointer-events: auto;
 }
@@ -263,22 +262,28 @@ button { font-family: inherit; cursor: pointer; }
 .content__btn {
   opacity: 0;
   position: relative;
-  margin-top: 52rem;
-  padding: 14px 32px 13px;
-  border: 1px solid var(--brass);
+  margin-top: 40rem;
+  padding: 0 0 6px;
+  border: none;
   background: none;
-  color: var(--brass);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .22em;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: .14em;
   cursor: pointer;
   pointer-events: auto;
-  transition: background .3s var(--ease), color .3s var(--ease);
 }
-.content__btn:hover { background: var(--brass); color: var(--bg); }
 .btn-text { display: block; }
-.btn-line { display: none; }
+.btn-line {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 1px;
+  background: var(--brass);
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: opacity .3s var(--ease);
+}
+.content__btn:hover .btn-line { opacity: 0.5; }
 
 /* ─── Gallery — centered behind content ─── */
 .gallery {
