@@ -1212,9 +1212,8 @@ button { font-family: inherit; cursor: pointer; }
   }
   .btn-line { transform: scaleX(1); }
 
-  /* Gallery: static 2-column grid below content (replaces hidden 3D ring on mobile) */
+  /* Gallery: hidden — 3D ring handles navigation on mobile too */
   .gallery {
-    display: block;
     position: relative;
     top: auto; left: auto;
     transform: none !important;
@@ -1300,8 +1299,11 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 @media (max-width: 900px) {
-  #ruben-canvas { display: none; }
-  .block__wrapper { z-index: auto; }
+  /* Show 3D canvas on mobile — scene.js handles opacity + touch */
+  #ruben-canvas { z-index: 1; opacity: 1; }
+  /* Content layers sit above the canvas */
+  .akumali-fixed { z-index: 4; }
+  .block__wrapper { z-index: 3; pointer-events: none; }
 }
 
 /* ── Scene hint ─────────────────────────────────────────────── */

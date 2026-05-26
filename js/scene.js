@@ -444,4 +444,15 @@ document.addEventListener('akumali:entranceDone', () => {
   window.addEventListener('scroll', handleScroll, { passive: true });
 });
 
+// On mobile: show canvas immediately and wire up tap-to-open
+if (window.innerWidth <= 900) {
+  canvas.style.opacity = '1';
+  canvas.style.pointerEvents = 'all';
+  canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    onCanvasClick({ clientX: t.clientX, clientY: t.clientY });
+  }, { passive: false });
+}
+
 window.rubenScene = { scene, camera, renderer };
