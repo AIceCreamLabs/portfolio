@@ -3,7 +3,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 // ── Config ──────────────────────────────────────────────────────────────────
-const COLS = 8, ROWS = 3, REPEATS = 3;
+const COLS = 9, ROWS = 3, REPEATS = 3;
 const RADIUS = 4, TILE_W = 0.72, TILE_H = 1, Y_SPACING = 2.7;
 const BASE_SPEEDS = [0.65, 1.1, 1.55];
 
@@ -16,6 +16,7 @@ const IMAGE_SRCS = [
   'portfolio/rove.jpg',
   'portfolio/axis.png',
   'portfolio/gridfash.png',
+  'portfolio/about-me.webp',
 ];
 
 const TILE_DATA = [
@@ -27,6 +28,7 @@ const TILE_DATA = [
   { title: 'Rove',            cat: 'E-Commerce' },
   { title: 'Axis',            cat: 'Web App' },
   { title: 'Gridfash',        cat: 'Editorial Platform' },
+  { title: 'About Me',        cat: 'AKUMALI · Studio' },
 ];
 
 // ── Renderer ─────────────────────────────────────────────────────────────────
@@ -249,7 +251,7 @@ function onCanvasMouseLeave() {
   hideTooltip();
 }
 
-const SCENE_TO_PORTFOLIO = [0, 1, 2, 3, 4, 5, 6, 7];
+const SCENE_TO_PORTFOLIO = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
 function onCanvasClick(e) {
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
