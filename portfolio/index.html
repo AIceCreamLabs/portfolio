@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Theresa Gyamfuwaa | AKUMALI · Studio — Web Development & AI Integration</title>
+  <meta name="description" content="Freelance full-stack developer and AI builder based in Thailand. I build digital systems that make money. React, Node.js, Python, FastAPI, Firebase, Claude, GPT-4.">
+  <meta name="keywords" content="freelance web developer, AI integration, React developer, Node.js, Python, full-stack developer Thailand, custom AI systems">
+  <meta name="author" content="Theresa Gyamfuwaa">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <link rel="canonical" href="https://portfolio-henna-two-28.vercel.app/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AKUMALI · Studio">
+  <meta property="og:title" content="Theresa Gyamfuwaa | AKUMALI · Studio">
+  <meta property="og:description" content="I build digital systems that make money. Strategy, design, and code — one brain, one vision.">
+  <meta property="og:image" content="https://portfolio-henna-two-28.vercel.app/hire-me.png">
+  <meta property="og:url" content="https://portfolio-henna-two-28.vercel.app/">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Theresa Gyamfuwaa | AKUMALI · Studio">
+  <meta name="twitter:description" content="I build digital systems that make money. Strategy, design, and code — one brain, one vision.">
+  <meta name="twitter:image" content="https://portfolio-henna-two-28.vercel.app/hire-me.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Theresa Gyamfuwaa",
+    "jobTitle": "Freelance Web Developer & AI Integration Specialist",
+    "url": "https://portfolio-henna-two-28.vercel.app/",
+    "email": "mailto:gyamfuwaa@protonmail.com",
+    "knowsAbout": ["Web Development","AI Integration","React","Node.js","Python","FastAPI","Firebase","Claude","GPT-4","LangChain"],
+    "workLocation": { "@type": "Place", "name": "Thailand" }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <script>
+    (function(){
+      var t = localStorage.getItem('akumali-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="portfolio_style.css">
+</head>
+<body>
+
+  <!-- Nav -->
+<header class="nav">
+  <span class="nav__brand"><span class="dot"></span>AKUMALI · STUDIO</span>
+  <span class="nav__loc">LAT 13.76° N &nbsp;·&nbsp; LON 100.50° E</span>
+  <button class="nav__theme" id="themeBtn" title="Toggle theme">LIGHT</button>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero__content" id="heroContent">
+    <span class="hero__eyebrow">BUILT BY AKUMALI</span>
+    <h1 class="hero__title">Digital systems<br><em>that make money.</em></h1>
+    <p class="hero__sub">Strategy, design, and code — one brain, one vision, no handoffs.</p>
+  </div>
+  <div class="hero__datum"></div>
+  <div class="hero__scroll-indicator">SCROLL</div>
+</section>
+
+<!-- Persistent akumali — a single element from hero to sticky center -->
+<div class="akumali-fixed" id="akumaliFixed">
+  <span class="akumali-fixed__letter">a</span>
+  <span class="akumali-fixed__letter">k</span>
+  <span class="akumali-fixed__letter">u</span>
+  <span class="akumali-fixed__letter">m</span>
+  <span class="akumali-fixed__letter">a</span>
+  <span class="akumali-fixed__letter">l</span>
+  <span class="akumali-fixed__letter">i</span>
+  <span class="akumali-fixed__cursor" id="akumaliCursor"></span>
+</div>
+
+<!-- Sticky grid block -- exactly like the tutorial -->
+<section class="block" id="gridBlock">
+  <div class="block__wrapper">
+    <div class="content">
+      <p class="content__subheading">I create immersive digital experiences for brands that want to be felt — not just seen.</p>
+      <ul class="content__description">
+        <li>Cinematic interfaces.</li>
+        <li>Spatial storytelling.</li>
+        <li>Emotionally engineered interaction systems.</li>
+      </ul>
+      <button class="content__btn" id="workBtn">
+        <span class="btn-text">About me</span>
+        <span class="btn-line"></span>
+      </button>
+    </div>
+    <div class="gallery">
+      <ul class="gallery__grid" id="galleryGrid"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer__sig">AKUMALI · STUDIO</div>
+  <div class="footer__meta">
+    <span>© 2026 Akua Gyamfuwaa</span>
+    <a href="mailto:gyamfuwaa@protonmail.com">gyamfuwaa@protonmail.com</a>
+    <span>Thailand · Available globally</span>
+  </div>
+</footer>
+
+<!-- Detail overlay -->
+<div class="detail" id="detail" aria-hidden="true">
+  <div class="detail__progress" id="detailProgress"></div>
+  <button class="detail__close" id="detailClose">← BACK</button>
+  <div class="detail__hero" id="detailHero">
+    <img class="detail__hero-img" id="detailHeroImg" src="" alt="" />
+    <video class="detail__hero-video" id="detailHeroVideo" muted loop playsinline></video>
+    <div class="detail__hero-scroll" id="detailHeroScroll">SCROLL</div>
+  </div>
+  <div class="detail__scroll">
+    <header class="detail__header">
+      <span class="detail__eyebrow" id="dEyebrow"></span>
+      <h2 class="detail__title" id="dTitle"></h2>
+      <p class="detail__sub" id="dSub"></p>
+    </header>
+  </div>
+  <div id="dMain"></div>
+</div>
+
+<div class="cursor" id="cursor"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="portfolio.js"></script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+</html>

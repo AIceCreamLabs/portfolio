@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f0e8" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)" />
+
+  <title>Theresa Gyamfuwaa | AKUMALI · Studio — Web Development & AI Integration</title>
+  <meta name="description" content="Freelance full-stack developer and AI builder based in Thailand. I build digital systems that make money. React, Node.js, Python, FastAPI, Firebase, Claude, GPT-4.">
+  <meta name="keywords" content="freelance web developer, AI integration, React developer, Node.js, Python, full-stack developer Thailand, custom AI systems">
+  <meta name="author" content="Theresa Gyamfuwaa">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <link rel="canonical" href="https://portfolio-henna-two-28.vercel.app/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AKUMALI · Studio">
+  <meta property="og:title" content="Theresa Gyamfuwaa | AKUMALI · Studio">
+  <meta property="og:description" content="I build digital systems that make money. Strategy, design, and code — one brain, one vision.">
+  <meta property="og:image" content="https://portfolio-henna-two-28.vercel.app/hire-me.png">
+  <meta property="og:url" content="https://portfolio-henna-two-28.vercel.app/">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Theresa Gyamfuwaa | AKUMALI · Studio">
+  <meta name="twitter:description" content="I build digital systems that make money. Strategy, design, and code — one brain, one vision.">
+  <meta name="twitter:image" content="https://portfolio-henna-two-28.vercel.app/hire-me.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Theresa Gyamfuwaa",
+    "jobTitle": "Freelance Web Developer & AI Integration Specialist",
+    "url": "https://portfolio-henna-two-28.vercel.app/",
+    "email": "mailto:gyamfuwaa@protonmail.com",
+    "knowsAbout": ["Web Development","AI Integration","React","Node.js","Python","FastAPI","Firebase","Claude","GPT-4","LangChain"],
+    "workLocation": { "@type": "Place", "name": "Thailand" }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    (function(){
+      var t = localStorage.getItem('akumali-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <!-- es-module-shims: polyfills importmap for Safari < 16.4 / iOS < 16.4.
+       In modern browsers it detects native support and does nothing. -->
+  <script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Nav -->
+<header class="nav">
+  <span class="nav__brand"><span class="dot"></span>AKUMALI · STUDIO</span>
+  <span class="nav__loc">LAT 13.76° N &nbsp;·&nbsp; LON 100.50° E</span>
+  <button class="nav__theme" id="themeBtn" title="Toggle theme">LIGHT</button>
+  <button class="nav__menu-btn" id="menuBtn" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- Full-screen menu overlay -->
+<div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+  <button class="menu-overlay__close" id="menuClose" aria-label="Close menu">✕</button>
+  <div class="menu-overlay__inner">
+    <nav class="menu-nav">
+      <p class="menu-nav__label">PROJECTS</p>
+      <ul class="menu-nav__list">
+        <li><button class="menu-nav__item" data-menu-project="0"><span class="menu-nav__num">01</span>Ntoma</button></li>
+        <li><button class="menu-nav__item" data-menu-project="1"><span class="menu-nav__num">02</span>CAN Architecture</button></li>
+        <li><button class="menu-nav__item" data-menu-project="2"><span class="menu-nav__num">03</span>Psychologist LT</button></li>
+        <li><button class="menu-nav__item" data-menu-project="3"><span class="menu-nav__num">04</span>AICE Legal</button></li>
+        <li><button class="menu-nav__item" data-menu-project="4"><span class="menu-nav__num">05</span>GiGZo</button></li>
+        <li><button class="menu-nav__item" data-menu-project="5"><span class="menu-nav__num">06</span>Atelier</button></li>
+      </ul>
+      <div class="menu-nav__secondary">
+        <button class="menu-nav__about" id="menuAboutBtn">About</button>
+      </div>
+    </nav>
+    <div class="menu-contact">
+      <p class="menu-contact__label">START A PROJECT</p>
+      <form class="contact-form" id="contactForm" action="#" onsubmit="handleContactSubmit(event)">
+        <div class="contact-form__row">
+          <div class="contact-form__field">
+            <label class="contact-form__label" for="cf-name">Name</label>
+            <input class="contact-form__input" id="cf-name" type="text" name="name" placeholder="Your name" required autocomplete="name" />
+          </div>
+          <div class="contact-form__field">
+            <label class="contact-form__label" for="cf-email">Email</label>
+            <input class="contact-form__input" id="cf-email" type="email" name="email" placeholder="your@email.com" required autocomplete="email" />
+          </div>
+        </div>
+        <div class="contact-form__field">
+          <label class="contact-form__label" for="cf-budget">Budget</label>
+          <select class="contact-form__input contact-form__select" id="cf-budget" name="budget">
+            <option value="">Select a range</option>
+            <option value="€2,500 – €5,000">€2,500 – €5,000</option>
+            <option value="€5,000 – €10,000">€5,000 – €10,000</option>
+            <option value="€10,000 – €20,000">€10,000 – €20,000</option>
+            <option value="€20,000+">€20,000+</option>
+            <option value="Let's discuss">Let's discuss</option>
+          </select>
+        </div>
+        <div class="contact-form__field">
+          <label class="contact-form__label" for="cf-msg">Message</label>
+          <textarea class="contact-form__input contact-form__textarea" id="cf-msg" name="message" rows="4" placeholder="Tell me about your project…" required></textarea>
+        </div>
+        <button class="contact-form__submit" type="submit">Send →</button>
+        <p class="contact-form__thanks" id="cfThanks" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero__content" id="heroContent">
+    <span class="hero__eyebrow">BUILT BY AKUMALI</span>
+    <h1 class="hero__title">I create immersive <em>digital experiences.</em></h1>
+    <p class="hero__sub">For brands and companies that want to be felt — not just seen.</p>
+  </div>
+  <div class="hero__datum"></div>
+  <div class="hero__scroll-indicator">SCROLL</div>
+</section>
+
+<!-- Persistent akumali — a single element from hero to sticky center -->
+<div class="akumali-fixed" id="akumaliFixed">
+  <span class="akumali-fixed__letter">A</span>
+  <span class="akumali-fixed__letter">K</span>
+  <span class="akumali-fixed__letter">U</span>
+  <span class="akumali-fixed__letter">M</span>
+  <span class="akumali-fixed__letter">A</span>
+  <span class="akumali-fixed__letter">L</span>
+  <span class="akumali-fixed__letter">I</span>
+  <span class="akumali-fixed__cursor" id="akumaliCursor"></span>
+</div>
+
+<canvas id="ruben-canvas"></canvas>
+
+<!-- Scene hint -->
+<div class="scene-hint" id="sceneHint">HOVER · CLICK TO EXPLORE</div>
+
+<!-- Grid block — scroll space for 3D scene -->
+<section class="block" id="gridBlock"></section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer__sig">AKUMALI · STUDIO</div>
+  <div class="footer__meta">
+    <span>© 2026 Akua Gyamfuwaa</span>
+    <a href="mailto:gyamfuwaa@protonmail.com">gyamfuwaa@protonmail.com</a>
+    <span>Thailand · Available globally</span>
+  </div>
+</footer>
+
+<!-- Detail overlay -->
+<div class="detail" id="detail" aria-hidden="true">
+  <div class="detail__progress" id="detailProgress"></div>
+  <button class="detail__close" id="detailClose">← BACK</button>
+  <div class="detail__hero" id="detailHero">
+    <img class="detail__hero-img" id="detailHeroImg" src="" alt="" />
+    <video class="detail__hero-video" id="detailHeroVideo" muted loop playsinline preload="none"></video>
+    <div class="detail__hero-scroll" id="detailHeroScroll">SCROLL</div>
+  </div>
+  <div class="detail__scroll">
+    <header class="detail__header">
+      <span class="detail__eyebrow" id="dEyebrow"></span>
+      <h2 class="detail__title" id="dTitle"></h2>
+      <p class="detail__sub" id="dSub"></p>
+    </header>
+  </div>
+  <div id="dMain"></div>
+</div>
+
+<div class="scene-tooltip" id="sceneTooltip" aria-hidden="true">
+  <span class="scene-tooltip__title" id="tooltipTitle"></span>
+  <span class="scene-tooltip__cat" id="tooltipCat"></span>
+</div>
+
+<div class="cursor" id="cursor"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script type="module" src="js/scene.js"></script>
+<script defer src="js/portfolio.js"></script>
+</body>
+</html>

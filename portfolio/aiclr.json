@@ -1,0 +1,14 @@
+{
+  "colorMode": "original",
+  "particleSpeed": 3.4,
+  "dispersionRange": 110,
+  "particleCount": 4300,
+  "particleSize": 6,
+  "particleShape": "square",
+  "animationEffect": "randomizedDepth",
+  "particleOpacity": 1,
+  "linkNumber": 80,
+  "linkOpacity": 1,
+  "linkColor": "#f5c211",
+  "backgroundColor": "#bffff3"
+}

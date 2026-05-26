@@ -1,0 +1,17 @@
+# Three.js helmet source (855MB, has own .git)
+helmet/
+
+# Root-level duplicate of models/akumali.obj
+akumali.obj
+
+# Dependencies
+node_modules/
+portfolio/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp
