@@ -444,15 +444,25 @@ document.addEventListener('akumali:entranceDone', () => {
   window.addEventListener('scroll', handleScroll, { passive: true });
 });
 
-// On mobile: show canvas immediately and wire up tap-to-open
+// On mobile: show canvas immediately, slow ring on touch, tap to open
 if (window.innerWidth <= 900) {
   canvas.style.opacity = '1';
   canvas.style.pointerEvents = 'all';
+
+  canvas.addEventListener('touchstart', () => {
+    targetMultiplier = 0.04; // near-pause so user can aim
+  }, { passive: true });
+
   canvas.addEventListener('touchend', (e) => {
     e.preventDefault();
     const t = e.changedTouches[0];
     onCanvasClick({ clientX: t.clientX, clientY: t.clientY });
+    targetMultiplier = 1.0;
   }, { passive: false });
+
+  canvas.addEventListener('touchcancel', () => {
+    targetMultiplier = 1.0;
+  }, { passive: true });
 }
 
 window.rubenScene = { scene, camera, renderer };
