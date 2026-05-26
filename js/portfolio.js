@@ -209,21 +209,22 @@ const PORTFOLIO_ITEMS = [
   {
     id: 8,
     title: 'Theresa Gyamfuwaa',
-    subtitle: 'Developer & AI Builder',
+    subtitle: 'Web Design & Development',
     category: 'Studio',
     image: 'portfolio/about-me.webp',
     iframeHero: 'portfolio/about.html',
     type: 'about',
-    description: 'I build things that don\'t exist yet. Not components — systems. Not features — leverage.',
-    challenge: 'Most developers translate briefs. They solve the problem as stated. I solve the problem behind the problem — the one your users feel but can\'t articulate.',
-    solution: 'One engagement. One brain. Strategy, design, and code moving as one. No handoffs. No translation loss. No committee.',
-    results: ['5 years building production systems in Thailand + remote', 'Fluent in React, Node.js, Python, FastAPI, Firebase, Claude, GPT-4', 'Available for select projects — starting from €2,500', 'Response within 24 hours'],
+    description: 'I design and build websites for brands that want to be felt — not just seen.',
+    challenge: 'Most agencies separate the designer from the developer. The result looks great in Figma and feels generic in the browser.',
+    solution: 'Design and code from one brain. The motion, the typography, the interaction — they stay intact from concept to deployment. No handoffs. No translation loss.',
+    results: ['Web design and development — from €2,500', 'AI integration and web apps — from €7,500, by discussion only', 'Available for select projects globally', 'Response within 24 hours'],
     pricing: [
-      { name: 'Foundation', price: '€2,500', duration: '3–4 weeks', desc: 'Website or landing page. SEO optimised. Mobile-first. You own the code.' },
-      { name: 'Product', price: '€5,000–7,500', duration: '8–12 weeks', desc: 'Full web app or SaaS. Built to scale.' },
-      { name: 'Retainer', price: 'from €2,500/mo', duration: '6+ months', desc: 'Strategic direction and execution. Shipped every week.' },
+      { name: 'Foundation', price: '€2,500', duration: '3–4 weeks', desc: 'Website or landing page. SEO-optimised. Mobile-first. You own the code.' },
+      { name: 'Platform', price: '€5,000', duration: '6–8 weeks', desc: 'Full editorial or brand platform. Custom CMS. Motion design. Performance-first.' },
+      { name: 'AI / Web App', price: 'from €7,500', duration: 'by discussion', desc: 'AI integration or complex web application. Available for the right project — reach out first.' },
+      { name: 'Retainer', price: 'from €2,500/mo', duration: '6+ months', desc: 'Ongoing design and development. Shipped every week.' },
     ],
-    tech: ['React', 'Next.js', 'Python', 'FastAPI', 'Firebase', 'GPT-4', 'Claude'],
+    tech: ['HTML/CSS', 'JavaScript', 'React', 'Next.js', 'Node.js', 'Firebase', 'Vercel'],
     link: 'mailto:gyamfuwaa@protonmail.com'
   }
 ];
