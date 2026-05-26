@@ -1190,6 +1190,8 @@ button { font-family: inherit; cursor: pointer; }
     left: auto;
     transform: none;
     height: auto;
+    width: 100%;
+    flex-shrink: 1;
     padding: 16px 20px 32px;
     pointer-events: all;
   }
@@ -1210,8 +1212,9 @@ button { font-family: inherit; cursor: pointer; }
   }
   .btn-line { transform: scaleX(1); }
 
-  /* Gallery: static 2-column grid below content */
+  /* Gallery: static 2-column grid below content (replaces hidden 3D ring on mobile) */
   .gallery {
+    display: block;
     position: relative;
     top: auto; left: auto;
     transform: none !important;
@@ -1298,6 +1301,7 @@ button { font-family: inherit; cursor: pointer; }
 
 @media (max-width: 900px) {
   #ruben-canvas { display: none; }
+  .block__wrapper { z-index: auto; }
 }
 
 /* ── Scene hint ─────────────────────────────────────────────── */
