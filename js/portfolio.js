@@ -362,6 +362,15 @@ class StickyGrid {
     mainTl
       .add(gridTl)
       .add(driftTl);
+
+    // Show content overlay in the final third of the block scroll
+    ScrollTrigger.create({
+      trigger: this.block,
+      start: '65% top',
+      end: 'bottom top',
+      onEnter: () => this.toggleContent(true),
+      onLeaveBack: () => this.toggleContent(false),
+    });
   }
 
   toggleContent(isVisible) {
@@ -476,6 +485,8 @@ let isMobile = false;
 let detailObserver = null;
 let detailProgressOff = null;
 let storyCleanup = [];
+let currentDetailIdx = -1;
+const PROJECT_ITEMS = () => PORTFOLIO_ITEMS.filter(i => i.type === 'project');
 
 function buildStory(item) {
   const media      = item.media || [];
@@ -791,6 +802,16 @@ function openDetail(item, label, originTile) {
   const heroImg    = document.getElementById('detailHeroImg');
   const heroVideo  = document.getElementById('detailHeroVideo');
 
+  // Track position for prev/next nav
+  const projects = PROJECT_ITEMS();
+  currentDetailIdx = projects.findIndex(p => p.id === item.id);
+  const prevBtn = document.getElementById('detailPrev');
+  const nextBtn = document.getElementById('detailNext');
+  const navEl   = document.getElementById('detailNav');
+  if (navEl) navEl.style.display = item.type === 'project' ? '' : 'none';
+  if (prevBtn) prevBtn.disabled = currentDetailIdx <= 0;
+  if (nextBtn) nextBtn.disabled = currentDetailIdx >= projects.length - 1;
+
   // Kill any ongoing close animation
   gsap.killTweensOf(detail);
 
@@ -1053,11 +1074,26 @@ function initVideoFullscreen(detailEl) {
   });
 }
 
+function navigateDetail(dir) {
+  const projects = PROJECT_ITEMS();
+  const next = projects[currentDetailIdx + dir];
+  if (!next) return;
+  const label = `PROJECT · ${String(PORTFOLIO_ITEMS.indexOf(next) + 1).padStart(2, '0')}`;
+  openDetail(next, label, null);
+}
+
 function initDetail() {
   const detail = document.getElementById('detail');
 
   document.getElementById('detailClose').addEventListener('click', closeDetail);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDetail();
+    if (e.key === 'ArrowRight') navigateDetail(1);
+    if (e.key === 'ArrowLeft')  navigateDetail(-1);
+  });
+
+  document.getElementById('detailPrev')?.addEventListener('click', () => navigateDetail(-1));
+  document.getElementById('detailNext')?.addEventListener('click', () => navigateDetail(1));
 
   // Project tile clicks — map via projectIdx (2D grid, kept for future use)
   document.getElementById('galleryGrid')?.addEventListener('click', e => {
@@ -1147,24 +1183,53 @@ function initMenu() {
 }
 
 /* ─── Contact form ─── */
-function handleContactSubmit(e) {
+// To activate: go to formspree.io, create a form for gyamfuwaa@protonmail.com,
+// paste the endpoint (e.g. https://formspree.io/f/xxxxxxxx) below.
+const FORM_ENDPOINT = '';
+
+async function handleContactSubmit(e) {
   e.preventDefault();
   const form   = e.target;
-  const name   = form.name.value.trim();
-  const email  = form.email.value.trim();
-  const budget = form.budget.value;
-  const msg    = form.message.value.trim();
-
-  const body = encodeURIComponent(
-    `Name: ${name}\nBudget: ${budget || 'Not specified'}\n\n${msg}`
-  );
-  const subject = encodeURIComponent(`Project enquiry from ${name}`);
-  window.location.href = `mailto:gyamfuwaa@protonmail.com?subject=${subject}&body=${body}&cc=${encodeURIComponent(email)}`;
-
   const thanks = document.getElementById('cfThanks');
-  if (thanks) {
-    thanks.textContent = 'Opening your email client…';
-    setTimeout(() => { thanks.textContent = ''; }, 4000);
+  const submit = form.querySelector('.contact-form__submit');
+
+  const data = {
+    name:    form.name.value.trim(),
+    email:   form.email.value.trim(),
+    budget:  form.budget.value,
+    message: form.message.value.trim(),
+  };
+
+  if (FORM_ENDPOINT) {
+    if (submit) submit.disabled = true;
+    if (thanks) thanks.textContent = 'Sending…';
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        if (thanks) thanks.textContent = 'Message sent. I\'ll be in touch within 24 hours.';
+        form.reset();
+      } else {
+        throw new Error('Network error');
+      }
+    } catch {
+      if (thanks) thanks.textContent = 'Something went wrong — email me directly at gyamfuwaa@protonmail.com';
+    } finally {
+      if (submit) submit.disabled = false;
+      setTimeout(() => { if (thanks) thanks.textContent = ''; }, 6000);
+    }
+  } else {
+    // Fallback: mailto until endpoint is configured
+    const body    = encodeURIComponent(`Name: ${data.name}\nBudget: ${data.budget || 'Not specified'}\n\n${data.message}`);
+    const subject = encodeURIComponent(`Project enquiry from ${data.name}`);
+    window.location.href = `mailto:gyamfuwaa@protonmail.com?subject=${subject}&body=${body}&cc=${encodeURIComponent(data.email)}`;
+    if (thanks) {
+      thanks.textContent = 'Opening your email client…';
+      setTimeout(() => { thanks.textContent = ''; }, 4000);
+    }
   }
 }
 window.handleContactSubmit = handleContactSubmit;
@@ -1544,6 +1609,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   initMenu();
   renderGrid();
+  try { new StickyGrid(); } catch(e) { console.warn('StickyGrid init failed:', e); }
   initDetail();
   try { initBulgeEffects(); } catch(e) { console.warn('Bulge init failed:', e); }
   try { initTileTilt(); }    catch(e) { console.warn('TileTilt init failed:', e); }

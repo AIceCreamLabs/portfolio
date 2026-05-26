@@ -91,7 +91,11 @@ function triggerGlitch() {
   glitchEndTime = performance.now() / 1000 + GLITCH_DURATION;
 }
 
+const sceneLoadingEl = document.getElementById('sceneLoading');
+if (sceneLoadingEl) sceneLoadingEl.classList.add('is-visible');
+
 new OBJLoader().load('models/akumali.obj', (obj) => {
+  if (sceneLoadingEl) sceneLoadingEl.classList.remove('is-visible');
   helmetMat = new THREE.MeshPhysicalMaterial({
     color: 0xc9a84c,
     metalness: 0.7,

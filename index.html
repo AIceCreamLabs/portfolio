@@ -134,8 +134,8 @@
 <section class="hero">
   <div class="hero__content" id="heroContent">
     <span class="hero__eyebrow">BUILT BY AKUMALI</span>
-    <h1 class="hero__title">I create immersive <em>digital experiences.</em></h1>
-    <p class="hero__sub">For brands and companies that want to be felt — not just seen.</p>
+    <h1 class="hero__title">Websites that <em>make money</em> and feel like cinema.</h1>
+    <p class="hero__sub">Web design and development for brands that want more than a template.</p>
   </div>
   <div class="hero__datum"></div>
   <div class="hero__scroll-indicator">SCROLL</div>
@@ -157,9 +157,28 @@
 
 <!-- Scene hint -->
 <div class="scene-hint" id="sceneHint">HOVER · CLICK TO EXPLORE</div>
+<div class="scene-loading" id="sceneLoading">LOADING MODEL</div>
 
-<!-- Grid block — scroll space for 3D scene -->
-<section class="block" id="gridBlock"></section>
+<!-- Grid block — 3D scene scroll space + sticky content overlay -->
+<section class="block" id="gridBlock">
+  <div class="block__wrapper">
+    <div class="content">
+      <p class="content__subheading">Web design and development for brands that want to be felt — not just seen.</p>
+      <ul class="content__description">
+        <li>Cinematic interfaces.</li>
+        <li>Editorial platforms.</li>
+        <li>E-commerce that converts.</li>
+      </ul>
+      <button class="content__btn" id="workBtn">
+        <span class="btn-text">About me</span>
+        <span class="btn-line"></span>
+      </button>
+    </div>
+    <div class="gallery">
+      <ul class="gallery__grid" id="galleryGrid"></ul>
+    </div>
+  </div>
+</section>
 
 <!-- Footer -->
 <footer class="footer">
@@ -175,6 +194,10 @@
 <div class="detail" id="detail" aria-hidden="true">
   <div class="detail__progress" id="detailProgress"></div>
   <button class="detail__close" id="detailClose">← BACK</button>
+  <nav class="detail__nav" id="detailNav">
+    <button class="detail__nav-btn" id="detailPrev">← PREV</button>
+    <button class="detail__nav-btn" id="detailNext">NEXT →</button>
+  </nav>
   <div class="detail__hero" id="detailHero">
     <img class="detail__hero-img" id="detailHeroImg" src="" alt="" />
     <video class="detail__hero-video" id="detailHeroVideo" muted loop playsinline preload="none"></video>
