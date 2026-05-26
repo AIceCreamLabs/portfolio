@@ -211,7 +211,7 @@ const PORTFOLIO_ITEMS = [
     title: 'Theresa Gyamfuwaa',
     subtitle: 'Web Design & Development',
     category: 'Studio',
-    image: 'portfolio/about-me.webp',
+    image: 'portfolio/about.gif',
     iframeHero: 'portfolio/about.html',
     type: 'about',
     description: 'I design and build websites for brands that want to be felt — not just seen.',
@@ -249,7 +249,7 @@ const GRID_IMAGES = [
   { src: 'portfolio/can.png',       projectIdx: 1 }, // col1 row0
   { src: 'portfolio/psych.png',     projectIdx: 2 }, // col2 row0
   { src: 'portfolio/forma.png',     projectIdx: 3 }, // col0 row1
-  { src: 'portfolio/about-me.webp', projectIdx: 8 }, // col1 row1 — CENTER (pinned)
+  { src: 'portfolio/about.gif', projectIdx: 8 }, // col1 row1 — CENTER (pinned)
   { src: 'portfolio/vanta.png',     projectIdx: 4 }, // col2 row1
   { src: 'portfolio/rove.jpg',      projectIdx: 5 }, // col0 row2
   { src: 'portfolio/axis.png',      projectIdx: 6 }, // col1 row2

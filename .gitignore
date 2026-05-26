@@ -2,7 +2,7 @@
 helmet/
 
 # Root-level duplicate of models/akumali.obj
-akumali.obj
+/akumali.obj
 
 # Dependencies
 node_modules/
