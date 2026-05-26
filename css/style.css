@@ -253,9 +253,8 @@ button { font-family: inherit; cursor: pointer; }
   height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 0 64px;
-  gap: 60px;
   overflow: hidden;
 }
 
@@ -325,10 +324,9 @@ button { font-family: inherit; cursor: pointer; }
 }
 .content__btn:hover .btn-line { opacity: 0.5; }
 
-/* ─── Gallery ─── */
+/* ─── Gallery — hidden; 3D ring is the navigation ─── */
 .gallery {
-  flex: 1;
-  max-width: 580px;
+  display: none;
 }
 .gallery__grid {
   opacity: 0;
