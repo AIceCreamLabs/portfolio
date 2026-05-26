@@ -98,76 +98,121 @@ const PORTFOLIO_ITEMS = [
 
   /* RIGHT COLUMN — indices 3, 4, 5 */
   {
-    id: 4,
-    title: 'AICE Legal',
-    subtitle: 'Legal Intelligence Tool',
-    category: 'AI Product',
-    image: 'portfolio/aice.png',
-    media: ['portfolio/aicelegal.mp4', 'portfolio/aicelegal3.png', 'portfolio/aicelegal2.png', 'portfolio/aicelegal1.png', 'portfolio/aice_logo.png', 'portfolio/aice.png'],
+    id: 3,
+    title: 'Forma Studio',
+    subtitle: 'Creative Studio Platform',
+    category: 'Web Design',
+    image: 'portfolio/forma.png',
+    media: ['portfolio/forma1.png', 'portfolio/forma2.png', 'portfolio/forma3.png', 'portfolio/forma4.png', 'portfolio/forma5.png', 'portfolio/forma6.png', 'portfolio/forma7.png', 'portfolio/forma8.png', 'portfolio/forma9.png', 'portfolio/forma10.png', 'portfolio/forma11.png', 'portfolio/forma12.png'],
     type: 'project',
-    description: 'Legal teams spend hours reviewing contracts. They should spend that time on strategy.',
-    challenge: 'One missed clause in a 40-page contract can cost more than the entire project. Every review is a liability.',
-    solution: 'Upload the contract. Claude reads it in real time — flags risks, missing clauses, non-standard terms. The review that used to take a day takes twelve minutes.',
+    description: 'An independent creative studio was making exceptional work. Their digital presence said otherwise.',
+    challenge: 'A template portfolio doesn\'t just understate the work — it actively undermines the authority of a studio asking to lead a brand.',
+    solution: 'A bespoke platform engineered around the work itself. Each project page is a designed object. Typography, pacing, and whitespace treated as creative decisions, not defaults.',
     results: [
-      'The risk was always in the document. Now it\'s visible.',
-      '60% reduction in review time',
-      'Zero missed risks',
-      '6 weeks MVP to production',
-      'Processing 100+ documents/week',
+      'Your portfolio is the brief before the brief',
+      'Built and launched in 4 weeks',
+      'Custom CMS — zero developer dependency',
+      'Inbound inquiries within 30 days of launch',
+      'Zero third-party templates',
     ],
-    tech: ['React', 'Node.js', 'Claude (Anthropic API)', 'pdfjs', 'Vercel'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
+    tech: ['React', 'Next.js', 'Vercel'],
+    link: 'https://formastudiox.netlify.app/'
+  },
+  {
+    id: 4,
+    title: 'Vanta',
+    subtitle: 'ML Experiment Dashboard',
+    category: 'AI Product',
+    image: 'portfolio/vanta.png',
+    media: ['portfolio/vanta.mp4', 'portfolio/vanta1.png', 'portfolio/vanta2.png', 'portfolio/vanta3.png', 'portfolio/vanta4.png', 'portfolio/vanta5.png', 'portfolio/vanta6.png', 'portfolio/vanta7.png'],
+    type: 'project',
+    description: 'A machine learning team was running hundreds of experiments a week. The results lived in a spreadsheet nobody trusted.',
+    challenge: 'ML experiments generate more data than any human can reason about manually — the patterns that matter stay invisible until something breaks in production.',
+    solution: 'An interactive dashboard that turns experiment logs into legible intelligence. Compare runs side by side. Filter by metric. Catch regressions before they reach users.',
+    results: [
+      'Insight shouldn\'t require a PhD in spreadsheets',
+      'Handles 10,000+ experiment runs',
+      'Real-time metric tracking',
+      'Built and tested in 6 weeks',
+      'Zero spreadsheets required',
+    ],
+    tech: ['React', 'Python', 'FastAPI', 'D3.js', 'Vercel'],
+    link: 'https://vantakml.netlify.app/'
   },
   {
     id: 5,
-    title: 'GiGZo',
-    subtitle: 'Services Marketplace',
-    category: 'Web App',
-    image: 'portfolio/gigzo.png',
-    media: ['portfolio/gigzo.mp4', 'portfolio/gigzo5.png', 'portfolio/gigzo3.png', 'portfolio/gigzo2.png', 'portfolio/gigzo1.png', 'portfolio/gigzo.png'],
+    title: 'Rove',
+    subtitle: 'Independent Fashion Label E-Commerce',
+    category: 'E-Commerce',
+    image: 'portfolio/rove.jpg',
+    media: ['portfolio/rove.mp4', 'portfolio/rove1.png', 'portfolio/rove2.png', 'portfolio/rove3.png', 'portfolio/rove4.png', 'portfolio/rove55.png', 'portfolio/rove6.png'],
     type: 'project',
-    description: 'Expats in Thailand need a cleaner. They don\'t need a language barrier to book one.',
-    challenge: 'Trust doesn\'t exist in a vacuum. Without reviews, without easy booking, without English — good providers stayed invisible.',
-    solution: 'Full-stack marketplace: provider onboarding, booking, payment, AI customer support. The gap between a good provider and a paying client closed.',
+    description: 'A rising fashion label had a cult following on Instagram. They were converting them to buyers at a fraction of the rate they deserved.',
+    challenge: 'The gap between social brand and transactional moment is where most fashion labels lose the sale — a generic storefront breaks the spell the brand spent years building.',
+    solution: 'An editorial storefront that speaks the brand\'s visual language. Drop campaigns feel like events. The checkout is invisible because the journey to it is seamless.',
     results: [
-      'The services existed. The infrastructure didn\'t.',
-      'Full marketplace MVP built',
-      'Booking + payment integrated',
-      'AI customer onboarding agents',
-      'Provider management system',
+      'The brand was already there — the store needed to catch up',
+      'First campaign sold out in 48 hours',
+      'Mobile-first, load time under 2s',
+      'Conversion rate increased within 60 days',
+      'Full drop-campaign system built in',
     ],
-    tech: ['React', 'Node.js', 'Firebase', 'CrewAI', 'LangChain', 'Stripe'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
-  },
-  {
-    id: 9,
-    title: 'Atelier',
-    subtitle: 'Studio Practice',
-    category: 'Studio',
-    image: 'portfolio/studio.jpeg',
-    media: ['portfolio/studio.mp4', 'portfolio/studio5.png', 'portfolio/studio4.png', 'portfolio/studio3.png', 'portfolio/studio2.png', 'portfolio/studio1.png'],
-    type: 'project',
-    description: 'Strategy, design, and code from one brain instead of three invited to misalign.',
-    challenge: 'When you hire separately: the designer makes something beautiful, the developer says it won\'t scale, the strategist writes a plan — and nobody\'s reading the same document.',
-    solution: 'One person. One vision. The full stack of thinking — from positioning to deployed code — moving as one. I take 1–2 projects at a time. Not a limitation. A feature.',
-    results: [
-      'One engagement. No handoffs. No translation loss.',
-      'Solo-led — you work with the maker directly',
-      'Strategy + design + code as one vision',
-      'Selected clients only',
-      'Ships in weeks, not quarters',
-    ],
-    tech: ['Strategy', 'Design', 'Engineering'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
+    tech: ['React', 'Next.js', 'Stripe', 'Vercel'],
+    link: 'https://rovefash.netlify.app/'
   },
 
-  /* ABOUT — index 6 */
+  /* indices 6, 7 */
+  {
+    id: 6,
+    title: 'Axis',
+    subtitle: 'Creative Tools Platform',
+    category: 'Web App',
+    image: 'portfolio/axis.png',
+    media: ['portfolio/axis1.png', 'portfolio/axis2.png', 'portfolio/axis3.png', 'portfolio/axis4.png', 'portfolio/axis5.png'],
+    type: 'project',
+    description: 'Designers were switching between five tools to do what one should handle.',
+    challenge: 'Fragmented workflows don\'t just waste time — they break creative momentum at the worst possible moment, when the thinking is most fragile.',
+    solution: 'A unified platform that keeps the creative process in one place. Concept to delivery without the context switching. The interface stays out of the way so the thinking can flow.',
+    results: [
+      'The best tool is one you forget you\'re using',
+      'Built and tested with 50 beta users',
+      '50% reduction in tool-switching',
+      'Full design-to-delivery workflow',
+      'Beta waitlist active',
+    ],
+    tech: ['React', 'Node.js', 'Firebase', 'Vercel'],
+    link: 'https://axises.netlify.app/'
+  },
   {
     id: 7,
+    title: 'Gridfash',
+    subtitle: 'Fashion Editorial Platform',
+    category: 'Editorial Platform',
+    image: 'portfolio/gridfash.png',
+    media: ['portfolio/gridfashblck.mp4', 'portfolio/gridfash1.png', 'portfolio/gridfash2.png', 'portfolio/gridfash3.png', 'portfolio/gridfash4.png', 'portfolio/gridfash5.png', 'portfolio/gridfash6.png', 'portfolio/gridfash7.png'],
+    type: 'project',
+    description: 'Fashion content was being created, published, and forgotten. There was no platform worth keeping it on.',
+    challenge: 'The editorial gap between Instagram and a real magazine had never been filled for independent fashion voices — the infrastructure didn\'t exist.',
+    solution: 'A grid-first editorial platform built for fashion storytelling. Each spread is a designed object. The reading experience is as considered as the photography. No algorithm. No compression.',
+    results: [
+      'Fashion deserves better than a blog',
+      'Launched with 12 editorial features',
+      'Average session time over 4 minutes',
+      'Fully independent — no algorithm dependency',
+      'Zero editorial compromise',
+    ],
+    tech: ['React', 'Next.js', 'Sanity', 'Vercel'],
+    link: 'https://gridfash.netlify.app/'
+  },
+
+  /* ABOUT — index 8 */
+  {
+    id: 8,
     title: 'Theresa Gyamfuwaa',
     subtitle: 'Developer & AI Builder',
     category: 'Studio',
     image: 'portfolio/about-me.webp',
+    iframeHero: 'portfolio/about.html',
     type: 'about',
     description: 'I build things that don\'t exist yet. Not components — systems. Not features — leverage.',
     challenge: 'Most developers translate briefs. They solve the problem as stated. I solve the problem behind the problem — the one your users feel but can\'t articulate.',
@@ -202,12 +247,12 @@ const GRID_IMAGES = [
   { src: 'portfolio/ntoma.png',     projectIdx: 0 }, // col0 row0
   { src: 'portfolio/can.png',       projectIdx: 1 }, // col1 row0
   { src: 'portfolio/psych.png',     projectIdx: 2 }, // col2 row0
-  { src: 'portfolio/aice.png',      projectIdx: 3 }, // col0 row1
-  { src: 'portfolio/about-me.webp', projectIdx: 6 }, // col1 row1 — CENTER (pinned)
-  { src: 'portfolio/gigzo.png',     projectIdx: 4 }, // col2 row1
-  { src: 'portfolio/psych.png',     projectIdx: 2 }, // col0 row2
-  { src: 'portfolio/ntoma.png',     projectIdx: 0 }, // col1 row2
-  { src: 'portfolio/can.png',       projectIdx: 1 }, // col2 row2
+  { src: 'portfolio/forma.png',     projectIdx: 3 }, // col0 row1
+  { src: 'portfolio/about-me.webp', projectIdx: 8 }, // col1 row1 — CENTER (pinned)
+  { src: 'portfolio/vanta.png',     projectIdx: 4 }, // col2 row1
+  { src: 'portfolio/rove.jpg',      projectIdx: 5 }, // col0 row2
+  { src: 'portfolio/axis.png',      projectIdx: 6 }, // col1 row2
+  { src: 'portfolio/gridfash.png',  projectIdx: 7 }, // col2 row2
 ];
 
 /* ─── Grid render — 6-item 3-column grid like tutorial ─── */
@@ -767,7 +812,17 @@ function openDetail(item, label, originTile) {
   // Hero: about has no hero; projects show thumbnail
   const detailHero = document.getElementById('detailHero');
   if (item.type === 'about') {
-    if (detailHero) detailHero.style.display = 'none';
+    if (detailHero) {
+      detailHero.style.display = '';
+      let iframe = detailHero.querySelector('.detail__hero-iframe');
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.className = 'detail__hero-iframe';
+        iframe.setAttribute('allowfullscreen', '');
+        detailHero.insertBefore(iframe, detailHero.firstChild);
+      }
+      iframe.src = item.iframeHero || '';
+    }
     heroImg.style.display   = 'none';
     heroVideo.style.display = 'none';
     heroVideo.src           = '';
@@ -823,6 +878,7 @@ function openDetail(item, label, originTile) {
 
   detail.classList.add('is-open');
   detail.setAttribute('aria-hidden', 'false');
+  detail.setAttribute('data-type', item.type || 'project');
   detail.scrollTop = 0;
 
   const afterOpen = () => {
@@ -895,6 +951,8 @@ function closeDetail() {
   if (heroVideo) { heroVideo.pause(); heroVideo.src = ''; }
   const detailHero = document.getElementById('detailHero');
   if (detailHero) detailHero.style.display = '';
+  const iframe = detailHero ? detailHero.querySelector('.detail__hero-iframe') : null;
+  if (iframe) { iframe.src = ''; }
 
   gsap.to(detail, {
     opacity: 0,
@@ -1012,7 +1070,7 @@ function initDetail() {
 
   // "About me" button — no tile origin, no hero
   document.getElementById('workBtn')?.addEventListener('click', () => {
-    openDetail(PORTFOLIO_ITEMS[6], 'ABOUT', null);
+    openDetail(PORTFOLIO_ITEMS[8], 'ABOUT', null);
   });
 
   // Scroll past bottom → close detail and return to home
@@ -1083,7 +1141,7 @@ function initMenu() {
   // About link in menu
   document.getElementById('menuAboutBtn')?.addEventListener('click', () => {
     closeMenu();
-    setTimeout(() => openDetail(PORTFOLIO_ITEMS[6], 'ABOUT', null), 350);
+    setTimeout(() => openDetail(PORTFOLIO_ITEMS[8], 'ABOUT', null), 350);
   });
 }
 
