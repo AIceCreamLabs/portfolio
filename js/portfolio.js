@@ -320,7 +320,7 @@ class StickyGrid {
   animate() {
     const items = [...this.items];
     const numCols = this.numColumns;
-    const gridTl = gsap.timeline();
+    const gridTl = gsap.timeline({ paused: true });
 
     // Clip-path reveal row by row, with Ken Burns counter-scale on each image
     items.forEach((item, i) => {
@@ -346,7 +346,7 @@ class StickyGrid {
     // Rows drift apart after reveal — keeps the grid moving through the full scroll
     const row0 = items.slice(0, numCols);
     const row2 = items.slice(numCols * 2);
-    const driftTl = gsap.timeline();
+    const driftTl = gsap.timeline({ paused: true });
     driftTl
       .to(row0, { y: -80, ease: 'none' }, 0)
       .to(row2, { y:  80, ease: 'none' }, 0);
@@ -1609,10 +1609,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   initMenu();
   renderGrid();
-  try { new StickyGrid(); } catch(e) { console.warn('StickyGrid init failed:', e); }
   initDetail();
-  try { initBulgeEffects(); } catch(e) { console.warn('Bulge init failed:', e); }
-  try { initTileTilt(); }    catch(e) { console.warn('TileTilt init failed:', e); }
 
   window.addEventListener('orientationchange', () => {
     setTimeout(() => window.location.reload(), 300);
@@ -1631,6 +1628,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  try { new StickyGrid(); }   catch(e) { console.warn('StickyGrid init failed:', e); }
+  try { initBulgeEffects(); } catch(e) { console.warn('Bulge init failed:', e); }
+  try { initTileTilt(); }     catch(e) { console.warn('TileTilt init failed:', e); }
+
   // Skip entrance animation for users who prefer reduced motion — show content immediately
   if (prefersReducedMotion) {
     const akumali = document.getElementById('akumaliFixed');
@@ -1644,7 +1645,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Centre akumali before entrance so it doesn't flash from the wrong position
   const akumali = document.getElementById('akumaliFixed');
-  if (akumali) gsap.set(akumali, { xPercent: -50, yPercent: -50 });
+  if (akumali) gsap.set(akumali, { xPercent: -50, yPercent: -50, opacity: 1 });
 
   playEntrance(() => {
     // Ambient float on AKUMALI while at rest in the hero
