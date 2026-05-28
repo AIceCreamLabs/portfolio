@@ -225,7 +225,7 @@ const PORTFOLIO_ITEMS = [
       { name: 'Retainer', price: 'from €2,500/mo', duration: '6+ months', desc: 'Ongoing design and development. Shipped every week.' },
     ],
     tech: ['HTML/CSS', 'JavaScript', 'React', 'Next.js', 'Node.js', 'Firebase', 'Vercel'],
-    link: 'mailto:gyamfuwaa@protonmail.com'
+    link: 'mailto:akumalis@protonmail.com'
   }
 ];
 
@@ -616,7 +616,10 @@ function buildAboutStory(item) {
       <div class="story__reveal">
         <p class="story__closing-line">${item.subtitle || ''}</p>
         <div class="detail__tags">${tags}</div>
-        <a class="detail__link" href="${item.link || '#'}">Get in touch →</a>
+        <div class="about__cta">
+          <button class="about__contact-btn" onclick="document.getElementById('menuOverlay').classList.add('is-open'); document.getElementById('menuOverlay').setAttribute('aria-hidden','false');">Start a project →</button>
+          <a class="detail__link" href="${item.link || '#'}">or email directly</a>
+        </div>
       </div>
     </div>
   `;
@@ -1183,7 +1186,7 @@ function initMenu() {
 }
 
 /* ─── Contact form ─── */
-// To activate: go to formspree.io, create a form for gyamfuwaa@protonmail.com,
+// To activate: go to formspree.io, create a form for akumalis@protonmail.com,
 // paste the endpoint (e.g. https://formspree.io/f/xxxxxxxx) below.
 const FORM_ENDPOINT = '';
 
@@ -1216,7 +1219,7 @@ async function handleContactSubmit(e) {
         throw new Error('Network error');
       }
     } catch {
-      if (thanks) thanks.textContent = 'Something went wrong — email me directly at gyamfuwaa@protonmail.com';
+      if (thanks) thanks.textContent = 'Something went wrong — email me directly at akumalis@protonmail.com';
     } finally {
       if (submit) submit.disabled = false;
       setTimeout(() => { if (thanks) thanks.textContent = ''; }, 6000);
@@ -1225,7 +1228,7 @@ async function handleContactSubmit(e) {
     // Fallback: mailto until endpoint is configured
     const body    = encodeURIComponent(`Name: ${data.name}\nBudget: ${data.budget || 'Not specified'}\n\n${data.message}`);
     const subject = encodeURIComponent(`Project enquiry from ${data.name}`);
-    window.location.href = `mailto:gyamfuwaa@protonmail.com?subject=${subject}&body=${body}&cc=${encodeURIComponent(data.email)}`;
+    window.location.href = `mailto:akumalis@protonmail.com?subject=${subject}&body=${body}&cc=${encodeURIComponent(data.email)}`;
     if (thanks) {
       thanks.textContent = 'Opening your email client…';
       setTimeout(() => { thanks.textContent = ''; }, 4000);
