@@ -581,7 +581,7 @@ function buildAboutStory(item) {
   return `
     <div class="about__content">
       <div class="about__cta about__cta--top">
-        <button class="about__contact-btn" onclick="document.getElementById('menuOverlay').classList.add('is-open'); document.getElementById('menuOverlay').setAttribute('aria-hidden','false');">Start a project →</button>
+        <button class="about__contact-btn js-open-contact">Start a project →</button>
         <a class="detail__link" href="${item.link || '#'}">or email directly</a>
       </div>
       <div class="story__reveal">
@@ -621,7 +621,7 @@ function buildAboutStory(item) {
         <p class="story__closing-line">${item.subtitle || ''}</p>
         <div class="detail__tags">${tags}</div>
         <div class="about__cta">
-          <button class="about__contact-btn" onclick="document.getElementById('menuOverlay').classList.add('is-open'); document.getElementById('menuOverlay').setAttribute('aria-hidden','false');">Start a project →</button>
+          <button class="about__contact-btn js-open-contact">Start a project →</button>
           <a class="detail__link" href="${item.link || '#'}">or email directly</a>
         </div>
       </div>
@@ -1115,6 +1115,17 @@ function initDetail() {
   // "About me" button — no tile origin, no hero
   document.getElementById('workBtn')?.addEventListener('click', () => {
     openDetail(PORTFOLIO_ITEMS[8], 'ABOUT', null);
+  });
+
+  // "Start a project" buttons inside the about panel
+  detail.addEventListener('click', (e) => {
+    if (!e.target.closest('.js-open-contact')) return;
+    closeDetail();
+    const overlay = document.getElementById('menuOverlay');
+    setTimeout(() => {
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+    }, 350);
   });
 
   // Scroll past bottom → close detail and return to home
