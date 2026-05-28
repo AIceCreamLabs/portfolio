@@ -580,6 +580,10 @@ function buildAboutStory(item) {
   const tags = (item.tech || []).map(t => `<span class="tag">${t}</span>`).join('');
   return `
     <div class="about__content">
+      <div class="about__cta about__cta--top">
+        <button class="about__contact-btn" onclick="document.getElementById('menuOverlay').classList.add('is-open'); document.getElementById('menuOverlay').setAttribute('aria-hidden','false');">Start a project →</button>
+        <a class="detail__link" href="${item.link || '#'}">or email directly</a>
+      </div>
       <div class="story__reveal">
         <span class="detail__label">THE WORK</span>
         <p class="story__body">${item.description || ''}</p>

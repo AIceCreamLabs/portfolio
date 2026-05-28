@@ -605,6 +605,10 @@ button { font-family: inherit; cursor: pointer; }
   flex-wrap: wrap;
   margin-top: 8px;
 }
+.about__cta--top {
+  margin-top: 0;
+  margin-bottom: 48px;
+}
 .about__contact-btn {
   display: inline-block;
   padding: 14px 32px;
