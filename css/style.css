@@ -136,6 +136,7 @@ button { font-family: inherit; cursor: pointer; }
   line-height: 1.25;
   letter-spacing: -0.01em;
   margin: 0;
+  will-change: transform, opacity;
 }
 .hero__title em {
   font-style: normal;         /* Syne has no italic — keep it upright, let colour do the work */
@@ -233,6 +234,7 @@ button { font-family: inherit; cursor: pointer; }
   gap: 4rem;
   z-index: 3;
   pointer-events: none;
+  will-change: transform, opacity;
 }
 .akumali-fixed__letter {
   font-family: 'Syne', sans-serif;
@@ -1197,7 +1199,9 @@ button { font-family: inherit; cursor: pointer; }
     padding: 80px 20px 16px;
   }
   .akumali-fixed__letter {
-    font-size: clamp(48px, 10vw, 90px);
+    font-size: clamp(36px, 9.5vw, 72px);
+    letter-spacing: 0.06em;  /* 0.22em causes overflow on narrow phones */
+    will-change: auto;        /* no GPU layer needed on mobile */
   }
 
   /* Sticky block: disable sticky, flow normally */
@@ -1282,7 +1286,10 @@ button { font-family: inherit; cursor: pointer; }
 
 @media (max-width: 480px) {
   .gallery__grid { grid-template-columns: 1fr; }
-  .akumali-fixed__letter { font-size: clamp(32px, 14vw, 56px); }
+  .akumali-fixed__letter {
+    font-size: clamp(28px, 11vw, 44px);
+    letter-spacing: 0.04em;
+  }
 }
 
 /* iPhone notch / Dynamic Island / home indicator */

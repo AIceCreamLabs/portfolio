@@ -1593,8 +1593,8 @@ function playEntrance(onComplete) {
     gsap.set([...heroContent.children], { clipPath: 'inset(100% 0 0 0)', y: 12 });
   }
 
-  tl.to(nav, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, lastLetterEnd + 0.1)
-    .to(datum, { scaleX: 1, duration: 1.0, ease: 'power3.out' }, lastLetterEnd + 0.2);
+  tl.to(nav, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', force3D: true }, lastLetterEnd + 0.1)
+    .to(datum, { scaleX: 1, duration: 1.0, ease: 'power3.out', force3D: true }, lastLetterEnd + 0.2);
 
   if (heroContent) {
     tl.to([...heroContent.children], {
@@ -1603,6 +1603,7 @@ function playEntrance(onComplete) {
       duration: 0.85,
       ease: 'power3.out',
       stagger: 0.12,
+      force3D: true,
     }, lastLetterEnd + 0.45);
   }
 }
@@ -1618,6 +1619,12 @@ document.addEventListener('DOMContentLoaded', () => {
   window.scrollTo(0, 0);
 
   gsap.registerPlugin(ScrollTrigger);
+
+  // iOS Safari runs scroll on a separate thread — these prevent rubber-band stutter
+  ScrollTrigger.config({
+    autoRefreshEvents: 'visibilitychange,orientationchange,load',
+    ignoreMobileResize: true,
+  });
 
   isMobile = window.innerWidth <= 900 || window.innerHeight <= 500;
 
