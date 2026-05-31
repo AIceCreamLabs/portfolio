@@ -447,9 +447,8 @@ document.addEventListener('akumali:entranceDone', () => {
   window.addEventListener('scroll', handleScroll, { passive: true });
 });
 
-// On mobile: show canvas immediately, slow ring on press, tap/click to open
+// On touch devices: keep canvas opacity scroll-driven; enable touch interaction
 if (window.innerWidth <= 768 || 'ontouchstart' in window) {
-  canvas.style.opacity = '1';
   canvas.style.pointerEvents = 'all';
 
   // Touch (real device)

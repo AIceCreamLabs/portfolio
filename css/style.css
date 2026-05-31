@@ -1176,7 +1176,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ─── Mobile ─── */
 @media (max-width: 900px) {
-  /* Reset fluid rem — use normal px on mobile */
+  /* Reset fluid rem so explicit px values below are correct */
   html { font-size: 16px; }
 
   /* Nav */
@@ -1184,71 +1184,30 @@ button { font-family: inherit; cursor: pointer; }
   .nav__loc { display: none; }
   .nav__theme { padding: 8px 14px; }
 
-  /* Hero: collapse — layout starts with AKUMALI */
-  .hero { height: 0; }
-  .hero__content { display: none; }
+  /* Hero title: desktop clamp bottoms out at 20px — give it a bit more room */
+  .hero__title { font-size: clamp(22px, 5.5vw, 32px); }
 
-  /* AKUMALI: pull into flow, static */
-  .akumali-fixed {
-    position: relative;
-    top: auto; left: auto;
-    transform: none !important;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 2vw;
-    padding: 80px 20px 16px;
-  }
+  /* AKUMALI — keep position:fixed and scroll-driven (desktop default).
+     Only scale the letter size so all 7 letters fit across the viewport. */
+  .akumali-fixed { gap: 3vw; }
   .akumali-fixed__letter {
-    font-size: clamp(36px, 9.5vw, 72px);
-    letter-spacing: 0.06em;  /* 0.22em causes overflow on narrow phones */
-    will-change: auto;        /* no GPU layer needed on mobile */
+    font-size: clamp(30px, 10vw, 72px);
+    letter-spacing: 0.06em;
   }
 
-  /* Sticky block: disable sticky, flow normally */
-  .block { height: auto; }
-  .block__wrapper {
-    position: relative;
-    height: auto;
-    flex-direction: column;
-    padding: 0;
-    gap: 0;
-    overflow: visible;
-    z-index: auto;
-  }
+  /* Scroll block — keep desktop 500vh + sticky so scroll animations play */
+  /* (no overrides needed; desktop defaults are correct) */
 
-  /* Content: static, padded */
-  .content {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
-    height: auto;
-    width: 100%;
-    flex-shrink: 1;
-    padding: 16px 20px 32px;
-    pointer-events: all;
-  }
-  .content__subheading {
-    width: 100%;
-    font-size: clamp(16px, 4.5vw, 22px);
-    opacity: 1 !important;
-  }
-  .content__description {
-    width: 100%;
-    font-size: 13px;
-    opacity: 1 !important;
-    margin-top: 12px;   /* reset from 16rem which = 256px at mobile base */
-    gap: 10px;          /* reset from 10rem which = 160px at mobile base */
-  }
-  .content__btn {
-    pointer-events: all;
-    opacity: 1 !important;
-    padding: 12px 0 8px;
-    margin-top: 24px;   /* reset from 40rem which = 640px at mobile base */
-  }
-  .btn-line { transform: scaleX(1); }
+  /* Content — pointer-events passthrough so 3D ring tiles stay tappable.
+     Only the interactive leaf nodes opt back in. */
+  .content__btn { pointer-events: all; }
 
-  /* Gallery: hidden — 3D ring handles navigation on mobile too */
+  /* Fix rem-based gaps that blow up at 16px base (16rem=256px, 40rem=640px).
+     These px values match the 1440-desktop intent (1rem≈1px there). */
+  .content__description { margin-top: 16px; gap: 10px; }
+  .content__btn { margin-top: 40px; }
+
+  /* Gallery: position resets for detail-panel thumbnail context */
   .gallery {
     position: relative;
     top: auto; left: auto;
@@ -1284,17 +1243,15 @@ button { font-family: inherit; cursor: pointer; }
   /* About */
   .about__content { padding: 48px 20px 100px; gap: 64px; }
   .about__tier-top { flex-wrap: wrap; gap: 4px 12px; }
-
 }
 
 @media (max-width: 480px) {
-  .gallery__grid { grid-template-columns: 1fr; }
-  /* Smaller font + tighter gap so all 7 letters stay on one line at 375px */
+  /* Tighter AKUMALI for the smallest phones — still position:fixed */
+  .akumali-fixed { gap: 1.5vw; }
   .akumali-fixed__letter {
-    font-size: clamp(20px, 8vw, 34px);
-    letter-spacing: 0.02em;
+    font-size: clamp(24px, 9vw, 44px);
+    letter-spacing: 0.04em;
   }
-  .akumali-fixed { gap: 1vw; }
 }
 
 /* iPhone notch / Dynamic Island / home indicator */
@@ -1304,7 +1261,7 @@ button { font-family: inherit; cursor: pointer; }
   @media (max-width: 900px) {
     .nav { padding-top: max(16px, env(safe-area-inset-top)); }
     .footer { padding-bottom: max(32px, env(safe-area-inset-bottom)); }
-    .akumali-fixed { padding-top: max(80px, calc(env(safe-area-inset-top) + 60px)); }
+    /* akumali-fixed is position:fixed centered — no notch padding needed */
     .detail__scroll {
       padding-top: max(env(safe-area-inset-top), 52px);
       padding-left: max(env(safe-area-inset-left), 16px);
@@ -1341,7 +1298,7 @@ button { font-family: inherit; cursor: pointer; }
 
 @media (max-width: 900px) {
   /* Show 3D canvas on mobile — scene.js handles opacity + touch */
-  #ruben-canvas { z-index: 1; opacity: 1; }
+  #ruben-canvas { z-index: 1; } /* opacity stays 0 — scroll-driven reveal handles it */
   /* Content layers sit above the canvas */
   .akumali-fixed { z-index: 4; }
   .block__wrapper { z-index: 3; pointer-events: none; }
@@ -1719,17 +1676,3 @@ button, a {
   }
 }
 
-/* ── Tablet landscape (601px – 900px): tighten the 3D-ring overlay ─────── */
-@media (min-width: 601px) and (max-width: 900px) {
-  .block__wrapper {
-    align-items: flex-end;
-    padding-bottom: 48px;
-  }
-  .content {
-    max-width: 380px;
-    background: var(--bg);
-    padding: 20px 24px 28px;
-    margin: 0 auto;
-    opacity: 0.96;
-  }
-}

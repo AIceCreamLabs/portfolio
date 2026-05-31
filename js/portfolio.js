@@ -1683,10 +1683,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => window.location.reload(), 300);
   });
 
-  if (isMobile) {
-    setupMobileArchitecture();
-    return;
-  }
+  /* Run full desktop experience on all devices — scroll animations + 3D ring */
 
   try { new StickyGrid(); }   catch(e) { console.warn('StickyGrid init failed:', e); }
   try { initBulgeEffects(); } catch(e) { console.warn('Bulge init failed:', e); }
