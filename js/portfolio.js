@@ -1612,6 +1612,57 @@ window.PORTFOLIO_ITEMS = PORTFOLIO_ITEMS;
 window.openDetail = openDetail;
 window.closeDetail = closeDetail;
 
+/* ─── Mobile architecture — lightweight, touch-optimised ─── */
+function setupMobileArchitecture() {
+  // Ensure all content is visible (desktop animations that hide things are bypassed)
+  const block = document.getElementById('gridBlock');
+  if (block) {
+    gsap.set(
+      [block.querySelector('.content__subheading'),
+       block.querySelector('.content__description'),
+       block.querySelector('.content__btn')],
+      { opacity: 1, pointerEvents: 'all' }
+    );
+  }
+
+  // Hide 3D canvas on small phones to save GPU/battery
+  if (window.innerWidth <= 480) {
+    const webglCanvas = document.querySelector('#ruben-canvas, canvas');
+    if (webglCanvas) {
+      webglCanvas.style.display = 'none';
+    }
+  }
+
+  // Optimise ScrollTrigger for iOS Safari thread scrolling
+  ScrollTrigger.config({
+    autoRefreshEvents: 'visibilitychange,orientationchange',
+    ignoreMobileResize: true,
+  });
+
+  // Simple fade-in animations for gallery items on scroll
+  const mobileItems = document.querySelectorAll('.gallery__item');
+  mobileItems.forEach((item) => {
+    gsap.fromTo(item,
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power2.out',
+        force3D: true,
+        scrollTrigger: {
+          trigger: item,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+      }
+    );
+  });
+
+  // Clean up any desktop mouse listeners
+  document.removeEventListener('mousemove', () => {});
+}
+
 /* ─── Boot ─── */
 document.addEventListener('DOMContentLoaded', () => {
   // Prevent browser from restoring previous scroll position on refresh
@@ -1626,7 +1677,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ignoreMobileResize: true,
   });
 
-  isMobile = window.innerWidth <= 900 || window.innerHeight <= 500;
+  isMobile = window.innerWidth <= 900 || window.innerHeight <= 500 || window.matchMedia('(pointer: coarse)').matches;
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1641,15 +1692,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (isMobile) {
-    const block = document.getElementById('gridBlock');
-    if (block) {
-      gsap.set(
-        [block.querySelector('.content__subheading'),
-         block.querySelector('.content__description'),
-         block.querySelector('.content__btn')],
-        { opacity: 1, pointerEvents: 'all' }
-      );
-    }
+    setupMobileArchitecture();
     return;
   }
 

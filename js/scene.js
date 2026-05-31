@@ -33,8 +33,9 @@ const TILE_DATA = [
 const canvas = document.getElementById('ruben-canvas');
 if (!canvas) throw new Error('ruben-canvas not found');
 
-const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const isMobileScene = window.innerWidth <= 768 || 'ontouchstart' in window;
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isMobileScene });
+renderer.setPixelRatio(isMobileScene ? Math.min(devicePixelRatio, 1.2) : Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.1;
 
@@ -447,7 +448,7 @@ document.addEventListener('akumali:entranceDone', () => {
 });
 
 // On mobile: show canvas immediately, slow ring on press, tap/click to open
-if (window.innerWidth <= 900) {
+if (window.innerWidth <= 768 || 'ontouchstart' in window) {
   canvas.style.opacity = '1';
   canvas.style.pointerEvents = 'all';
 
@@ -471,6 +472,11 @@ if (window.innerWidth <= 900) {
   canvas.addEventListener('mousedown', () => { targetMultiplier = 0.04; });
   canvas.addEventListener('mouseup',   () => { targetMultiplier = 1.0; });
   canvas.addEventListener('click', onCanvasClick);
+}
+
+// Very small screens: kill render loop to save battery
+if (window.innerWidth <= 480) {
+  renderer.setAnimationLoop(null);
 }
 
 window.rubenScene = { scene, camera, renderer };
