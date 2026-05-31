@@ -1237,11 +1237,14 @@ button { font-family: inherit; cursor: pointer; }
     width: 100%;
     font-size: 13px;
     opacity: 1 !important;
+    margin-top: 12px;   /* reset from 16rem which = 256px at mobile base */
+    gap: 10px;          /* reset from 10rem which = 160px at mobile base */
   }
   .content__btn {
     pointer-events: all;
     opacity: 1 !important;
     padding: 12px 0 8px;
+    margin-top: 24px;   /* reset from 40rem which = 640px at mobile base */
   }
   .btn-line { transform: scaleX(1); }
 
@@ -1286,10 +1289,12 @@ button { font-family: inherit; cursor: pointer; }
 
 @media (max-width: 480px) {
   .gallery__grid { grid-template-columns: 1fr; }
+  /* Smaller font + tighter gap so all 7 letters stay on one line at 375px */
   .akumali-fixed__letter {
-    font-size: clamp(28px, 11vw, 44px);
-    letter-spacing: 0.04em;
+    font-size: clamp(20px, 8vw, 34px);
+    letter-spacing: 0.02em;
   }
+  .akumali-fixed { gap: 1vw; }
 }
 
 /* iPhone notch / Dynamic Island / home indicator */
@@ -1679,5 +1684,77 @@ button, a {
 
   .contact-form__select {
     display: block !important;
+  }
+}
+
+/* ── Small phones (≤480px): show gallery grid as 3D-canvas fallback ─────── */
+/* Placed after the 768px block so these rules win the cascade               */
+@media (max-width: 480px) {
+  /* Reveal the gallery — 3D canvas is hidden by JS at this breakpoint */
+  .gallery {
+    display: block;
+    padding: 8px 16px 40px;
+  }
+  .gallery__grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+  }
+  .gallery__item {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+  .gallery__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* ── Touch targets & detail-nav safe area (all mobile) ──────────────────── */
+@media (max-width: 900px) {
+  /* Ensure all interactive buttons meet the 44px minimum touch target */
+  .detail__nav-btn {
+    min-height: 44px;
+    padding: 12px 18px;
+  }
+  .menu-overlay__close {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .contact-form__submit {
+    min-height: 44px;
+    padding: 14px 28px;
+  }
+  /* Push detail prev/next nav above iPhone home indicator */
+  .detail__nav {
+    bottom: max(16px, calc(env(safe-area-inset-bottom) + 12px));
+    right: max(16px, env(safe-area-inset-right));
+  }
+  /* Wider close button tap zone */
+  .detail__close {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* ── Tablet landscape (601px – 900px): tighten the 3D-ring overlay ─────── */
+@media (min-width: 601px) and (max-width: 900px) {
+  .block__wrapper {
+    align-items: flex-end;
+    padding-bottom: 48px;
+  }
+  .content {
+    max-width: 380px;
+    background: var(--bg);
+    padding: 20px 24px 28px;
+    margin: 0 auto;
+    opacity: 0.96;
   }
 }
