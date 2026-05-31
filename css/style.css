@@ -1687,31 +1687,6 @@ button, a {
   }
 }
 
-/* ── Small phones (≤480px): show gallery grid as 3D-canvas fallback ─────── */
-/* Placed after the 768px block so these rules win the cascade               */
-@media (max-width: 480px) {
-  /* Reveal the gallery — 3D canvas is hidden by JS at this breakpoint */
-  .gallery {
-    display: block;
-    padding: 8px 16px 40px;
-  }
-  .gallery__grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    padding: 0 !important;
-    opacity: 1 !important;
-  }
-  .gallery__item {
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-  }
-  .gallery__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
 
 /* ── Touch targets & detail-nav safe area (all mobile) ──────────────────── */
 @media (max-width: 900px) {

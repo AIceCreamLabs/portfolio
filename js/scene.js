@@ -474,9 +474,4 @@ if (window.innerWidth <= 768 || 'ontouchstart' in window) {
   canvas.addEventListener('click', onCanvasClick);
 }
 
-// Very small screens: kill render loop to save battery
-if (window.innerWidth <= 480) {
-  renderer.setAnimationLoop(null);
-}
-
 window.rubenScene = { scene, camera, renderer };

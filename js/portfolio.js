@@ -1625,14 +1625,6 @@ function setupMobileArchitecture() {
     );
   }
 
-  // Hide 3D canvas on small phones to save GPU/battery
-  if (window.innerWidth <= 480) {
-    const webglCanvas = document.querySelector('#ruben-canvas, canvas');
-    if (webglCanvas) {
-      webglCanvas.style.display = 'none';
-    }
-  }
-
   // Optimise ScrollTrigger for iOS Safari thread scrolling
   ScrollTrigger.config({
     autoRefreshEvents: 'visibilitychange,orientationchange',
