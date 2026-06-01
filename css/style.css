@@ -1702,53 +1702,47 @@ body.is-mobile { overflow-x: hidden; }
   padding-top: max(72px, calc(env(safe-area-inset-top) + 56px));
 }
 
-/* ── Scatter container ────────────────────────────────────────── */
+/* ── 2-column staggered scatter ──────────────────────────────── */
 .mob-scatter {
-  position: relative;
-  padding: 16px 0 56px;
-  overflow: hidden;          /* clip images that bleed off edge */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 16px 0 0;
+  overflow: hidden;
 }
 
-/* Each scattered image item */
+/* Two equal columns */
+.mob-scatter-col {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Right column drops 48px — the editorial stagger */
+.mob-scatter-col:nth-child(2) {
+  margin-top: 48px;
+}
+
+/* Left col: slight left bleed */
+.mob-scatter-col:nth-child(1) .mob-sitem {
+  margin-left: -8px;
+  width: calc(50vw + 8px);
+  aspect-ratio: 4 / 5;
+}
+
+/* Right col: slight right bleed, taller portrait */
+.mob-scatter-col:nth-child(2) .mob-sitem {
+  margin-right: -8px;
+  width: calc(50vw + 8px);
+  aspect-ratio: 3 / 4;
+}
+
 .mob-sitem {
   position: relative;
   overflow: hidden;
-  display: block;
   cursor: pointer;
-}
-
-/* ── 4-position repeating pattern — magazine scatter ─────────── */
-/* Position 1: left-bleed, tall portrait */
-.mob-sitem:nth-child(4n+1) {
-  width: 58vw;
-  height: 72vw;
-  margin-left: -3vw;
-  margin-bottom: -20vw;
-  z-index: 3;
-}
-/* Position 2: right-bleed, slightly shorter */
-.mob-sitem:nth-child(4n+2) {
-  width: 54vw;
-  height: 64vw;
-  margin-left: 44vw;
-  margin-bottom: -14vw;
-  z-index: 2;
-}
-/* Position 3: center-left, tallest */
-.mob-sitem:nth-child(4n+3) {
-  width: 62vw;
-  height: 76vw;
-  margin-left: 16vw;
-  margin-bottom: -22vw;
-  z-index: 4;
-}
-/* Position 4: right-bleed, mid-height */
-.mob-sitem:nth-child(4n+4) {
-  width: 55vw;
-  height: 66vw;
-  margin-left: 40vw;
-  margin-bottom: -10vw;
-  z-index: 1;
+  display: block;
 }
 
 .mob-sitem img {
@@ -1759,24 +1753,23 @@ body.is-mobile { overflow-x: hidden; }
   display: block;
 }
 
-/* Project number — small label bottom-left of each image */
+/* Project number — small brass label bottom-left */
 .mob-sitem__num {
   position: absolute;
   bottom: 10px;
-  left: 10px;
+  left: 12px;
   font-family: 'Space Mono', monospace;
   font-size: 8px;
   letter-spacing: .18em;
   color: rgba(255,255,255,.85);
-  z-index: 5;
   pointer-events: none;
 }
 
 /* ── Brand anchor at the bottom ──────────────────────────────── */
 .mob-brand {
-  padding: 56px 24px max(48px, calc(env(safe-area-inset-bottom) + 32px));
+  padding: 48px 24px max(48px, calc(env(safe-area-inset-bottom) + 32px));
   border-top: 1px solid var(--border);
-  margin-top: 32vw;    /* push below the last scattered image overlap */
+  margin-top: 20px;
 }
 .mob-brand__eye {
   font-family: 'Space Mono', monospace;

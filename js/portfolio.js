@@ -1632,24 +1632,32 @@ function setupMobileLayout() {
   const scatter = document.getElementById('mobScatter');
   if (!scatter) return;
 
+  // Two columns: left gets even-indexed projects, right gets odd — right drops 48px via CSS
+  const col1 = document.createElement('div');
+  col1.className = 'mob-scatter-col';
+  const col2 = document.createElement('div');
+  col2.className = 'mob-scatter-col';
+
   const projects = PORTFOLIO_ITEMS.filter(i => i.type === 'project');
-  scatter.innerHTML = projects.map((item, pi) => {
+  projects.forEach((item, pi) => {
     const idx = PORTFOLIO_ITEMS.indexOf(item);
     const num = String(pi + 1).padStart(2, '0');
-    return `
-      <div class="mob-sitem" data-idx="${idx}">
-        <img src="${item.image}" alt="${item.title}" />
-        <span class="mob-sitem__num">${num}</span>
-      </div>`;
-  }).join('');
+    const el = document.createElement('div');
+    el.className = 'mob-sitem';
+    el.dataset.idx = String(idx);
+    el.innerHTML = `<img src="${item.image}" alt="${item.title}" /><span class="mob-sitem__num">${num}</span>`;
+    (pi % 2 === 0 ? col1 : col2).appendChild(el);
+  });
+
+  scatter.appendChild(col1);
+  scatter.appendChild(col2);
 
   scatter.addEventListener('click', e => {
     const sitem = e.target.closest('.mob-sitem');
     if (!sitem) return;
     const item = PORTFOLIO_ITEMS[parseInt(sitem.dataset.idx, 10)];
     if (!item) return;
-    const label = item.type === 'about' ? 'ABOUT' : `PROJECT · ${String(parseInt(sitem.dataset.idx) + 1).padStart(2, '0')}`;
-    openDetail(item, label, null);
+    openDetail(item, `PROJECT · ${String(parseInt(sitem.dataset.idx) + 1).padStart(2, '0')}`, null);
   });
 }
 
