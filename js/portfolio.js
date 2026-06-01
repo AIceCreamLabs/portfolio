@@ -1619,7 +1619,7 @@ window.PORTFOLIO_ITEMS = PORTFOLIO_ITEMS;
 window.openDetail = openDetail;
 window.closeDetail = closeDetail;
 
-/* ─── Mobile layout — editorial scatter ─── */
+/* ─── Mobile ring carousel — horizontal scroll with circular illusion ─── */
 function setupMobileLayout() {
   document.body.classList.add('is-mobile');
 
@@ -1629,35 +1629,50 @@ function setupMobileLayout() {
   });
   window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
 
-  const scatter = document.getElementById('mobScatter');
-  if (!scatter) return;
-
-  // Two columns: left gets even-indexed projects, right gets odd — right drops 48px via CSS
-  const col1 = document.createElement('div');
-  col1.className = 'mob-scatter-col';
-  const col2 = document.createElement('div');
-  col2.className = 'mob-scatter-col';
+  const ring = document.getElementById('mobRing');
+  if (!ring) return;
 
   const projects = PORTFOLIO_ITEMS.filter(i => i.type === 'project');
-  projects.forEach((item, pi) => {
+  ring.innerHTML = projects.map((item, pi) => {
     const idx = PORTFOLIO_ITEMS.indexOf(item);
     const num = String(pi + 1).padStart(2, '0');
-    const el = document.createElement('div');
-    el.className = 'mob-sitem';
-    el.dataset.idx = String(idx);
-    el.innerHTML = `<img src="${item.image}" alt="${item.title}" /><span class="mob-sitem__num">${num}</span>`;
-    (pi % 2 === 0 ? col1 : col2).appendChild(el);
-  });
+    return `
+      <div class="mob-tile" data-idx="${idx}">
+        <img src="${item.image}" alt="${item.title}" />
+        <div class="mob-tile__label">
+          <span class="mob-tile__num">${num}</span>
+          <span class="mob-tile__name">${item.title}</span>
+          <span class="mob-tile__cat">${item.category}</span>
+        </div>
+      </div>`;
+  }).join('');
 
-  scatter.appendChild(col1);
-  scatter.appendChild(col2);
+  const tiles = ring.querySelectorAll('.mob-tile');
 
-  scatter.addEventListener('click', e => {
-    const sitem = e.target.closest('.mob-sitem');
-    if (!sitem) return;
-    const item = PORTFOLIO_ITEMS[parseInt(sitem.dataset.idx, 10)];
+  // Update each tile's rotateY + scale based on distance from the ring center
+  function updateRing() {
+    const ringCenter = ring.scrollLeft + ring.clientWidth / 2;
+    tiles.forEach(tile => {
+      const tileCenter = tile.offsetLeft + tile.offsetWidth / 2;
+      const offset = (tileCenter - ringCenter) / ring.clientWidth; // –1 … +1
+      const rotY    = offset * 42;                   // max ±42° rotation
+      const scale   = 1 - Math.abs(offset) * 0.26;  // shrinks toward edges
+      const opacity = 1 - Math.abs(offset) * 0.38;
+      tile.style.transform = `rotateY(${rotY}deg) scale(${scale})`;
+      tile.style.opacity   = String(Math.max(0.25, opacity));
+    });
+  }
+
+  ring.addEventListener('scroll', updateRing, { passive: true });
+  requestAnimationFrame(updateRing);
+
+  // Tap to open project
+  ring.addEventListener('click', e => {
+    const tile = e.target.closest('.mob-tile');
+    if (!tile) return;
+    const item = PORTFOLIO_ITEMS[parseInt(tile.dataset.idx, 10)];
     if (!item) return;
-    openDetail(item, `PROJECT · ${String(parseInt(sitem.dataset.idx) + 1).padStart(2, '0')}`, null);
+    openDetail(item, `PROJECT · ${String(parseInt(tile.dataset.idx) + 1).padStart(2, '0')}`, null);
   });
 }
 

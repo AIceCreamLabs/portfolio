@@ -1677,8 +1677,8 @@ button, a {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   MOBILE-ONLY LAYOUT — Editorial scatter (body.is-mobile)
-   Cream background · images scattered like a magazine spread
+   MOBILE-ONLY LAYOUT — Ring carousel (body.is-mobile)
+   Horizontal swipe with circular perspective illusion
    ═══════════════════════════════════════════════════════════════ */
 
 /* Hidden by default */
@@ -1702,50 +1702,46 @@ body.is-mobile { overflow-x: hidden; }
   padding-top: max(72px, calc(env(safe-area-inset-top) + 56px));
 }
 
-/* ── 2-column staggered scatter ──────────────────────────────── */
-.mob-scatter {
+/* ── Horizontal ring carousel ─────────────────────────────────── */
+
+/* Perspective wrapper — gives CSS 3D depth to child tiles */
+.mob-ring-wrap {
+  perspective: 700px;
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+  padding: 48px 0 36px;
+}
+
+/* Horizontal scroll container */
+.mob-ring {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  padding: 16px 0 0;
-  overflow: hidden;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 16px;
+  /* side padding centres the first/last card */
+  padding: 0 calc(50vw - 36vw);
 }
+.mob-ring::-webkit-scrollbar { display: none; }
 
-/* Two equal columns */
-.mob-scatter-col {
-  flex: 0 0 50%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* Right column drops 48px — the editorial stagger */
-.mob-scatter-col:nth-child(2) {
-  margin-top: 48px;
-}
-
-/* Left col: slight left bleed */
-.mob-scatter-col:nth-child(1) .mob-sitem {
-  margin-left: -8px;
-  width: calc(50vw + 8px);
-  aspect-ratio: 4 / 5;
-}
-
-/* Right col: slight right bleed, taller portrait */
-.mob-scatter-col:nth-child(2) .mob-sitem {
-  margin-right: -8px;
-  width: calc(50vw + 8px);
-  aspect-ratio: 3 / 4;
-}
-
-.mob-sitem {
+/* Each project tile */
+.mob-tile {
+  scroll-snap-align: center;
+  flex: 0 0 72vw;
+  height: 88vw;
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  display: block;
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  /* smooth but fast so it tracks the finger */
+  transition: transform 0.12s ease-out, opacity 0.12s ease-out;
 }
 
-.mob-sitem img {
+.mob-tile img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1753,16 +1749,37 @@ body.is-mobile { overflow-x: hidden; }
   display: block;
 }
 
-/* Project number — small brass label bottom-left */
-.mob-sitem__num {
+/* Project info overlay at bottom of each tile */
+.mob-tile__label {
   position: absolute;
-  bottom: 10px;
-  left: 12px;
+  bottom: 0; left: 0; right: 0;
+  padding: 40px 16px 16px;
+  background: linear-gradient(transparent, rgba(0,0,0,.6));
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  pointer-events: none;
+}
+.mob-tile__num {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  color: var(--brass);
+}
+.mob-tile__name {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.01em;
+  line-height: 1;
+}
+.mob-tile__cat {
   font-family: 'Space Mono', monospace;
   font-size: 8px;
-  letter-spacing: .18em;
-  color: rgba(255,255,255,.85);
-  pointer-events: none;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.65);
+  text-transform: uppercase;
 }
 
 /* ── Brand anchor at the bottom ──────────────────────────────── */
