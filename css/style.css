@@ -1704,9 +1704,9 @@ body.is-mobile { overflow-x: hidden; }
 
 /* ── Horizontal ring carousel ─────────────────────────────────── */
 
-/* Perspective wrapper — gives CSS 3D depth to child tiles */
+/* Perspective wrapper — cinematic 3D depth for half-cylinder arc */
 .mob-ring-wrap {
-  perspective: 700px;
+  perspective: 800px;
   perspective-origin: 50% 50%;
   overflow: hidden;
   padding: 48px 0 36px;

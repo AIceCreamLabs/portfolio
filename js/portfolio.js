@@ -1649,17 +1649,21 @@ function setupMobileLayout() {
 
   const tiles = ring.querySelectorAll('.mob-tile');
 
-  // Update each tile's rotateY + scale based on distance from the ring center
+  // Half-cylinder arc — tiles rotate & recede in depth like a curved surface
   function updateRing() {
     const ringCenter = ring.scrollLeft + ring.clientWidth / 2;
+    const maxDeg = 75;
+    const radius = ring.clientWidth * 0.35;
     tiles.forEach(tile => {
       const tileCenter = tile.offsetLeft + tile.offsetWidth / 2;
-      const offset = (tileCenter - ringCenter) / ring.clientWidth; // –1 … +1
-      const rotY    = offset * 42;                   // max ±42° rotation
-      const scale   = 1 - Math.abs(offset) * 0.26;  // shrinks toward edges
-      const opacity = 1 - Math.abs(offset) * 0.38;
-      tile.style.transform = `rotateY(${rotY}deg) scale(${scale})`;
-      tile.style.opacity   = String(Math.max(0.25, opacity));
+      const offset = (tileCenter - ringCenter) / ring.clientWidth;
+      const absOff = Math.abs(offset);
+      const angleRad = offset * maxDeg * (Math.PI / 180);
+      const translateZ = -radius * (1 - Math.cos(angleRad));
+      const scale = 1 - absOff * 0.22;
+      const opacity = 1 - absOff * 0.42;
+      tile.style.transform = `rotateY(${offset * maxDeg}deg) translateZ(${translateZ}px) scale(${scale})`;
+      tile.style.opacity = String(Math.max(0.18, opacity));
     });
   }
 
