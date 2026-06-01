@@ -1619,47 +1619,45 @@ window.PORTFOLIO_ITEMS = PORTFOLIO_ITEMS;
 window.openDetail = openDetail;
 window.closeDetail = closeDetail;
 
-/* ─── Mobile architecture — lightweight, touch-optimised ─── */
-function setupMobileArchitecture() {
-  // Ensure all content is visible (desktop animations that hide things are bypassed)
-  const block = document.getElementById('gridBlock');
-  if (block) {
-    gsap.set(
-      [block.querySelector('.content__subheading'),
-       block.querySelector('.content__description'),
-       block.querySelector('.content__btn')],
-      { opacity: 1, pointerEvents: 'all' }
-    );
-  }
+/* ─── Mobile layout — editorial hero + swipeable project cards ─── */
+function setupMobileLayout() {
+  document.body.classList.add('is-mobile');
 
-  // Optimise ScrollTrigger for iOS Safari thread scrolling
   ScrollTrigger.config({
     autoRefreshEvents: 'visibilitychange,orientationchange',
     ignoreMobileResize: true,
   });
 
-  // Simple fade-in animations for gallery items on scroll
-  const mobileItems = document.querySelectorAll('.gallery__item');
-  mobileItems.forEach((item) => {
-    gsap.fromTo(item,
-      { opacity: 0, y: 30 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: 'power2.out',
-        force3D: true,
-        scrollTrigger: {
-          trigger: item,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
-  });
+  // Keep ScrollTrigger in sync with native scroll (for detail panel reveals)
+  window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
 
-  // Clean up any desktop mouse listeners
-  document.removeEventListener('mousemove', () => {});
+  const swiper = document.getElementById('mobSwiper');
+  if (!swiper) return;
+
+  const projects = PORTFOLIO_ITEMS.filter(i => i.type === 'project');
+  swiper.innerHTML = projects.map((item) => {
+    const idx = PORTFOLIO_ITEMS.indexOf(item);
+    const num = String(projects.indexOf(item) + 1).padStart(2, '0');
+    return `
+      <div class="mob-card" data-idx="${idx}"
+           style="background-image:url(${item.image})">
+        <div class="mob-card__label">
+          <span class="mob-card__num">${num}</span>
+          <span class="mob-card__title">${item.title}</span>
+          <span class="mob-card__cat">${item.category}</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Tap to open project detail
+  swiper.addEventListener('click', e => {
+    const card = e.target.closest('.mob-card');
+    if (!card) return;
+    const item = PORTFOLIO_ITEMS[parseInt(card.dataset.idx, 10)];
+    if (!item) return;
+    const label = item.type === 'about' ? 'ABOUT' : `PROJECT · ${card.dataset.idx.padStart(2, '0')}`;
+    openDetail(item, label, null);
+  });
 }
 
 /* ─── Boot ─── */
@@ -1690,7 +1688,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => window.location.reload(), 300);
   });
 
-  /* Run full desktop experience on all devices — scroll animations + 3D ring */
+  if (isMobile) {
+    setupMobileLayout();
+    return; // skip 3D ring, Lenis, StickyGrid, playEntrance on touch devices
+  }
 
   try { new StickyGrid(); }   catch(e) { console.warn('StickyGrid init failed:', e); }
   try { initBulgeEffects(); } catch(e) { console.warn('Bulge init failed:', e); }

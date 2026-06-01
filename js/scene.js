@@ -447,24 +447,25 @@ document.addEventListener('akumali:entranceDone', () => {
   window.addEventListener('scroll', handleScroll, { passive: true });
 });
 
-// Touch devices: canvas stays pointer-events:none so it never blocks scroll.
-// Tap detection lives on the document — distinguish a tap from a swipe.
+// Touch tap-to-tile: document-level listener distinguishes tap from swipe.
+// Skipped when body.is-mobile is active (canvas is hidden; mobile uses swiper instead).
 if ('ontouchstart' in window) {
   let _t0 = 0, _x0 = 0, _y0 = 0;
 
   document.addEventListener('touchstart', (e) => {
+    if (document.body.classList.contains('is-mobile')) return;
     _t0 = Date.now();
     _x0 = e.touches[0].clientX;
     _y0 = e.touches[0].clientY;
-    targetMultiplier = 0.04; // slow ring on press
+    targetMultiplier = 0.04;
   }, { passive: true });
 
   document.addEventListener('touchend', (e) => {
+    if (document.body.classList.contains('is-mobile')) return;
     targetMultiplier = 1.0;
     const t = e.changedTouches[0];
     const moved = Math.abs(t.clientX - _x0) > 12 || Math.abs(t.clientY - _y0) > 12;
     const held  = Date.now() - _t0 > 300;
-    // Only fire if it was a short, stationary tap (not a scroll swipe)
     if (!moved && !held) {
       onCanvasClick({ clientX: t.clientX, clientY: t.clientY });
     }
