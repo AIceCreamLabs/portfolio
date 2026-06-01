@@ -464,6 +464,13 @@ let scrollVel = 0;  // absolute velocity 0–6
 let scrollDir = 0;  // +1 down / -1 up
 function lenisRaf(time) { if (lenis) lenis.raf(time * 1000); }
 function initLenis() {
+  if (window.matchMedia('(pointer: coarse)').matches) {
+    // Touch device — Lenis intercepts touch events and breaks native scroll.
+    // Use native scroll instead; just keep ScrollTrigger in sync.
+    window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
+    ScrollTrigger.refresh();
+    return;
+  }
   lenis = new Lenis({ lerp: 0.10, wheelMultiplier: 1.2 });
   lenis.on('scroll', (e) => {
     ScrollTrigger.update();

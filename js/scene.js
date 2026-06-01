@@ -447,30 +447,32 @@ document.addEventListener('akumali:entranceDone', () => {
   window.addEventListener('scroll', handleScroll, { passive: true });
 });
 
-// On touch devices: keep canvas opacity scroll-driven; enable touch interaction
-if (window.innerWidth <= 768 || 'ontouchstart' in window) {
-  canvas.style.pointerEvents = 'all';
+// Touch devices: canvas stays pointer-events:none so it never blocks scroll.
+// Tap detection lives on the document — distinguish a tap from a swipe.
+if ('ontouchstart' in window) {
+  let _t0 = 0, _x0 = 0, _y0 = 0;
 
-  // Touch (real device)
-  canvas.addEventListener('touchstart', () => {
-    targetMultiplier = 0.04;
+  document.addEventListener('touchstart', (e) => {
+    _t0 = Date.now();
+    _x0 = e.touches[0].clientX;
+    _y0 = e.touches[0].clientY;
+    targetMultiplier = 0.04; // slow ring on press
   }, { passive: true });
 
-  canvas.addEventListener('touchend', (e) => {
-    e.preventDefault();
+  document.addEventListener('touchend', (e) => {
+    targetMultiplier = 1.0;
     const t = e.changedTouches[0];
-    onCanvasClick({ clientX: t.clientX, clientY: t.clientY });
-    targetMultiplier = 1.0;
-  }, { passive: false });
-
-  canvas.addEventListener('touchcancel', () => {
-    targetMultiplier = 1.0;
+    const moved = Math.abs(t.clientX - _x0) > 12 || Math.abs(t.clientY - _y0) > 12;
+    const held  = Date.now() - _t0 > 300;
+    // Only fire if it was a short, stationary tap (not a scroll swipe)
+    if (!moved && !held) {
+      onCanvasClick({ clientX: t.clientX, clientY: t.clientY });
+    }
   }, { passive: true });
 
-  // Mouse fallback (emulators / pointer devices on small screens)
-  canvas.addEventListener('mousedown', () => { targetMultiplier = 0.04; });
-  canvas.addEventListener('mouseup',   () => { targetMultiplier = 1.0; });
-  canvas.addEventListener('click', onCanvasClick);
+  document.addEventListener('touchcancel', () => {
+    targetMultiplier = 1.0;
+  }, { passive: true });
 }
 
 window.rubenScene = { scene, camera, renderer };
