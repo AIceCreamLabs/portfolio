@@ -1677,12 +1677,14 @@ button, a {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   MOBILE-ONLY LAYOUT  (body.is-mobile added by JS on touch devices)
-   Cinematic: particle canvas top + curved cream reveal + swipe cards
+   MOBILE-ONLY LAYOUT — Editorial scatter (body.is-mobile)
+   Cream background · images scattered like a magazine spread
    ═══════════════════════════════════════════════════════════════ */
 
-.mob-hero, .mob-swiper { display: none; }
+/* Hidden by default */
+.mob-editorial { display: none; }
 
+/* Hide all desktop elements on mobile */
 body.is-mobile .hero,
 body.is-mobile .block,
 body.is-mobile #ruben-canvas,
@@ -1690,177 +1692,115 @@ body.is-mobile .akumali-fixed,
 body.is-mobile .scene-hint,
 body.is-mobile .scene-loading { display: none !important; }
 
-body.is-mobile .mob-hero  { display: block; }
-body.is-mobile .mob-swiper { display: flex; }
-
-/* ── Cinematic hero: dark particles (top 62%) + cream reveal (bottom 38%) ── */
-.mob-hero {
-  position: relative;
-  width: 100%;
-  height: 100svh;           /* svh avoids iOS bar overlap */
-  background: #141210 !important;
-  overflow: hidden;
-}
-
-/* Particle canvas covers the dark upper portion */
-.mob-hero__canvas {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 64%;
-  display: block;
-}
-
-/* Curved cream dome overlaps the bottom of the canvas — the Rove curve */
-.mob-hero__curve {
-  position: absolute;
-  top: 56%;
-  left: -20%; right: -20%;
-  height: 100px;
-  background: var(--bg);
-  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-  z-index: 2;
-}
-
-/* Editorial text sits in the cream area */
-.mob-hero__info {
-  position: absolute;
-  top: 62%; bottom: 0;
-  left: 0; right: 0;
-  background: var(--bg);
-  padding: 20px 28px 0;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.mob-hero__eyebrow {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .26em;
-  color: var(--brass);
-  margin: 0;
-}
-.mob-hero__title {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(40px, 13vw, 64px);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--ink);
-  margin: 0;
-  line-height: .95;
-}
-.mob-hero__sub {
-  font-family: 'Space Mono', monospace;
-  font-size: clamp(10px, 2.8vw, 13px);
-  color: var(--ink-2);
-  line-height: 1.65;
-  letter-spacing: 0.02em;
-  margin: 0;
-  max-width: 32ch;
-}
-
-/* "SCROLL" label — vertical, bottom-right, editorial */
-.mob-hero__scroll {
-  position: absolute;
-  bottom: max(20px, env(safe-area-inset-bottom));
-  right: 24px;
-  z-index: 4;
-  font-family: 'Space Mono', monospace;
-  font-size: 8px;
-  letter-spacing: 0.22em;
-  color: var(--ink-2);
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-}
-
-/* ── Cinematic project swiper ─────────────────────────────────── */
+body.is-mobile .mob-editorial { display: block; }
 body.is-mobile { overflow-x: hidden; }
 
-.mob-swiper {
-  width: 100%;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  flex-direction: row;
-  flex-wrap: nowrap;        /* never wrap — horizontal only */
-  align-items: flex-start;
-  gap: 12px;
-  padding: 28px 20px max(48px, calc(env(safe-area-inset-bottom) + 28px));
+/* ── Full editorial page ──────────────────────────────────────── */
+.mob-editorial {
   background: var(--bg);
+  min-height: 100vh;
+  padding-top: max(72px, calc(env(safe-area-inset-top) + 56px));
 }
-.mob-swiper::-webkit-scrollbar { display: none; }
 
-/* Each card: editorial photo top (curved) + cream info bottom */
-.mob-card {
-  scroll-snap-align: start;
-  flex: 0 0 76vw;           /* fixed width, never shrink */
-  height: 88vw;
+/* ── Scatter container ────────────────────────────────────────── */
+.mob-scatter {
+  position: relative;
+  padding: 16px 0 56px;
+  overflow: hidden;          /* clip images that bleed off edge */
+}
+
+/* Each scattered image item */
+.mob-sitem {
   position: relative;
   overflow: hidden;
-  background: var(--bg);
+  display: block;
   cursor: pointer;
 }
 
-/* Project image — <img> tag fills the top 66% */
-.mob-card__img {
-  position: absolute;
-  top: 0; left: 0;
+/* ── 4-position repeating pattern — magazine scatter ─────────── */
+/* Position 1: left-bleed, tall portrait */
+.mob-sitem:nth-child(4n+1) {
+  width: 58vw;
+  height: 72vw;
+  margin-left: -3vw;
+  margin-bottom: -20vw;
+  z-index: 3;
+}
+/* Position 2: right-bleed, slightly shorter */
+.mob-sitem:nth-child(4n+2) {
+  width: 54vw;
+  height: 64vw;
+  margin-left: 44vw;
+  margin-bottom: -14vw;
+  z-index: 2;
+}
+/* Position 3: center-left, tallest */
+.mob-sitem:nth-child(4n+3) {
+  width: 62vw;
+  height: 76vw;
+  margin-left: 16vw;
+  margin-bottom: -22vw;
+  z-index: 4;
+}
+/* Position 4: right-bleed, mid-height */
+.mob-sitem:nth-child(4n+4) {
+  width: 55vw;
+  height: 66vw;
+  margin-left: 40vw;
+  margin-bottom: -10vw;
+  z-index: 1;
+}
+
+.mob-sitem img {
   width: 100%;
-  height: 66%;
+  height: 100%;
   object-fit: cover;
   object-position: center top;
   display: block;
 }
 
-/* Curved cream dome over the bottom of the image */
-.mob-card::before {
-  content: '';
+/* Project number — small label bottom-left of each image */
+.mob-sitem__num {
   position: absolute;
-  top: 56%;
-  left: -25%; right: -25%;
-  height: 56px;
-  background: var(--bg);
-  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-  z-index: 2;
-}
-
-/* Info area in the cream section */
-.mob-card__label {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 38%;
-  background: var(--bg);
-  padding: 6px 16px 18px;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 3px;
-}
-
-.mob-card__num {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .16em;
-  color: var(--brass);
-}
-.mob-card__title {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--ink);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-.mob-card__cat {
+  bottom: 10px;
+  left: 10px;
   font-family: 'Space Mono', monospace;
   font-size: 8px;
-  letter-spacing: .14em;
+  letter-spacing: .18em;
+  color: rgba(255,255,255,.85);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ── Brand anchor at the bottom ──────────────────────────────── */
+.mob-brand {
+  padding: 56px 24px max(48px, calc(env(safe-area-inset-bottom) + 32px));
+  border-top: 1px solid var(--border);
+  margin-top: 32vw;    /* push below the last scattered image overlap */
+}
+.mob-brand__eye {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .24em;
+  color: var(--brass);
+  margin: 0 0 12px;
+  display: block;
+}
+.mob-brand__title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(44px, 16vw, 80px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0 0 14px;
+  line-height: .92;
+}
+.mob-brand__sub {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 3vw, 13px);
   color: var(--ink-2);
-  text-transform: uppercase;
+  line-height: 1.65;
+  max-width: 32ch;
+  margin: 0;
 }
 

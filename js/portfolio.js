@@ -1619,78 +1619,7 @@ window.PORTFOLIO_ITEMS = PORTFOLIO_ITEMS;
 window.openDetail = openDetail;
 window.closeDetail = closeDetail;
 
-/* ─── Particle animation for mobile hero canvas ─── */
-function initMobParticles() {
-  const canvas = document.getElementById('mobParticle');
-  if (!canvas) return;
-
-  const W = window.innerWidth;
-  const H = Math.round(window.innerHeight * 0.64);
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width  = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width  = W + 'px';
-  canvas.style.height = H + 'px';
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-
-  // Slow-drifting glow blobs — like bokeh in a fashion shoot
-  const glows = Array.from({ length: 6 }, () => ({
-    x: Math.random() * W, y: Math.random() * H * 0.9,
-    r: Math.random() * 60 + 30,
-    a: Math.random() * 0.055 + 0.01,
-    vx: (Math.random() - 0.5) * 0.12, vy: (Math.random() - 0.5) * 0.09,
-    brass: Math.random() > 0.4,
-  }));
-
-  // Fine floating particles
-  const pts = Array.from({ length: 70 }, () => ({
-    x: Math.random() * W, y: Math.random() * H,
-    r: Math.random() * 1.4 + 0.3,
-    a: Math.random() * 0.45 + 0.1,
-    vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
-    brass: Math.random() > 0.6,
-  }));
-
-  let raf;
-  (function draw() {
-    // Dark base — AKUMALI dark theme colour
-    ctx.fillStyle = '#141210';
-    ctx.fillRect(0, 0, W, H);
-
-    // Glow blobs (soft radial gradients)
-    glows.forEach(g => {
-      const col = g.brass ? '201,168,76' : '240,236,228';
-      const grad = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.r);
-      grad.addColorStop(0, `rgba(${col},${g.a})`);
-      grad.addColorStop(1, `rgba(${col},0)`);
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
-      ctx.fill();
-      g.x += g.vx; g.y += g.vy;
-      if (g.x < -g.r || g.x > W + g.r) g.vx *= -1;
-      if (g.y < -g.r || g.y > H + g.r) g.vy *= -1;
-    });
-
-    // Fine particles
-    pts.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = p.brass
-        ? `rgba(201,168,76,${p.a})`
-        : `rgba(240,236,228,${p.a})`;
-      ctx.fill();
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0 || p.x > W) p.vx *= -1;
-      if (p.y < 0 || p.y > H) p.vy *= -1;
-    });
-
-    raf = requestAnimationFrame(draw);
-  })();
-}
-
-/* ─── Mobile layout — cinematic hero + editorial swipe cards ─── */
+/* ─── Mobile layout — editorial scatter ─── */
 function setupMobileLayout() {
   document.body.classList.add('is-mobile');
 
@@ -1700,34 +1629,26 @@ function setupMobileLayout() {
   });
   window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
 
-  // Start particle animation on the hero canvas
-  initMobParticles();
-
-  // Build swiper cards
-  const swiper = document.getElementById('mobSwiper');
-  if (!swiper) return;
+  const scatter = document.getElementById('mobScatter');
+  if (!scatter) return;
 
   const projects = PORTFOLIO_ITEMS.filter(i => i.type === 'project');
-  swiper.innerHTML = projects.map((item) => {
+  scatter.innerHTML = projects.map((item, pi) => {
     const idx = PORTFOLIO_ITEMS.indexOf(item);
-    const num = String(projects.indexOf(item) + 1).padStart(2, '0');
+    const num = String(pi + 1).padStart(2, '0');
     return `
-      <div class="mob-card" data-idx="${idx}">
-        <img class="mob-card__img" src="${item.image}" alt="${item.title}" />
-        <div class="mob-card__label">
-          <span class="mob-card__num">${num}</span>
-          <span class="mob-card__title">${item.title}</span>
-          <span class="mob-card__cat">${item.category}</span>
-        </div>
+      <div class="mob-sitem" data-idx="${idx}">
+        <img src="${item.image}" alt="${item.title}" />
+        <span class="mob-sitem__num">${num}</span>
       </div>`;
   }).join('');
 
-  swiper.addEventListener('click', e => {
-    const card = e.target.closest('.mob-card');
-    if (!card) return;
-    const item = PORTFOLIO_ITEMS[parseInt(card.dataset.idx, 10)];
+  scatter.addEventListener('click', e => {
+    const sitem = e.target.closest('.mob-sitem');
+    if (!sitem) return;
+    const item = PORTFOLIO_ITEMS[parseInt(sitem.dataset.idx, 10)];
     if (!item) return;
-    const label = item.type === 'about' ? 'ABOUT' : `PROJECT · ${card.dataset.idx.padStart(2, '0')}`;
+    const label = item.type === 'about' ? 'ABOUT' : `PROJECT · ${String(parseInt(sitem.dataset.idx) + 1).padStart(2, '0')}`;
     openDetail(item, label, null);
   });
 }
