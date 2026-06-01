@@ -1697,8 +1697,8 @@ body.is-mobile .mob-swiper { display: flex; }
 .mob-hero {
   position: relative;
   width: 100%;
-  height: 100vh;
-  background: #141210;
+  height: 100svh;           /* svh avoids iOS bar overlap */
+  background: #141210 !important;
   overflow: hidden;
 }
 
@@ -1776,12 +1776,17 @@ body.is-mobile .mob-swiper { display: flex; }
 }
 
 /* ── Cinematic project swiper ─────────────────────────────────── */
+body.is-mobile { overflow-x: hidden; }
+
 .mob-swiper {
-  overflow-x: auto;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   flex-direction: row;
+  flex-wrap: nowrap;        /* never wrap — horizontal only */
   align-items: flex-start;
   gap: 12px;
   padding: 28px 20px max(48px, calc(env(safe-area-inset-bottom) + 28px));
@@ -1792,22 +1797,23 @@ body.is-mobile .mob-swiper { display: flex; }
 /* Each card: editorial photo top (curved) + cream info bottom */
 .mob-card {
   scroll-snap-align: start;
-  flex-shrink: 0;
-  width: 76vw;
-  height: 88vw;         /* tall portrait aspect, like a fashion spread */
+  flex: 0 0 76vw;           /* fixed width, never shrink */
+  height: 88vw;
   position: relative;
   overflow: hidden;
   background: var(--bg);
   cursor: pointer;
 }
 
-/* Project image fills the top ~65% */
+/* Project image — <img> tag fills the top 66% */
 .mob-card__img {
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0; left: 0;
+  width: 100%;
   height: 66%;
-  background-size: cover;
-  background-position: center top;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
 }
 
 /* Curved cream dome over the bottom of the image */

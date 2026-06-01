@@ -1713,7 +1713,7 @@ function setupMobileLayout() {
     const num = String(projects.indexOf(item) + 1).padStart(2, '0');
     return `
       <div class="mob-card" data-idx="${idx}">
-        <div class="mob-card__img" style="background-image:url(${item.image})"></div>
+        <img class="mob-card__img" src="${item.image}" alt="${item.title}" />
         <div class="mob-card__label">
           <span class="mob-card__num">${num}</span>
           <span class="mob-card__title">${item.title}</span>
