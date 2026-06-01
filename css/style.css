@@ -1678,13 +1678,11 @@ button, a {
 
 /* ═══════════════════════════════════════════════════════════════
    MOBILE-ONLY LAYOUT  (body.is-mobile added by JS on touch devices)
+   Cinematic: particle canvas top + curved cream reveal + swipe cards
    ═══════════════════════════════════════════════════════════════ */
 
-/* Hidden by default — only shown when JS sets body.is-mobile */
-.mob-hero,
-.mob-swiper { display: none; }
+.mob-hero, .mob-swiper { display: none; }
 
-/* Swap layouts: hide desktop sections, reveal mobile ones */
 body.is-mobile .hero,
 body.is-mobile .block,
 body.is-mobile #ruben-canvas,
@@ -1692,119 +1690,152 @@ body.is-mobile .akumali-fixed,
 body.is-mobile .scene-hint,
 body.is-mobile .scene-loading { display: none !important; }
 
-body.is-mobile .mob-hero { display: block; }
+body.is-mobile .mob-hero  { display: block; }
 body.is-mobile .mob-swiper { display: flex; }
 
-/* ── Mobile hero ──────────────────────────────────────────────── */
+/* ── Cinematic hero: dark particles (top 62%) + cream reveal (bottom 38%) ── */
 .mob-hero {
   position: relative;
   width: 100%;
   height: 100vh;
+  background: #141210;
   overflow: hidden;
 }
-.mob-hero__bg {
+
+/* Particle canvas covers the dark upper portion */
+.mob-hero__canvas {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
+  height: 64%;
+  display: block;
 }
-.mob-hero__overlay {
+
+/* Curved cream dome overlaps the bottom of the canvas — the Rove curve */
+.mob-hero__curve {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,.12) 0%,
-    rgba(0,0,0,.48) 70%,
-    rgba(0,0,0,.65) 100%
-  );
-}
-.mob-hero__content {
-  position: absolute;
-  bottom: 14vh;
-  left: 0;
-  right: 0;
-  text-align: center;
-  padding: 0 28px;
+  top: 56%;
+  left: -20%; right: -20%;
+  height: 100px;
+  background: var(--bg);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
   z-index: 2;
 }
+
+/* Editorial text sits in the cream area */
+.mob-hero__info {
+  position: absolute;
+  top: 62%; bottom: 0;
+  left: 0; right: 0;
+  background: var(--bg);
+  padding: 20px 28px 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .mob-hero__eyebrow {
-  display: block;
   font-family: 'Space Mono', monospace;
   font-size: 9px;
   letter-spacing: .26em;
   color: var(--brass);
-  margin-bottom: 16px;
+  margin: 0;
 }
 .mob-hero__title {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(52px, 17vw, 88px);
+  font-size: clamp(40px, 13vw, 64px);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #fff;
-  margin: 0 0 18px;
-  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0;
+  line-height: .95;
 }
 .mob-hero__sub {
   font-family: 'Space Mono', monospace;
-  font-size: clamp(11px, 3.2vw, 15px);
-  color: rgba(255,255,255,.82);
-  line-height: 1.7;
+  font-size: clamp(10px, 2.8vw, 13px);
+  color: var(--ink-2);
+  line-height: 1.65;
+  letter-spacing: 0.02em;
   margin: 0;
-  max-width: 34ch;
-  margin-inline: auto;
-}
-.mob-hero__scroll {
-  position: absolute;
-  bottom: max(28px, env(safe-area-inset-bottom));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  color: rgba(255,255,255,.5);
-  font-size: 20px;
-  animation: mobScrollBounce 1.8s ease-in-out infinite;
-}
-@keyframes mobScrollBounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50%       { transform: translateX(-50%) translateY(7px); }
+  max-width: 32ch;
 }
 
-/* ── Mobile swiper ────────────────────────────────────────────── */
+/* "SCROLL" label — vertical, bottom-right, editorial */
+.mob-hero__scroll {
+  position: absolute;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  right: 24px;
+  z-index: 4;
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  color: var(--ink-2);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* ── Cinematic project swiper ─────────────────────────────────── */
 .mob-swiper {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   flex-direction: row;
-  gap: 10px;
-  padding: 32px 20px max(48px, calc(env(safe-area-inset-bottom) + 32px));
+  align-items: flex-start;
+  gap: 12px;
+  padding: 28px 20px max(48px, calc(env(safe-area-inset-bottom) + 28px));
   background: var(--bg);
 }
 .mob-swiper::-webkit-scrollbar { display: none; }
 
+/* Each card: editorial photo top (curved) + cream info bottom */
 .mob-card {
   scroll-snap-align: start;
   flex-shrink: 0;
-  width: 72vw;
-  height: 58vw;
-  background-size: cover;
-  background-position: center;
+  width: 76vw;
+  height: 88vw;         /* tall portrait aspect, like a fashion spread */
   position: relative;
-  cursor: pointer;
   overflow: hidden;
+  background: var(--bg);
+  cursor: pointer;
 }
+
+/* Project image fills the top ~65% */
+.mob-card__img {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 66%;
+  background-size: cover;
+  background-position: center top;
+}
+
+/* Curved cream dome over the bottom of the image */
+.mob-card::before {
+  content: '';
+  position: absolute;
+  top: 56%;
+  left: -25%; right: -25%;
+  height: 56px;
+  background: var(--bg);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  z-index: 2;
+}
+
+/* Info area in the cream section */
 .mob-card__label {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 32px 14px 14px;
-  background: linear-gradient(transparent, rgba(0,0,0,.62));
+  bottom: 0; left: 0; right: 0;
+  height: 38%;
+  background: var(--bg);
+  padding: 6px 16px 18px;
+  z-index: 3;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   gap: 3px;
 }
+
 .mob-card__num {
   font-family: 'Space Mono', monospace;
   font-size: 9px;
@@ -1813,17 +1844,17 @@ body.is-mobile .mob-swiper { display: flex; }
 }
 .mob-card__title {
   font-family: 'Syne', sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: -.01em;
-  line-height: 1.1;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 .mob-card__cat {
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .12em;
-  color: rgba(255,255,255,.65);
+  font-size: 8px;
+  letter-spacing: .14em;
+  color: var(--ink-2);
   text-transform: uppercase;
 }
 
