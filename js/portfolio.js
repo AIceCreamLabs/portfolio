@@ -31,49 +31,7 @@
    Center panel buttons access: index 6 (Hire Me), index 7 (About)
    ─────────── */
 const PORTFOLIO_ITEMS = [
-  /* LEFT COLUMN — indices 0, 1, 2 */
-  {
-    id: 1,
-    title: 'Ntoma',
-    subtitle: 'AI-Powered Garment Pattern Generation',
-    category: 'AI Product',
-    image: 'portfolio/ntoma.png',
-    media: ['portfolio/ntoma4.mp4', 'portfolio/ntoma3.png', 'portfolio/ntoma2.png', 'portfolio/ntoma1.png', 'portfolio/ntoma.png'],
-    type: 'project',
-    description: 'A designer found a photo of the perfect dress. Her local tailor quoted €200 and 6 weeks.',
-    challenge: 'Patterns have always been the bottleneck between idea and garment. Not the fabric. Not the sewing. The math.',
-    solution: 'One photo. Two minutes. Correct pattern pieces, size-graded XS to XL, exported for factory production. The tailor became optional.',
-    results: [
-      'The bottleneck was never the fabric.',
-      'Photo to pattern in under 2 minutes',
-      'XS–XL grading, automatic',
-      'DXF export for factory production',
-      'Early access waitlist live',
-    ],
-    tech: ['React', 'FastAPI', 'Python', 'OpenAI Vision', 'Vercel'],
-    link: 'https://ntoma.vercel.app'
-  },
-  {
-    id: 3,
-    title: 'CAN Architecture',
-    subtitle: 'Portfolio platform for an award-winning architecture firm',
-    category: 'Editorial Platform',
-    image: 'portfolio/can.png',
-    media: ['portfolio/can-demo.mp4', 'portfolio/can.png'],
-    type: 'project',
-    description: 'The firm was winning commissions in the room. They were losing them before the meeting ever happened.',
-    challenge: 'Architecture is a trust business. Clients form their impression from a portfolio — and the best work in the city was buried in a PDF nobody opened.',
-    solution: 'A platform engineered to make the work do the selling. Immersive project pages. Filterable by typology. An admin panel she controls without code, so the portfolio stays current without a developer on retainer.',
-    results: [
-      'Good work deserves a stage that matches it',
-      'Live 3 weeks from brief',
-      'Inbound client inquiries within 60 days of launch',
-      'Zero developer dependency — fully self-managed',
-      '€2,500 total investment',
-    ],
-    tech: ['React', 'Next.js', 'Node.js', 'Firebase', 'Firestore', 'Vercel'],
-    link: 'https://can-yinka-muu8xna3i-aicecreamlabs-6519s-projects.vercel.app/'
-  },
+  /* Projects — indices 0–5 */
   {
     id: 2,
     title: 'Psychologist LT',
@@ -244,16 +202,17 @@ function initTheme() {
 }
 
 /* ─── Grid images — 9-tile 3×3 grid, center tile is About Me ─── */
+/* Ntoma and CAN removed; Rove fills col0 row0, Psych fills col1 row0 */
 const GRID_IMAGES = [
-  { src: 'portfolio/ntoma.png',     projectIdx: 0 }, // col0 row0
-  { src: 'portfolio/can.png',       projectIdx: 1 }, // col1 row0
-  { src: 'portfolio/psych.png',     projectIdx: 2 }, // col2 row0
-  { src: 'portfolio/forma.png',     projectIdx: 3 }, // col0 row1
-  { src: 'portfolio/about.gif', projectIdx: 8 }, // col1 row1 — CENTER (pinned)
-  { src: 'portfolio/vanta.png',     projectIdx: 4 }, // col2 row1
-  { src: 'portfolio/rove.jpg',      projectIdx: 5 }, // col0 row2
-  { src: 'portfolio/axis.png',      projectIdx: 6 }, // col1 row2
-  { src: 'portfolio/gridfash.png',  projectIdx: 7 }, // col2 row2
+  { src: 'portfolio/rove.jpg',      projectIdx: 3 }, // col0 row0
+  { src: 'portfolio/psych.png',     projectIdx: 0 }, // col1 row0
+  { src: 'portfolio/forma.png',     projectIdx: 1 }, // col2 row0
+  { src: 'portfolio/vanta.png',     projectIdx: 2 }, // col0 row1
+  { src: 'portfolio/about.gif',     projectIdx: 6 }, // col1 row1 — CENTER (pinned)
+  { src: 'portfolio/axis.png',      projectIdx: 4 }, // col2 row1
+  { src: 'portfolio/gridfash.png',  projectIdx: 5 }, // col0 row2
+  { src: 'portfolio/psych.png',     projectIdx: 0 }, // col1 row2 (repeat)
+  { src: 'portfolio/forma.png',     projectIdx: 1 }, // col2 row2 (repeat)
 ];
 
 /* ─── Grid render — 6-item 3-column grid like tutorial ─── */
@@ -1121,7 +1080,7 @@ function initDetail() {
 
   // "About me" button — no tile origin, no hero
   document.getElementById('workBtn')?.addEventListener('click', () => {
-    openDetail(PORTFOLIO_ITEMS[8], 'ABOUT', null);
+    openDetail(PORTFOLIO_ITEMS[6], 'ABOUT', null);
   });
 
   // "Start a project" buttons inside the about panel
@@ -1203,7 +1162,7 @@ function initMenu() {
   // About link in menu
   document.getElementById('menuAboutBtn')?.addEventListener('click', () => {
     closeMenu();
-    setTimeout(() => openDetail(PORTFOLIO_ITEMS[8], 'ABOUT', null), 350);
+    setTimeout(() => openDetail(PORTFOLIO_ITEMS[6], 'ABOUT', null), 350);
   });
 }
 
