@@ -1169,7 +1169,7 @@ function initMenu() {
 /* ─── Contact form ─── */
 // To activate: go to formspree.io, create a form for akumalis@protonmail.com,
 // paste the endpoint (e.g. https://formspree.io/f/xxxxxxxx) below.
-const FORM_ENDPOINT = '';
+const FORM_ENDPOINT = 'https://formspree.io/f/mgobdljr';
 
 async function handleContactSubmit(e) {
   e.preventDefault();
