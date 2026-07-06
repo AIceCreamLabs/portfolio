@@ -1677,12 +1677,12 @@ button, a {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   MOBILE-ONLY LAYOUT — Ring carousel (body.is-mobile)
-   Horizontal swipe with circular perspective illusion
+   MOBILE-ONLY LAYOUT — Tilt panels (body.is-mobile)
+   Gyroscope-driven fan panels over black wave
    ═══════════════════════════════════════════════════════════════ */
 
 /* Hidden by default */
-.mob-editorial { display: none; }
+.mob-scene { display: none; }
 
 /* Hide all desktop elements on mobile */
 body.is-mobile .hero,
@@ -1692,193 +1692,171 @@ body.is-mobile .akumali-fixed,
 body.is-mobile .scene-hint,
 body.is-mobile .scene-loading { display: none !important; }
 
-body.is-mobile .mob-editorial { display: block; }
-body.is-mobile { overflow-x: hidden; }
+body.is-mobile .mob-scene { display: block; }
+body.is-mobile { overflow: hidden; }
 
-/* ── Full editorial page ──────────────────────────────────────── */
-.mob-editorial {
+/* ── Full-screen scene container ─────────────────────────────── */
+.mob-scene {
+  position: fixed;
+  inset: 0;
   background: var(--bg);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  padding-top: max(72px, calc(env(safe-area-inset-top) + 56px));
-}
-
-/* ── Horizontal ring carousel ─────────────────────────────────── */
-
-/* Perspective wrapper — cinematic 3D depth for half-cylinder arc */
-.mob-ring-wrap {
-  perspective: 800px;
-  perspective-origin: 50% 50%;
   overflow: hidden;
-  padding: 32px 0 20px;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  min-height: 0;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* Horizontal scroll container */
-.mob-ring {
-  display: flex;
-  flex-direction: row;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  gap: 16px;
-  /* side padding centres the first/last card */
-  padding: 0 calc(50vw - 36vw);
+/* ── Bust / portrait at top ──────────────────────────────────── */
+.mob-scene__bust {
+  position: absolute;
+  top: max(6%, calc(env(safe-area-inset-top) + 52px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 80px;
+  height: 80px;
 }
-.mob-ring::-webkit-scrollbar { display: none; }
-
-/* Each project tile */
-.mob-tile {
-  scroll-snap-align: center;
-  flex: 0 0 76vw;
-  height: min(72vh, 88vw);
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  transform-origin: center center;
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
-  transition: transform 0.12s ease-out, opacity 0.12s ease-out;
-}
-
-.mob-tile img {
+.mob-scene__bust img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  border-radius: 50%;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.18));
+}
+
+/* ── Black wave section ──────────────────────────────────────── */
+.mob-scene__wave {
+  position: absolute;
+  bottom: max(52px, calc(env(safe-area-inset-bottom) + 52px));
+  left: 0;
+  right: 0;
+  height: 71%;
+  z-index: 2;
+}
+
+.mob-scene__wave-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 72px;
+  display: block;
+  z-index: 1;
+}
+.mob-scene__wave-svg path { fill: var(--ink); }
+
+.mob-scene__wave-fill {
+  position: absolute;
+  top: 56px; left: 0; right: 0; bottom: 0;
+  background: var(--ink);
+  z-index: 0;
+}
+
+/* ── Three tilt panels ───────────────────────────────────────── */
+.mob-panels {
+  position: absolute;
+  top: 64px; left: 14px; right: 14px; bottom: 0;
+  display: flex;
+  gap: 7px;
+  perspective: 550px;
+  perspective-origin: 50% 100%;
+  z-index: 2;
+}
+
+.mob-panel {
+  flex: 1;
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+  background: #1a1a1a;
+  position: relative;
+  cursor: pointer;
+  transform-origin: center bottom;
+  will-change: transform;
+}
+
+.mob-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.55;
+  filter: grayscale(20%);
   display: block;
 }
 
-/* Project info overlay at bottom of each tile */
-.mob-tile__label {
+.mob-panel__overlay {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 40px 16px 16px;
-  background: linear-gradient(transparent, rgba(0,0,0,.6));
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  pointer-events: none;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 55%);
 }
-.mob-tile__num {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .16em;
-  color: var(--brass);
+
+.mob-panel__label {
+  position: absolute;
+  bottom: 14px;
+  left: 10px;
+  right: 10px;
 }
-.mob-tile__name {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -.01em;
-  line-height: 1;
-}
-.mob-tile__cat {
+.mob-panel__cat {
+  display: block;
+  color: rgba(255,255,255,0.45);
   font-family: 'Space Mono', monospace;
   font-size: 8px;
-  letter-spacing: .12em;
-  color: rgba(255,255,255,.65);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.mob-panel__title {
+  display: block;
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+/* ── AKUMALI wordmark bar ────────────────────────────────────── */
+.mob-scene__wordmark {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: max(52px, calc(env(safe-area-inset-bottom) + 52px));
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-top: 1px solid var(--border);
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.35em;
+  color: var(--ink);
   text-transform: uppercase;
 }
 
-/* Long-press description preview */
-.mob-tile__preview {
+/* ── iOS gyro permission button ──────────────────────────────── */
+.mob-scene__gyro-btn {
   position: absolute;
-  inset: 0;
-  background: rgba(10, 9, 8, 0.88);
-  display: flex;
+  top: max(22%, calc(env(safe-area-inset-top) + 160px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: none;
   flex-direction: column;
-  justify-content: center;
-  padding: 28px 20px;
-  pointer-events: none;
-  opacity: 0;
-}
-.mob-tile__preview-desc {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px;
-  line-height: 1.8;
-  color: rgba(255,255,255,0.82);
-  margin: 0 0 16px;
-}
-.mob-tile__preview-hint {
-  font-family: 'Space Mono', monospace;
-  font-size: 8px;
-  letter-spacing: 0.22em;
-  color: var(--brass);
-}
-
-/* ── Progress dots ────────────────────────────────────────────── */
-.mob-dots {
-  display: flex;
-  justify-content: center;
+  align-items: center;
   gap: 6px;
-  padding: 12px 0 8px;
-}
-.mob-dots__dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--ink-2);
-  opacity: 0.3;
-  transition: opacity 0.3s, transform 0.3s, background 0.3s;
-}
-.mob-dots__dot.is-active {
-  opacity: 1;
-  transform: scale(1.5);
-  background: var(--brass);
-}
-
-/* ── Brand anchor at the bottom ──────────────────────────────── */
-.mob-brand {
-  padding: 32px 24px max(48px, calc(env(safe-area-inset-bottom) + 32px));
-  border-top: 1px solid var(--border);
-}
-.mob-brand__eye {
-  font-family: 'Space Mono', monospace;
-  font-size: 8px;
-  letter-spacing: .24em;
-  color: var(--brass);
-  margin: 0 0 12px;
-  display: block;
-}
-.mob-brand__title {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(44px, 16vw, 80px);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--ink);
-  margin: 0 0 14px;
-  line-height: .92;
-}
-.mob-brand__sub {
-  font-family: 'Space Mono', monospace;
-  font-size: clamp(10px, 3vw, 13px);
-  color: var(--ink-2);
-  line-height: 1.65;
-  max-width: 32ch;
-  margin: 0;
-}
-.mob-cta {
-  margin-top: 28px;
-  padding: 14px 28px;
-  border: 1px solid var(--ink);
   background: transparent;
-  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 10px 24px;
   font-family: 'Space Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  display: inline-block;
+  color: var(--ink);
+  white-space: nowrap;
 }
-.mob-cta:active {
-  background: var(--ink);
-  color: var(--bg);
+.mob-scene__gyro-btn span {
+  font-size: 7px;
+  color: var(--ink-2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 

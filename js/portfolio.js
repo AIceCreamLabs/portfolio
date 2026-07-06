@@ -1628,209 +1628,107 @@ function setupMobileLayout() {
     autoRefreshEvents: 'visibilitychange,orientationchange',
     ignoreMobileResize: true,
   });
-  window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
 
-  const ring = document.getElementById('mobRing');
-  if (!ring) return;
+  // Three featured panels — picked for visual impact
+  const FEATURED_INDICES = [4, 0, 2]; // Rove, Ntoma, Forma Studio
+  const MULTIPLIERS = [1.4, 0.25, -0.9]; // left fans most, center barely, right counter
 
-  // Build tiles
-  const projects = PORTFOLIO_ITEMS.filter(i => i.type === 'project');
-  ring.innerHTML = projects.map((item, pi) => {
-    const idx = PORTFOLIO_ITEMS.indexOf(item);
-    const num = String(pi + 1).padStart(2, '0');
-    return `<div class="mob-tile" data-idx="${idx}" data-pi="${pi}">
-      <img src="${item.image}" alt="${item.title}" loading="lazy" />
-      <div class="mob-tile__label">
-        <span class="mob-tile__num">${num}</span>
-        <span class="mob-tile__name">${item.title}</span>
-        <span class="mob-tile__cat">${item.category}</span>
-      </div>
-      <div class="mob-tile__preview" aria-hidden="true">
-        <p class="mob-tile__preview-desc">${item.description}</p>
-        <span class="mob-tile__preview-hint">TAP TO OPEN</span>
-      </div>
-    </div>`;
-  }).join('');
+  const panelsEl = document.getElementById('mobPanels');
+  if (!panelsEl) return;
 
-  const tiles = ring.querySelectorAll('.mob-tile');
-
-  // Progress dots
-  const dotsEl = document.getElementById('mobDots');
-  if (dotsEl) {
-    projects.forEach((_, i) => {
-      const dot = document.createElement('span');
-      dot.className = 'mob-dots__dot' + (i === 0 ? ' is-active' : '');
-      dotsEl.appendChild(dot);
+  // Build panels
+  FEATURED_INDICES.forEach((idx, pi) => {
+    const item = PORTFOLIO_ITEMS[idx];
+    const div = document.createElement('div');
+    div.className = 'mob-panel';
+    div.innerHTML = `
+      <img src="${item.image}" alt="${item.title}" loading="eager" />
+      <div class="mob-panel__overlay"></div>
+      <div class="mob-panel__label">
+        <span class="mob-panel__cat">${item.category}</span>
+        <span class="mob-panel__title">${item.title}</span>
+      </div>`;
+    div.addEventListener('click', () => {
+      openDetail(item, `PROJECT · ${String(idx + 1).padStart(2, '0')}`, null);
     });
-  }
-  const dots = dotsEl ? dotsEl.querySelectorAll('.mob-dots__dot') : [];
+    panelsEl.appendChild(div);
+  });
 
-  // Gyroscope tilt state (applied to centered tile only)
-  let gyroTiltX = 0, gyroTiltY = 0;
-  let currentCenteredIndex = 0;
+  const panels = panelsEl.querySelectorAll('.mob-panel');
 
-  // Half-cylinder arc with optional gyro tilt on centered tile
-  function updateRing() {
-    const ringCenter = ring.scrollLeft + ring.clientWidth / 2;
-    const maxDeg = 75;
-    const radius = ring.clientWidth * 0.35;
-    tiles.forEach((tile, ti) => {
-      const tileCenter = tile.offsetLeft + tile.offsetWidth / 2;
-      const offset = (tileCenter - ringCenter) / ring.clientWidth;
-      const absOff = Math.abs(offset);
-      const angleRad = offset * maxDeg * (Math.PI / 180);
-      const translateZ = -radius * (1 - Math.cos(angleRad));
-      const scale = 1 - absOff * 0.22;
-      const opacity = 1 - absOff * 0.42;
-      const isCenter = absOff < 0.2;
-      const tx = isCenter ? gyroTiltX : 0;
-      const ty = isCenter ? gyroTiltY : 0;
-      tile.style.transform = `rotateY(${offset * maxDeg + ty}deg) rotateX(${tx}deg) translateZ(${translateZ}px) scale(${scale})`;
-      tile.style.opacity = String(Math.max(0.18, opacity));
+  // Tilt state
+  let tiltTarget = 0;
+  let tiltCurrent = 0;
+  let hasGyro = false;
+  let touchStartX = null;
+
+  // RAF lerp loop — smooth regardless of input source
+  (function tick() {
+    tiltCurrent += (tiltTarget - tiltCurrent) * 0.07;
+    panels.forEach((el, i) => {
+      const rotY = tiltCurrent * MULTIPLIERS[i];
+      const tx   = tiltCurrent * MULTIPLIERS[i] * 0.35;
+      el.style.transform = `rotateY(${rotY}deg) translateX(${tx}px)`;
     });
+    requestAnimationFrame(tick);
+  })();
+
+  // Gyroscope listener
+  function startGyro() {
+    window.addEventListener('deviceorientation', e => {
+      hasGyro = true;
+      tiltTarget = Math.max(-28, Math.min(28, e.gamma || 0));
+    }, true);
   }
 
-  ring.addEventListener('scroll', updateRing, { passive: true });
-
-  // Find which tile is closest to center
-  function getCenteredIndex() {
-    const ringCenter = ring.scrollLeft + ring.clientWidth / 2;
-    let closest = 0, minDist = Infinity;
-    tiles.forEach((tile, i) => {
-      const dist = Math.abs((tile.offsetLeft + tile.offsetWidth / 2) - ringCenter);
-      if (dist < minDist) { minDist = dist; closest = i; }
-    });
-    return closest;
-  }
-
-  // On snap: haptic + dot update + label animation
-  function onSnapComplete() {
-    const idx = getCenteredIndex();
-    if (idx === currentCenteredIndex) return;
-    currentCenteredIndex = idx;
-    if (navigator.vibrate) navigator.vibrate(12);
-    dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
-    const label = tiles[idx] && tiles[idx].querySelector('.mob-tile__label');
-    if (label) gsap.fromTo(label, { opacity: 0.4, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' });
-  }
-
-  if ('onscrollend' in window) {
-    ring.addEventListener('scrollend', onSnapComplete, { passive: true });
+  // iOS 13+ requires a permission gesture before DeviceOrientationEvent fires
+  const gyroBtn = document.getElementById('mobGyroBtn');
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    if (gyroBtn) {
+      gyroBtn.style.display = 'flex';
+      gyroBtn.addEventListener('click', async () => {
+        try {
+          const result = await DeviceOrientationEvent.requestPermission();
+          if (result === 'granted') { startGyro(); gyroBtn.style.display = 'none'; }
+        } catch (_) {}
+      });
+    }
   } else {
-    let snapTimer;
-    ring.addEventListener('scroll', () => {
-      clearTimeout(snapTimer);
-      snapTimer = setTimeout(onSnapComplete, 140);
-    }, { passive: true });
+    startGyro();
   }
 
-  // Gyroscope — tilt centered card as user tilts phone
-  function initGyroscope() {
-    if (!window.DeviceOrientationEvent) return;
-
-    function startTilt() {
-      let baseB = null, baseG = null;
-      window.addEventListener('deviceorientation', e => {
-        if (baseB === null) { baseB = e.beta || 0; baseG = e.gamma || 0; }
-        const dB = Math.min(Math.max((e.beta  || 0) - baseB, -25), 25);
-        const dG = Math.min(Math.max((e.gamma || 0) - baseG, -25), 25);
-        gyroTiltX = (dB / 25) * 7;
-        gyroTiltY = (dG / 25) * 9;
-        requestAnimationFrame(updateRing);
-      }, false);
-    }
-
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-      // iOS 13+ requires user gesture to request permission
-      ring.addEventListener('touchend', function once() {
-        DeviceOrientationEvent.requestPermission()
-          .then(s => { if (s === 'granted') startTilt(); })
-          .catch(() => {});
-        ring.removeEventListener('touchend', once);
-      }, { once: true });
-    } else {
-      startTilt();
-    }
-  }
-  initGyroscope();
-
-  // Long-press (500ms hold) — show description overlay while held
-  let longPressTimer = null;
-  let isLongPress = false;
-
-  ring.addEventListener('touchstart', e => {
-    const tile = e.target.closest('.mob-tile');
-    if (!tile) return;
-    isLongPress = false;
-    longPressTimer = setTimeout(() => {
-      isLongPress = true;
-      if (navigator.vibrate) navigator.vibrate([8, 60, 8]);
-      const preview = tile.querySelector('.mob-tile__preview');
-      if (preview) gsap.to(preview, { opacity: 1, duration: 0.3, ease: 'power2.out' });
-    }, 500);
+  // Touch-drag fallback — horizontal drag drives tilt when no gyro
+  window.addEventListener('touchstart', e => {
+    if (hasGyro) return;
+    touchStartX = e.touches[0] ? e.touches[0].clientX : null;
   }, { passive: true });
 
-  ring.addEventListener('touchend', e => {
-    clearTimeout(longPressTimer);
-    if (isLongPress) {
-      const tile = e.target.closest('.mob-tile');
-      if (tile) {
-        const preview = tile.querySelector('.mob-tile__preview');
-        if (preview) gsap.to(preview, { opacity: 0, duration: 0.25, ease: 'power2.in' });
-      }
-      isLongPress = false;
-    }
+  window.addEventListener('touchmove', e => {
+    if (hasGyro || touchStartX === null) return;
+    const dx = (e.touches[0] ? e.touches[0].clientX : touchStartX) - touchStartX;
+    tiltTarget = Math.max(-28, Math.min(28, dx * 0.25));
   }, { passive: true });
 
-  ring.addEventListener('touchmove', () => {
-    clearTimeout(longPressTimer);
-    isLongPress = false;
-  }, { passive: true });
-
-  // Tap to open project (guarded against long-press)
-  ring.addEventListener('click', e => {
-    if (isLongPress) return;
-    const tile = e.target.closest('.mob-tile');
-    if (!tile) return;
-    const item = PORTFOLIO_ITEMS[parseInt(tile.dataset.idx, 10)];
-    if (!item) return;
-    openDetail(item, `PROJECT · ${String(parseInt(tile.dataset.idx) + 1).padStart(2, '0')}`, null);
+  window.addEventListener('touchend', () => {
+    if (hasGyro) return;
+    tiltTarget = 0;
+    touchStartX = null;
   });
 
-  // CTA opens menu overlay (contact form)
-  const ctaBtn = document.getElementById('mobCta');
-  if (ctaBtn) {
-    ctaBtn.addEventListener('click', () => {
-      const overlay = document.getElementById('menuOverlay');
-      if (overlay) {
-        overlay.classList.add('is-open');
-        overlay.setAttribute('aria-hidden', 'false');
-      }
-    });
-  }
-
-  // Cinematic entrance — staggered GSAP reveal
-  requestAnimationFrame(() => {
-    ring.scrollLeft = 0;
-    updateRing();
-
-    gsap.fromTo(tiles,
-      { opacity: 0, y: 48, scale: 0.88 },
-      {
-        opacity: 1, y: 0, scale: 1,
-        duration: 0.75, stagger: 0.08, ease: 'power3.out', delay: 0.2,
-        onComplete: updateRing,
-      }
-    );
-    gsap.fromTo('.mob-brand__title',
-      { opacity: 0, y: 24 },
-      { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.6 }
-    );
-    gsap.fromTo(['.mob-brand__eye', '.mob-brand__sub', '.mob-cta'],
-      { opacity: 0, y: 16 },
-      { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out', delay: 0.8 }
-    );
-  });
+  // Entrance animations
+  gsap.fromTo('.mob-scene__bust',
+    { opacity: 0, scale: 0.75 },
+    { opacity: 1, scale: 1, duration: 0.9, ease: 'back.out(1.4)', delay: 0.1 }
+  );
+  gsap.fromTo(panels,
+    { y: 120, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out', delay: 0.25 }
+  );
+  gsap.fromTo('.mob-scene__wordmark',
+    { opacity: 0 },
+    { opacity: 1, duration: 0.7, ease: 'power2.out', delay: 0.7 }
+  );
 }
 
 /* ─── Boot ─── */

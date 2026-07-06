@@ -159,18 +159,22 @@
 <div class="scene-hint" id="sceneHint">HOVER · CLICK TO EXPLORE</div>
 <div class="scene-loading" id="sceneLoading">LOADING MODEL</div>
 
-<!-- Mobile ring carousel (populated by JS on touch devices) -->
-<div class="mob-editorial" id="mobEditorial">
-  <div class="mob-ring-wrap">
-    <div class="mob-ring" id="mobRing"></div>
+<!-- Mobile scene (populated by JS on touch devices) -->
+<div class="mob-scene" id="mobScene">
+  <div class="mob-scene__bust">
+    <img src="portfolio/about.gif" alt="AKUMALI" onerror="this.parentElement.style.display='none'" />
   </div>
-  <div class="mob-dots" id="mobDots"></div>
-  <div class="mob-brand">
-    <p class="mob-brand__eye">BUILT BY AKUMALI · STUDIO</p>
-    <h1 class="mob-brand__title">AKUMALI</h1>
-    <p class="mob-brand__sub">For brands that want to be felt — not just seen.</p>
-    <button class="mob-cta" id="mobCta">Start a project →</button>
+  <div class="mob-scene__wave">
+    <svg class="mob-scene__wave-svg" viewBox="0 0 390 72" preserveAspectRatio="none">
+      <path d="M0,52 C55,8 115,68 195,32 C272,0 330,58 390,24 L390,72 L0,72 Z" />
+    </svg>
+    <div class="mob-scene__wave-fill"></div>
+    <div class="mob-panels" id="mobPanels"></div>
   </div>
+  <div class="mob-scene__wordmark">AKUMALI</div>
+  <button class="mob-scene__gyro-btn" id="mobGyroBtn">
+    Enable motion<span>tilt to interact</span>
+  </button>
 </div>
 
 <!-- Grid block — 3D scene scroll space + sticky content overlay -->
