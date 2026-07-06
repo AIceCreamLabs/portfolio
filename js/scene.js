@@ -8,22 +8,26 @@ const RADIUS = 4, TILE_W = 0.72, TILE_H = 1, Y_SPACING = 2.7;
 const BASE_SPEEDS = [0.65, 1.1, 1.55];
 
 const IMAGE_SRCS = [
+  'portfolio/ntoma.png',
   'portfolio/psych.png',
   'portfolio/forma.png',
   'portfolio/vanta.png',
   'portfolio/rove.jpg',
   'portfolio/axis.png',
   'portfolio/gridfash.png',
+  'portfolio/gigzo.png',
   'portfolio/about-tile.png',
 ];
 
 const TILE_DATA = [
+  { title: 'Ntoma',           cat: 'AI Product' },
   { title: 'Psychologist LT', cat: 'Web Development' },
   { title: 'Forma Studio',    cat: 'Web Design' },
   { title: 'Vanta',           cat: 'AI Product' },
   { title: 'Rove',            cat: 'E-Commerce' },
   { title: 'Axis',            cat: 'Web App' },
   { title: 'Gridfash',        cat: 'Editorial Platform' },
+  { title: 'GiGZo',           cat: 'Marketplace' },
   { title: 'About Me',        cat: 'AKUMALI · Studio' },
 ];
 
@@ -252,7 +256,7 @@ function onCanvasMouseLeave() {
   hideTooltip();
 }
 
-const SCENE_TO_PORTFOLIO = [0, 1, 2, 3, 4, 5, 6];
+const SCENE_TO_PORTFOLIO = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
 function onCanvasClick(e) {
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;

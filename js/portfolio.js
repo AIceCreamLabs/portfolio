@@ -31,7 +31,28 @@
    Center panel buttons access: index 6 (Hire Me), index 7 (About)
    ─────────── */
 const PORTFOLIO_ITEMS = [
-  /* Projects — indices 0–5 */
+  /* Projects — indices 0–7 */
+  {
+    id: 1,
+    title: 'Ntoma',
+    subtitle: 'AI-Powered Garment Pattern Generation',
+    category: 'AI Product',
+    image: 'portfolio/ntoma.png',
+    media: ['portfolio/ntoma4.mp4', 'portfolio/ntoma3.png', 'portfolio/ntoma2.png', 'portfolio/ntoma1.png', 'portfolio/ntoma.png'],
+    type: 'project',
+    description: 'Skilled tailors and designers had the craft to make anything — but turning a reference photo into a sized, production-ready pattern still required expensive specialists or weeks of manual drafting.',
+    challenge: 'Pattern-making sits at the exact bottleneck between creative idea and physical garment. Without it, the whole pipeline stalls — regardless of how good the fabric or the sewing is.',
+    solution: 'One photo. Two minutes. Correct pattern pieces, automatically size-graded XS to XL and exported in DXF format ready for factory production. The specialist became optional.',
+    results: [
+      'The bottleneck was never the fabric.',
+      'Photo to production-ready pattern in under 2 minutes',
+      'Automatic XS–XL grading — eliminates manual size scaling',
+      'DXF export compatible with industry-standard cutting equipment',
+      'Early access waitlist live',
+    ],
+    tech: ['React', 'FastAPI', 'Python', 'OpenAI Vision', 'Vercel'],
+    link: 'https://ntoma.vercel.app'
+  },
   {
     id: 2,
     title: 'Psychologist LT',
@@ -163,9 +184,31 @@ const PORTFOLIO_ITEMS = [
     link: 'https://gridfash.netlify.app/'
   },
 
-  /* ABOUT — index 8 */
   {
     id: 8,
+    title: 'GiGZo',
+    subtitle: 'Two-Sided Services Marketplace',
+    category: 'Marketplace',
+    image: 'portfolio/gigzo.png',
+    media: ['portfolio/gigzo.mp4', 'portfolio/gigzo1.png', 'portfolio/gigzo2.png', 'portfolio/gigzo3.png', 'portfolio/gigzo5.png'],
+    type: 'project',
+    description: 'Skilled freelancers and tradespeople had no infrastructure to be found, booked, or paid — and clients had no reliable way to find and trust them. Both sides were running on WhatsApp and word-of-mouth.',
+    challenge: 'The cold-start problem is marketplace-specific and brutal: providers won\'t list without clients, clients won\'t join without providers. No amount of good engineering solves a chicken-and-egg problem that ultimately requires capital to crack.',
+    solution: 'Designed and built both sides of the platform solo — dual onboarding flows for providers and clients, listing management, search and filtering, booking logic, and integrated payment infrastructure. The product was feature-complete; reaching supply-demand equilibrium required growth capital the business didn\'t have.',
+    results: [
+      'A two-sided marketplace is as much a business model problem as a product problem.',
+      'Dual onboarding engineered for two distinct user types — zero shared flows between provider and client',
+      'Booking and payment infrastructure built to handle marketplace escrow and trust logic',
+      'Platform architecture designed to scale to 10,000+ listings without re-engineering',
+      'Cold-start analysis: ~€50K in provider acquisition needed to reach demand-side viability',
+    ],
+    tech: ['React', 'Node.js', 'Firebase', 'Stripe', 'Vercel'],
+    link: 'https://gigzo.netlify.app/'
+  },
+
+  /* ABOUT — index 8 */
+  {
+    id: 9,
     title: 'Theresa Gyamfuwaa',
     subtitle: 'Web Design & Development',
     category: 'Studio',
@@ -202,17 +245,16 @@ function initTheme() {
 }
 
 /* ─── Grid images — 9-tile 3×3 grid, center tile is About Me ─── */
-/* Ntoma and CAN removed; Rove fills col0 row0, Psych fills col1 row0 */
 const GRID_IMAGES = [
-  { src: 'portfolio/rove.jpg',      projectIdx: 3 }, // col0 row0
-  { src: 'portfolio/psych.png',     projectIdx: 0 }, // col1 row0
-  { src: 'portfolio/forma.png',     projectIdx: 1 }, // col2 row0
-  { src: 'portfolio/vanta.png',     projectIdx: 2 }, // col0 row1
-  { src: 'portfolio/about.gif',     projectIdx: 6 }, // col1 row1 — CENTER (pinned)
-  { src: 'portfolio/axis.png',      projectIdx: 4 }, // col2 row1
-  { src: 'portfolio/gridfash.png',  projectIdx: 5 }, // col0 row2
-  { src: 'portfolio/psych.png',     projectIdx: 0 }, // col1 row2 (repeat)
-  { src: 'portfolio/forma.png',     projectIdx: 1 }, // col2 row2 (repeat)
+  { src: 'portfolio/ntoma.png',     projectIdx: 0 }, // col0 row0
+  { src: 'portfolio/psych.png',     projectIdx: 1 }, // col1 row0
+  { src: 'portfolio/forma.png',     projectIdx: 2 }, // col2 row0
+  { src: 'portfolio/vanta.png',     projectIdx: 3 }, // col0 row1
+  { src: 'portfolio/about.gif',     projectIdx: 8 }, // col1 row1 — CENTER (pinned)
+  { src: 'portfolio/axis.png',      projectIdx: 5 }, // col2 row1
+  { src: 'portfolio/gridfash.png',  projectIdx: 6 }, // col0 row2
+  { src: 'portfolio/rove.jpg',      projectIdx: 4 }, // col1 row2
+  { src: 'portfolio/gigzo.png',     projectIdx: 7 }, // col2 row2
 ];
 
 /* ─── Grid render — 6-item 3-column grid like tutorial ─── */
@@ -1080,7 +1122,7 @@ function initDetail() {
 
   // "About me" button — no tile origin, no hero
   document.getElementById('workBtn')?.addEventListener('click', () => {
-    openDetail(PORTFOLIO_ITEMS[6], 'ABOUT', null);
+    openDetail(PORTFOLIO_ITEMS[8], 'ABOUT', null);
   });
 
   // "Start a project" buttons inside the about panel
@@ -1162,7 +1204,7 @@ function initMenu() {
   // About link in menu
   document.getElementById('menuAboutBtn')?.addEventListener('click', () => {
     closeMenu();
-    setTimeout(() => openDetail(PORTFOLIO_ITEMS[6], 'ABOUT', null), 350);
+    setTimeout(() => openDetail(PORTFOLIO_ITEMS[8], 'ABOUT', null), 350);
   });
 }
 
