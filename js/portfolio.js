@@ -1629,101 +1629,157 @@ function setupMobileLayout() {
     ignoreMobileResize: true,
   });
 
-  // Three featured panels — picked for visual impact
-  const FEATURED_INDICES = [4, 0, 2]; // Rove, Ntoma, Forma Studio
-  const MULTIPLIERS = [1.4, 0.25, -0.9]; // left fans most, center barely, right counter
+  const N = 8;
+  const ANGLE_STEP = 360 / N;
+  const RADIUS = 240;
 
-  const panelsEl = document.getElementById('mobPanels');
-  if (!panelsEl) return;
+  const cylEl = document.getElementById('mobCyl');
+  const dotsEl = document.getElementById('mobDots');
+  const sceneEl = document.getElementById('mobScene');
+  if (!cylEl) return;
 
-  // Build panels
-  FEATURED_INDICES.forEach((idx, pi) => {
-    const item = PORTFOLIO_ITEMS[idx];
-    const div = document.createElement('div');
-    div.className = 'mob-panel';
-    div.innerHTML = `
-      <img src="${item.image}" alt="${item.title}" loading="eager" />
-      <div class="mob-panel__overlay"></div>
-      <div class="mob-panel__label">
-        <span class="mob-panel__cat">${item.category}</span>
-        <span class="mob-panel__title">${item.title}</span>
+  // Build cylinder cards + dots
+  const cards = [];
+  const dots = [];
+
+  for (let i = 0; i < N; i++) {
+    const item = PORTFOLIO_ITEMS[i];
+    const angle = i * ANGLE_STEP;
+
+    const card = document.createElement('div');
+    card.className = 'mob-cylinder-card' + (i === 0 ? ' is-active' : '');
+    card.innerHTML = `
+      <img src="${item.image}" alt="${item.title}" loading="${i < 3 ? 'eager' : 'lazy'}" />
+      <div class="mob-cylinder-card__label">
+        <span class="mob-cylinder-card__tag">${item.category}</span>
+        <span class="mob-cylinder-card__name">${item.title}</span>
       </div>`;
-    div.addEventListener('click', () => {
-      openDetail(item, `PROJECT · ${String(idx + 1).padStart(2, '0')}`, null);
-    });
-    panelsEl.appendChild(div);
-  });
+    card.style.transform = `rotateY(${angle}deg) translateZ(${RADIUS}px)`;
+    cylEl.appendChild(card);
+    cards.push(card);
 
-  const panels = panelsEl.querySelectorAll('.mob-panel');
+    if (dotsEl) {
+      const dot = document.createElement('div');
+      dot.className = 'mob-dot' + (i === 0 ? ' is-active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(dot);
+      dots.push(dot);
+    }
+  }
 
-  // Tilt state
-  let tiltTarget = 0;
-  let tiltCurrent = 0;
-  let hasGyro = false;
+  // State
+  let rotation = 0;
+  let targetRotation = 0;
+  let activeIndex = 0;
+  let isTouching = false;
   let touchStartX = null;
+  let touchStartRot = 0;
+  let hasMoved = false;
 
-  // RAF lerp loop — smooth regardless of input source
+  function goTo(i) {
+    targetRotation = -(i * ANGLE_STEP);
+  }
+
+  function getActiveIndex(rot) {
+    const normalized = (((-rot % 360) + 360) % 360);
+    return Math.round(normalized / ANGLE_STEP) % N;
+  }
+
+  function updateCards(idx) {
+    if (idx === activeIndex) return;
+    activeIndex = idx;
+    cards.forEach((c, i) => c.classList.toggle('is-active', i === idx));
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+    if (navigator.vibrate) navigator.vibrate(8);
+  }
+
+  // RAF loop
   (function tick() {
-    tiltCurrent += (tiltTarget - tiltCurrent) * 0.07;
-    panels.forEach((el, i) => {
-      const rotY = tiltCurrent * MULTIPLIERS[i];
-      const tx   = tiltCurrent * MULTIPLIERS[i] * 0.35;
-      el.style.transform = `rotateY(${rotY}deg) translateX(${tx}px)`;
+    rotation += (targetRotation - rotation) * 0.09;
+    cylEl.style.transform = `rotateY(${rotation}deg)`;
+
+    cards.forEach((card, i) => {
+      const cardAngle = ((i * ANGLE_STEP + rotation) % 360 + 360) % 360;
+      const dist = Math.min(cardAngle, 360 - cardAngle) / 180;
+      card.style.opacity = 1 - dist * 0.65;
+      card.style.filter = `brightness(${1 - dist * 0.45})`;
+      card.style.boxShadow = i === activeIndex
+        ? '0 8px 32px rgba(0,0,0,0.18)'
+        : '0 2px 8px rgba(0,0,0,0.06)';
     });
+
+    const idx = getActiveIndex(rotation);
+    updateCards(idx);
+
     requestAnimationFrame(tick);
   })();
 
-  // Gyroscope listener
+  // Touch drag → spin cylinder
+  sceneEl.addEventListener('touchstart', e => {
+    isTouching = true;
+    hasMoved = false;
+    touchStartX = e.touches[0].clientX;
+    touchStartRot = targetRotation;
+  }, { passive: true });
+
+  sceneEl.addEventListener('touchmove', e => {
+    if (touchStartX === null) return;
+    const dx = e.touches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 4) hasMoved = true;
+    targetRotation = touchStartRot + dx * 0.45;
+  }, { passive: true });
+
+  sceneEl.addEventListener('touchend', e => {
+    isTouching = false;
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    touchStartX = null;
+    // Snap to nearest card
+    targetRotation = Math.round(targetRotation / ANGLE_STEP) * ANGLE_STEP;
+  }, { passive: true });
+
+  // Tap on active card → open detail; tap on non-active → navigate to it
+  cards.forEach((card, i) => {
+    card.addEventListener('click', () => {
+      if (hasMoved) return;
+      if (i !== activeIndex) {
+        goTo(i);
+      } else {
+        openDetail(PORTFOLIO_ITEMS[i], `PROJECT · ${String(i + 1).padStart(2, '0')}`, null);
+      }
+    });
+  });
+
+  // Gyroscope — gently nudges rotation when not touching
   function startGyro() {
     window.addEventListener('deviceorientation', e => {
-      hasGyro = true;
-      tiltTarget = Math.max(-28, Math.min(28, e.gamma || 0));
+      if (!isTouching) targetRotation += (e.gamma || 0) * 0.01;
     }, true);
   }
 
-  // iOS 13+ requires a permission gesture before DeviceOrientationEvent fires
-  const gyroBtn = document.getElementById('mobGyroBtn');
-  if (typeof DeviceOrientationEvent !== 'undefined' &&
-      typeof DeviceOrientationEvent.requestPermission === 'function') {
-    if (gyroBtn) {
-      gyroBtn.style.display = 'flex';
-      gyroBtn.addEventListener('click', async () => {
-        try {
-          const result = await DeviceOrientationEvent.requestPermission();
-          if (result === 'granted') { startGyro(); gyroBtn.style.display = 'none'; }
-        } catch (_) {}
-      });
+  if (typeof DeviceOrientationEvent !== 'undefined') {
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      // iOS: request on first interaction
+      sceneEl.addEventListener('touchend', function once() {
+        DeviceOrientationEvent.requestPermission()
+          .then(r => { if (r === 'granted') startGyro(); })
+          .catch(() => {});
+      }, { once: true, passive: true });
+    } else {
+      startGyro();
     }
-  } else {
-    startGyro();
   }
 
-  // Touch-drag fallback — horizontal drag drives tilt when no gyro
-  window.addEventListener('touchstart', e => {
-    if (hasGyro) return;
-    touchStartX = e.touches[0] ? e.touches[0].clientX : null;
-  }, { passive: true });
+  // Fade swipe hint after 3s
+  const hintEl = document.getElementById('mobSwipeHint');
+  if (hintEl) setTimeout(() => gsap.to(hintEl, { opacity: 0, duration: 0.6 }), 3000);
 
-  window.addEventListener('touchmove', e => {
-    if (hasGyro || touchStartX === null) return;
-    const dx = (e.touches[0] ? e.touches[0].clientX : touchStartX) - touchStartX;
-    tiltTarget = Math.max(-28, Math.min(28, dx * 0.25));
-  }, { passive: true });
-
-  window.addEventListener('touchend', () => {
-    if (hasGyro) return;
-    tiltTarget = 0;
-    touchStartX = null;
-  });
-
-  // Entrance animations
+  // Entrance — use translateY only; RAF loop owns opacity
+  gsap.set(cylEl, { y: 60 });
+  gsap.to(cylEl, { y: 0, duration: 1, ease: 'power3.out', delay: 0.2 });
   gsap.fromTo('.mob-scene__bust',
     { opacity: 0, scale: 0.75 },
     { opacity: 1, scale: 1, duration: 0.9, ease: 'back.out(1.4)', delay: 0.1 }
-  );
-  gsap.fromTo(panels,
-    { y: 120, opacity: 0 },
-    { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out', delay: 0.25 }
   );
   gsap.fromTo('.mob-scene__wordmark',
     { opacity: 0 },

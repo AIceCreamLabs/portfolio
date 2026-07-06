@@ -1725,93 +1725,120 @@ body.is-mobile { overflow: hidden; }
   filter: drop-shadow(0 4px 16px rgba(0,0,0,0.18));
 }
 
-/* ── Black wave section ──────────────────────────────────────── */
-.mob-scene__wave {
+/* ── 3D Cylinder ─────────────────────────────────────────────── */
+.mob-cylinder-wrap {
   position: absolute;
-  bottom: max(52px, calc(env(safe-area-inset-bottom) + 52px));
-  left: 0;
-  right: 0;
-  height: 71%;
-  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  perspective: 600px;
+  z-index: 5;
 }
 
-.mob-scene__wave-svg {
+.mob-cylinder {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 72px;
-  display: block;
-  z-index: 1;
-}
-.mob-scene__wave-svg path { fill: var(--ink); }
-
-.mob-scene__wave-fill {
-  position: absolute;
-  top: 56px; left: 0; right: 0; bottom: 0;
-  background: var(--ink);
-  z-index: 0;
-}
-
-/* ── Three tilt panels ───────────────────────────────────────── */
-.mob-panels {
-  position: absolute;
-  top: 64px; left: 14px; right: 14px; bottom: 0;
-  display: flex;
-  gap: 7px;
-  perspective: 550px;
-  perspective-origin: 50% 100%;
-  z-index: 2;
-}
-
-.mob-panel {
-  flex: 1;
-  border-radius: 10px 10px 0 0;
-  overflow: hidden;
-  background: #1a1a1a;
-  position: relative;
-  cursor: pointer;
-  transform-origin: center bottom;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
   will-change: transform;
 }
 
-.mob-panel img {
+.mob-cylinder-card {
+  position: absolute;
+  width: 110px;
+  height: 170px;
+  margin-left: -55px;
+  margin-top: -85px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mob-cylinder-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.55;
-  filter: grayscale(20%);
   display: block;
+  pointer-events: none;
 }
 
-.mob-panel__overlay {
+.mob-cylinder-card__label {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 55%);
+  background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 10px 10px 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
-.mob-panel__label {
-  position: absolute;
-  bottom: 14px;
-  left: 10px;
-  right: 10px;
-}
-.mob-panel__cat {
-  display: block;
-  color: rgba(255,255,255,0.45);
+.mob-cylinder-card.is-active .mob-cylinder-card__label { opacity: 1; }
+
+.mob-cylinder-card__tag {
+  color: rgba(255,255,255,0.6);
   font-family: 'Space Mono', monospace;
   font-size: 8px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: 3px;
-}
-.mob-panel__title {
   display: block;
+}
+
+.mob-cylinder-card__name {
   color: #fff;
   font-family: 'Syne', sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  line-height: 1.2;
+  display: block;
+}
+
+/* ── Progress dots ───────────────────────────────────────────── */
+.mob-dots {
+  position: absolute;
+  bottom: calc(max(52px, calc(env(safe-area-inset-bottom) + 52px)) + 22px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.mob-dot {
+  height: 5px;
+  width: 5px;
+  border-radius: 3px;
+  background: var(--ink);
+  opacity: 0.2;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mob-dot.is-active {
+  width: 16px;
+  opacity: 0.9;
+}
+
+/* ── Swipe hint ──────────────────────────────────────────────── */
+.mob-swipe-hint {
+  position: absolute;
+  bottom: calc(max(52px, calc(env(safe-area-inset-bottom) + 52px)) + 44px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--ink);
+  opacity: 0.3;
+  text-transform: uppercase;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
 }
 
 /* ── AKUMALI wordmark bar ────────────────────────────────────── */
@@ -1833,32 +1860,4 @@ body.is-mobile { overflow: hidden; }
   text-transform: uppercase;
 }
 
-/* ── iOS gyro permission button ──────────────────────────────── */
-.mob-scene__gyro-btn {
-  position: absolute;
-  top: max(22%, calc(env(safe-area-inset-top) + 160px));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  border: 1px solid var(--ink);
-  padding: 10px 24px;
-  font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  cursor: pointer;
-  color: var(--ink);
-  white-space: nowrap;
-}
-.mob-scene__gyro-btn span {
-  font-size: 7px;
-  color: var(--ink-2);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
 
