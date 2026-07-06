@@ -1690,7 +1690,8 @@ body.is-mobile .block,
 body.is-mobile #ruben-canvas,
 body.is-mobile .akumali-fixed,
 body.is-mobile .scene-hint,
-body.is-mobile .scene-loading { display: none !important; }
+body.is-mobile .scene-loading,
+body.is-mobile .footer { display: none !important; }
 
 body.is-mobile .mob-scene { display: block; }
 body.is-mobile { overflow: hidden; }
@@ -1699,6 +1700,7 @@ body.is-mobile { overflow: hidden; }
 .mob-scene {
   position: fixed;
   inset: 0;
+  z-index: 1;
   background: var(--bg);
   overflow: hidden;
   user-select: none;
