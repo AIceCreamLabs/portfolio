@@ -1705,6 +1705,9 @@ body.is-mobile { overflow: hidden; }
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: none;
+  perspective: 700px;
+  perspective-origin: 50% 52%;
 }
 
 /* ── Bust / portrait at top ──────────────────────────────────── */
@@ -1725,33 +1728,38 @@ body.is-mobile { overflow: hidden; }
   filter: drop-shadow(0 4px 16px rgba(0,0,0,0.18));
 }
 
-/* ── Arc scroll strip ────────────────────────────────────────── */
-.mob-strip-wrap {
+/* ── Orbit disk ──────────────────────────────────────────────── */
+.mob-orbit {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  perspective: 900px;
-  perspective-origin: 50% 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
   z-index: 5;
 }
 
-.mob-strip {
-  display: flex;
-  gap: 14px;
+.mob-disk {
+  position: absolute;
+  width: 0;
+  height: 0;
   transform-style: preserve-3d;
   will-change: transform;
 }
 
 .mob-card {
-  width: 150px;
-  height: 210px;
+  position: absolute;
+  width: 130px;
+  height: 190px;
+  margin-left: -65px;
+  margin-top: -95px;
   border-radius: 10px;
   overflow: hidden;
-  flex-shrink: 0;
   cursor: pointer;
-  will-change: transform;
   -webkit-tap-highlight-color: transparent;
-  position: relative;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
 }
 
 .mob-card img {
@@ -1765,17 +1773,17 @@ body.is-mobile { overflow: hidden; }
 .mob-card__label {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 55%);
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 45%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 12px 12px 14px;
+  padding: 10px 10px 12px;
 }
 
-.mob-card__cat {
-  color: rgba(255,255,255,0.55);
+.mob-card__tag {
+  color: rgba(255,255,255,0.5);
   font-family: 'Space Mono', monospace;
-  font-size: 8px;
+  font-size: 7px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: 3px;
@@ -1785,27 +1793,10 @@ body.is-mobile { overflow: hidden; }
 .mob-card__name {
   color: #fff;
   font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   display: block;
-}
-
-/* ── Swipe hint ──────────────────────────────────────────────── */
-.mob-swipe-hint {
-  position: absolute;
-  bottom: calc(max(52px, calc(env(safe-area-inset-bottom) + 52px)) + 20px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Space Mono', monospace;
-  font-size: 8px;
-  letter-spacing: 0.18em;
-  color: var(--ink);
-  opacity: 0.3;
-  text-transform: uppercase;
-  white-space: nowrap;
-  z-index: 10;
-  pointer-events: none;
 }
 
 /* ── AKUMALI wordmark bar ────────────────────────────────────── */

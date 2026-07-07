@@ -1629,89 +1629,89 @@ function setupMobileLayout() {
     ignoreMobileResize: true,
   });
 
-  const CARD_W = 150, CARD_H = 210, GAP = 14;
   const N = 8;
+  const ANGLE_STEP = 360 / N;
+  const RADIUS = 300;
+  const AUTO_SPEED = 0.012;
 
   const sceneEl = document.getElementById('mobScene');
-  const stripWrapEl = document.getElementById('mobStripWrap');
-  const stripEl = document.getElementById('mobStrip');
-  if (!stripEl) return;
+  const diskEl  = document.getElementById('mobDisk');
+  if (!diskEl) return;
 
-  // Position strip so card 0 is centered
-  const screenCenter = window.innerWidth / 2;
-  const stripStart = screenCenter - CARD_W / 2;
-  stripWrapEl.style.left = stripStart + 'px';
-
-  // Build cards
+  // Build cards on the disk
   const cards = [];
   for (let i = 0; i < N; i++) {
-    const item = PORTFOLIO_ITEMS[i];
-    const card = document.createElement('div');
+    const item  = PORTFOLIO_ITEMS[i];
+    const angle = i * ANGLE_STEP;
+    const card  = document.createElement('div');
     card.className = 'mob-card';
+    card.style.transform = `rotateY(${angle}deg) translateZ(${RADIUS}px)`;
     card.innerHTML = `
       <img src="${item.image}" alt="${item.title}" loading="${i < 3 ? 'eager' : 'lazy'}" />
       <div class="mob-card__label">
-        <span class="mob-card__cat">${item.category}</span>
+        <span class="mob-card__tag">${item.category}</span>
         <span class="mob-card__name">${item.title}</span>
       </div>`;
-    stripEl.appendChild(card);
+    diskEl.appendChild(card);
     cards.push(card);
   }
 
-  // State
-  let offset = 0, targetOffset = 0;
-  let tilt = 0, tiltTarget = 0;
-  let velocity = 0;
-  let touchStartX = null, touchStartOffset = 0, lastTouchX = 0;
-  let hasMoved = false;
-  const minOffset = -(N - 1) * (CARD_W + GAP);
+  // State object — mirrors the React useRef state
+  const s = {
+    rotY: 0, rotYTarget: 0,
+    rotX: 0, rotXTarget: 0,
+    touchStartX: 0, touchStartRotY: 0,
+    isTouching: false,
+    velocity: 0, lastX: 0,
+    idleTimer: 0,
+  };
 
-  // RAF loop — lerp scroll + tilt, recompute per-card arc each frame
+  // RAF loop
   (function tick() {
-    offset   += (targetOffset - offset)   * 0.1;
-    tilt     += (tiltTarget  - tilt)      * 0.08;
+    if (!s.isTouching) {
+      s.idleTimer++;
+      if (s.idleTimer > 90) s.rotYTarget += AUTO_SPEED;
+    }
 
-    stripEl.style.transform = `translateX(${offset}px) rotateY(${tilt}deg)`;
+    s.rotY += (s.rotYTarget - s.rotY) * 0.07;
+    s.rotX += (s.rotXTarget - s.rotX) * 0.05;
 
-    cards.forEach((card, i) => {
-      const cardCenter = stripStart + i * (CARD_W + GAP) + CARD_W / 2 + offset;
-      const distPx = cardCenter - screenCenter;
-      const rotY = (distPx / screenCenter) * -18;
-      card.style.transform = `rotateY(${rotY}deg)`;
-    });
+    diskEl.style.transform = `rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)`;
 
     requestAnimationFrame(tick);
   })();
 
-  // Touch handlers
+  // Touch — drag to spin, momentum on release
   sceneEl.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-    lastTouchX  = e.touches[0].clientX;
-    touchStartOffset = targetOffset;
-    hasMoved = false;
+    s.isTouching    = true;
+    s.idleTimer     = 0;
+    s.touchStartX   = e.touches[0].clientX;
+    s.touchStartRotY = s.rotYTarget;
+    s.lastX         = e.touches[0].clientX;
+    s.velocity      = 0;
   }, { passive: true });
 
   sceneEl.addEventListener('touchmove', e => {
-    if (touchStartX === null) return;
     const x = e.touches[0].clientX;
-    velocity = x - lastTouchX;
-    lastTouchX = x;
-    const dx = x - touchStartX;
-    if (Math.abs(dx) > 5) hasMoved = true;
-    targetOffset = touchStartOffset + dx;
-    tiltTarget = velocity * 0.4;
+    s.velocity   = (x - s.lastX) * 0.35;
+    s.lastX      = x;
+    s.rotYTarget = s.touchStartRotY + (x - s.touchStartX) * 0.28;
   }, { passive: true });
 
-  sceneEl.addEventListener('touchend', e => {
-    if (touchStartX === null) return;
-    touchStartX = null;
-    const clamped = Math.max(minOffset, Math.min(0, targetOffset));
-    targetOffset = Math.round(clamped / (CARD_W + GAP)) * (CARD_W + GAP);
-    tiltTarget = 0;
-    if (Math.abs(velocity) > 2 && navigator.vibrate) navigator.vibrate(8);
+  sceneEl.addEventListener('touchend', () => {
+    s.isTouching = false;
+    s.idleTimer  = 0;
+    s.rotYTarget += s.velocity * 6; // momentum carry
+    if (Math.abs(s.velocity) > 1 && navigator.vibrate) navigator.vibrate(6);
   }, { passive: true });
 
-  // Tap → open detail
+  // Tap to open project (guard against swipe)
+  let hasMoved = false;
+  sceneEl.addEventListener('touchstart', () => { hasMoved = false; }, { passive: true });
+  sceneEl.addEventListener('touchmove',  e => {
+    if (Math.abs(e.touches[0].clientX - s.touchStartX) > 8) hasMoved = true;
+  }, { passive: true });
+
   cards.forEach((card, i) => {
     card.addEventListener('click', () => {
       if (hasMoved) return;
@@ -1719,10 +1719,11 @@ function setupMobileLayout() {
     });
   });
 
-  // Gyroscope → tilts whole strip when not touching
+  // Gyroscope — beta tilts disk forward/back, gamma drifts rotation
   function startGyro() {
     window.addEventListener('deviceorientation', e => {
-      if (touchStartX === null) tiltTarget = (e.gamma || 0) * 0.25;
+      s.rotXTarget = Math.max(-18, Math.min(18, ((e.beta || 60) - 60) * 0.25));
+      if (!s.isTouching) s.rotYTarget += (e.gamma || 0) * 0.008;
     }, true);
   }
 
@@ -1738,18 +1739,14 @@ function setupMobileLayout() {
     }
   }
 
-  // Fade swipe hint after 3s
-  const hintEl = document.getElementById('mobSwipeHint');
-  if (hintEl) setTimeout(() => gsap.to(hintEl, { opacity: 0, duration: 0.6 }), 3000);
-
   // Entrance
   gsap.fromTo('.mob-scene__bust',
     { opacity: 0, scale: 0.75 },
     { opacity: 1, scale: 1, duration: 0.9, ease: 'back.out(1.4)', delay: 0.1 }
   );
-  gsap.fromTo(stripWrapEl,
-    { opacity: 0, y: 40 },
-    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: 0.3 }
+  gsap.fromTo(diskEl,
+    { opacity: 0, y: 60 },
+    { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.25 }
   );
   gsap.fromTo('.mob-scene__wordmark',
     { opacity: 0 },
