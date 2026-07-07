@@ -1631,8 +1631,8 @@ function setupMobileLayout() {
 
   const N = 8;
   const ANGLE_STEP = 360 / N;
-  const RADIUS = 300;
-  const AUTO_SPEED = 0.012;
+  const RADIUS = 200;
+  const AUTO_SPEED = -0.012;
 
   const sceneEl = document.getElementById('mobScene');
   const diskEl  = document.getElementById('mobDisk');
@@ -1695,7 +1695,7 @@ function setupMobileLayout() {
     const x = e.touches[0].clientX;
     s.velocity   = (x - s.lastX) * 0.35;
     s.lastX      = x;
-    s.rotYTarget = s.touchStartRotY + (x - s.touchStartX) * 0.28;
+    s.rotYTarget = s.touchStartRotY - (x - s.touchStartX) * 0.28;
   }, { passive: true });
 
   sceneEl.addEventListener('touchend', () => {
